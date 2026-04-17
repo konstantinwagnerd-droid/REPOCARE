@@ -11,13 +11,15 @@ export function generateStaticParams() {
   return caseStudies.map((c) => ({ slug: c.slug }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }) {
-  const c = caseStudyMap[params.slug];
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const c = caseStudyMap[slug];
   return { title: c ? `${c.facility} — Fallstudie CareAI` : "Fallstudie — CareAI" };
 }
 
-export default function CaseStudyPage({ params }: { params: { slug: string } }) {
-  const c = caseStudyMap[params.slug];
+export default async function CaseStudyPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const c = caseStudyMap[slug];
   if (!c) return notFound();
 
   return (

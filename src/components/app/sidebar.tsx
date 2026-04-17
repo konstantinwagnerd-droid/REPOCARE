@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, FileText, Mic, Search, LogOut, Sparkles, Settings, Shield, FileCheck, ClipboardCheck } from "lucide-react";
+import { LayoutDashboard, Users, FileText, Mic, Search, LogOut, Sparkles, Settings, Shield, FileCheck, ClipboardCheck, Plug, LayoutGrid, Database } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import type { Role } from "@/db/schema";
@@ -22,6 +22,9 @@ const adminNav = [
   { href: "/admin/schedule", label: "Dienstplan", icon: FileText },
   { href: "/admin/audit", label: "Audit-Log", icon: Shield },
   { href: "/admin/reports", label: "Reports", icon: FileText },
+  { href: "/admin/report-builder", label: "Dashboard-Builder", icon: LayoutGrid },
+  { href: "/admin/webhooks", label: "Webhooks", icon: Plug },
+  { href: "/admin/backup", label: "Backup", icon: Database },
   { href: "/admin/settings", label: "Einstellungen", icon: Settings },
 ];
 

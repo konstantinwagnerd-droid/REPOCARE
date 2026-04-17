@@ -43,7 +43,9 @@ export async function renderPdf<T>(
   };
 
   const element = React.createElement(Component as React.ComponentType<{ data: T; meta: BaseDocMeta }>, { data, meta });
-  const buffer = await renderToBuffer(element);
+  // Cast: unsere Komponenten wrappen BaseDocument, das ein <Document> zurückgibt — react-pdf
+  // sieht das zur Laufzeit korrekt, der strukturelle TS-Check hier ist zu streng.
+  const buffer = await renderToBuffer(element as unknown as Parameters<typeof renderToBuffer>[0]);
 
   const safeTitle = opts.title.replace(/[^a-z0-9äöüß\- ]/gi, "").replace(/\s+/g, "_").slice(0, 60);
   const filename = `${safeTitle}_${generatedAt.toISOString().slice(0, 10)}_${documentHash.slice(0, 8)}.pdf`;

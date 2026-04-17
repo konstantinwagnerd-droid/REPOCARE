@@ -4,10 +4,22 @@
  * Strategy: strict-dynamic with per-request nonce for scripts.
  * Allow self + inline-for-next style (Next.js emits inline styles).
  */
-import { randomBytes } from "node:crypto";
-
+/**
+ * Edge-runtime-sicher: nutzt Web-Crypto statt node:crypto,
+ * damit CSP-Builder auch in der Next.js-Middleware funktioniert.
+ */
 export function generateNonce(): string {
-  return randomBytes(16).toString("base64");
+  const bytes = new Uint8Array(16);
+  // Works in both Node (global webcrypto) and Edge runtime
+  crypto.getRandomValues(bytes);
+  // Base64-Encoding Edge-kompatibel
+  let binary = "";
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return typeof btoa !== "undefined"
+    ? btoa(binary)
+    : Buffer.from(bytes).toString("base64");
 }
 
 export function buildCSP(nonce: string, opts: { reportOnly?: boolean } = {}): string {

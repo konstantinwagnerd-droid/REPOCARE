@@ -11,8 +11,9 @@ export function generateStaticParams() {
   return articles.map((a) => ({ slug: a.slug }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }) {
-  const a = articleMap[params.slug];
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const a = articleMap[slug];
   return { title: a ? `${a.title} — CareAI Hilfe` : "Artikel — CareAI" };
 }
 
@@ -56,8 +57,9 @@ function extractHeadings(body: string) {
     });
 }
 
-export default function HelpArticlePage({ params }: { params: { slug: string } }) {
-  const a = articleMap[params.slug];
+export default async function HelpArticlePage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const a = articleMap[slug];
   if (!a) return notFound();
   const toc = extractHeadings(a.body);
   const related = (a.related ?? []).map((s) => articleMap[s]).filter(Boolean);

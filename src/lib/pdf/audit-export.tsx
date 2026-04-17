@@ -11,15 +11,13 @@ export interface AuditEntry {
   ip: string | null;
 }
 
-export function AuditExportDoc({
-  meta,
-  entries,
-  filter,
-}: {
-  meta: BaseDocMeta;
+export interface AuditExportData {
   entries: AuditEntry[];
   filter: { from?: Date | string; to?: Date | string; user?: string; action?: string };
-}) {
+}
+
+export function AuditExportDoc({ meta, data }: { meta: BaseDocMeta; data: AuditExportData }) {
+  const { entries, filter } = data;
   return (
     <BaseDocument meta={meta}>
       <View style={styles.metaBox}>
