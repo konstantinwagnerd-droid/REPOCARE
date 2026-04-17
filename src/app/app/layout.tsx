@@ -7,6 +7,7 @@ import { AnalyticsTracker } from "@/components/analytics/Tracker";
 import { PrivacyBanner } from "@/components/analytics/PrivacyBanner";
 import { NotificationToaster } from "@/components/notifications/NotificationToaster";
 import { ImpersonationBanner } from "@/components/impersonation/banner";
+import { OfflineBanner } from "@/components/sample-data/OfflineBanner";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -26,6 +27,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <AnalyticsTracker role={session.user.role} />
       <NotificationToaster />
       <PrivacyBanner />
+      <OfflineBanner />
     </VoiceCommandProvider>
   );
 }

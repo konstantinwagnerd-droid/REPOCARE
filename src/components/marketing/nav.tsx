@@ -6,6 +6,7 @@ import { Sparkles, Moon, Sun, Menu, X } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { LanguageSwitcher } from "@/components/marketing/language-switcher";
 
 const navLinks = [
   { href: "/#features", label: "Funktionen" },
@@ -39,6 +40,7 @@ export function MarketingNav() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <LanguageSwitcher />
           <button
             onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
             aria-label="Design wechseln"

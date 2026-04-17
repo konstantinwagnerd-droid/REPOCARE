@@ -1,0 +1,438 @@
+{
+  "id": "baseline-2026-04-17",
+  "timestamp": "2026-04-17T19:26:34.540Z",
+  "benchmarks": [
+    {
+      "url": "http://localhost:3000/",
+      "route": "/",
+      "routeType": "marketing",
+      "metrics": [
+        {
+          "name": "LCP",
+          "value": 1200,
+          "unit": "ms"
+        },
+        {
+          "name": "FCP",
+          "value": 900,
+          "unit": "ms"
+        },
+        {
+          "name": "CLS",
+          "value": 0.03,
+          "unit": "score"
+        },
+        {
+          "name": "TBT",
+          "value": 80,
+          "unit": "ms"
+        },
+        {
+          "name": "TTI",
+          "value": 1800,
+          "unit": "ms"
+        },
+        {
+          "name": "INP",
+          "value": 120,
+          "unit": "ms"
+        },
+        {
+          "name": "TTFB",
+          "value": 350,
+          "unit": "ms"
+        }
+      ],
+      "timestamp": "2026-04-17T19:26:34.540Z"
+    },
+    {
+      "url": "http://localhost:3000/en",
+      "route": "/en",
+      "routeType": "marketing",
+      "metrics": [
+        {
+          "name": "LCP",
+          "value": 1200,
+          "unit": "ms"
+        },
+        {
+          "name": "FCP",
+          "value": 900,
+          "unit": "ms"
+        },
+        {
+          "name": "CLS",
+          "value": 0.03,
+          "unit": "score"
+        },
+        {
+          "name": "TBT",
+          "value": 80,
+          "unit": "ms"
+        },
+        {
+          "name": "TTI",
+          "value": 1800,
+          "unit": "ms"
+        },
+        {
+          "name": "INP",
+          "value": 120,
+          "unit": "ms"
+        },
+        {
+          "name": "TTFB",
+          "value": 350,
+          "unit": "ms"
+        }
+      ],
+      "timestamp": "2026-04-17T19:26:34.540Z"
+    },
+    {
+      "url": "http://localhost:3000/trust",
+      "route": "/trust",
+      "routeType": "marketing",
+      "metrics": [
+        {
+          "name": "LCP",
+          "value": 1200,
+          "unit": "ms"
+        },
+        {
+          "name": "FCP",
+          "value": 900,
+          "unit": "ms"
+        },
+        {
+          "name": "CLS",
+          "value": 0.03,
+          "unit": "score"
+        },
+        {
+          "name": "TBT",
+          "value": 80,
+          "unit": "ms"
+        },
+        {
+          "name": "TTI",
+          "value": 1800,
+          "unit": "ms"
+        },
+        {
+          "name": "INP",
+          "value": 120,
+          "unit": "ms"
+        },
+        {
+          "name": "TTFB",
+          "value": 350,
+          "unit": "ms"
+        }
+      ],
+      "timestamp": "2026-04-17T19:26:34.540Z"
+    },
+    {
+      "url": "http://localhost:3000/integrations",
+      "route": "/integrations",
+      "routeType": "marketing",
+      "metrics": [
+        {
+          "name": "LCP",
+          "value": 1200,
+          "unit": "ms"
+        },
+        {
+          "name": "FCP",
+          "value": 900,
+          "unit": "ms"
+        },
+        {
+          "name": "CLS",
+          "value": 0.03,
+          "unit": "score"
+        },
+        {
+          "name": "TBT",
+          "value": 80,
+          "unit": "ms"
+        },
+        {
+          "name": "TTI",
+          "value": 1800,
+          "unit": "ms"
+        },
+        {
+          "name": "INP",
+          "value": 120,
+          "unit": "ms"
+        },
+        {
+          "name": "TTFB",
+          "value": 350,
+          "unit": "ms"
+        }
+      ],
+      "timestamp": "2026-04-17T19:26:34.540Z"
+    },
+    {
+      "url": "http://localhost:3000/roi-rechner",
+      "route": "/roi-rechner",
+      "routeType": "marketing",
+      "metrics": [
+        {
+          "name": "LCP",
+          "value": 1200,
+          "unit": "ms"
+        },
+        {
+          "name": "FCP",
+          "value": 900,
+          "unit": "ms"
+        },
+        {
+          "name": "CLS",
+          "value": 0.03,
+          "unit": "score"
+        },
+        {
+          "name": "TBT",
+          "value": 80,
+          "unit": "ms"
+        },
+        {
+          "name": "TTI",
+          "value": 1800,
+          "unit": "ms"
+        },
+        {
+          "name": "INP",
+          "value": 120,
+          "unit": "ms"
+        },
+        {
+          "name": "TTFB",
+          "value": 350,
+          "unit": "ms"
+        }
+      ],
+      "timestamp": "2026-04-17T19:26:34.540Z"
+    },
+    {
+      "url": "http://localhost:3000/case-studies",
+      "route": "/case-studies",
+      "routeType": "marketing",
+      "metrics": [
+        {
+          "name": "LCP",
+          "value": 1200,
+          "unit": "ms"
+        },
+        {
+          "name": "FCP",
+          "value": 900,
+          "unit": "ms"
+        },
+        {
+          "name": "CLS",
+          "value": 0.03,
+          "unit": "score"
+        },
+        {
+          "name": "TBT",
+          "value": 80,
+          "unit": "ms"
+        },
+        {
+          "name": "TTI",
+          "value": 1800,
+          "unit": "ms"
+        },
+        {
+          "name": "INP",
+          "value": 120,
+          "unit": "ms"
+        },
+        {
+          "name": "TTFB",
+          "value": 350,
+          "unit": "ms"
+        }
+      ],
+      "timestamp": "2026-04-17T19:26:34.540Z"
+    },
+    {
+      "url": "http://localhost:3000/blog",
+      "route": "/blog",
+      "routeType": "marketing",
+      "metrics": [
+        {
+          "name": "LCP",
+          "value": 1200,
+          "unit": "ms"
+        },
+        {
+          "name": "FCP",
+          "value": 900,
+          "unit": "ms"
+        },
+        {
+          "name": "CLS",
+          "value": 0.03,
+          "unit": "score"
+        },
+        {
+          "name": "TBT",
+          "value": 80,
+          "unit": "ms"
+        },
+        {
+          "name": "TTI",
+          "value": 1800,
+          "unit": "ms"
+        },
+        {
+          "name": "INP",
+          "value": 120,
+          "unit": "ms"
+        },
+        {
+          "name": "TTFB",
+          "value": 350,
+          "unit": "ms"
+        }
+      ],
+      "timestamp": "2026-04-17T19:26:34.540Z"
+    },
+    {
+      "url": "http://localhost:3000/login",
+      "route": "/login",
+      "routeType": "auth",
+      "metrics": [
+        {
+          "name": "LCP",
+          "value": 1100,
+          "unit": "ms"
+        },
+        {
+          "name": "FCP",
+          "value": 800,
+          "unit": "ms"
+        },
+        {
+          "name": "CLS",
+          "value": 0.02,
+          "unit": "score"
+        },
+        {
+          "name": "TBT",
+          "value": 60,
+          "unit": "ms"
+        },
+        {
+          "name": "TTI",
+          "value": 1500,
+          "unit": "ms"
+        },
+        {
+          "name": "INP",
+          "value": 110,
+          "unit": "ms"
+        },
+        {
+          "name": "TTFB",
+          "value": 320,
+          "unit": "ms"
+        }
+      ],
+      "timestamp": "2026-04-17T19:26:34.540Z"
+    },
+    {
+      "url": "http://localhost:3000/admin",
+      "route": "/admin",
+      "routeType": "admin",
+      "metrics": [
+        {
+          "name": "LCP",
+          "value": 1900,
+          "unit": "ms"
+        },
+        {
+          "name": "FCP",
+          "value": 1300,
+          "unit": "ms"
+        },
+        {
+          "name": "CLS",
+          "value": 0.05,
+          "unit": "score"
+        },
+        {
+          "name": "TBT",
+          "value": 180,
+          "unit": "ms"
+        },
+        {
+          "name": "TTI",
+          "value": 3200,
+          "unit": "ms"
+        },
+        {
+          "name": "INP",
+          "value": 160,
+          "unit": "ms"
+        },
+        {
+          "name": "TTFB",
+          "value": 450,
+          "unit": "ms"
+        }
+      ],
+      "timestamp": "2026-04-17T19:26:34.540Z"
+    },
+    {
+      "url": "http://localhost:3000/app",
+      "route": "/app",
+      "routeType": "app",
+      "metrics": [
+        {
+          "name": "LCP",
+          "value": 2100,
+          "unit": "ms"
+        },
+        {
+          "name": "FCP",
+          "value": 1400,
+          "unit": "ms"
+        },
+        {
+          "name": "CLS",
+          "value": 0.06,
+          "unit": "score"
+        },
+        {
+          "name": "TBT",
+          "value": 200,
+          "unit": "ms"
+        },
+        {
+          "name": "TTI",
+          "value": 3400,
+          "unit": "ms"
+        },
+        {
+          "name": "INP",
+          "value": 170,
+          "unit": "ms"
+        },
+        {
+          "name": "TTFB",
+          "value": 480,
+          "unit": "ms"
+        }
+      ],
+      "timestamp": "2026-04-17T19:26:34.540Z"
+    }
+  ],
+  "mode": "mock",
+  "notes": "Mock-mode baseline — realistic initial values. Use --real or --lighthouse to measure."
+}
