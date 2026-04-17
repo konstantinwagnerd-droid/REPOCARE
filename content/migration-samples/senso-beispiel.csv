@@ -1,0 +1,11 @@
+K_Vorname;K_Nachname;K_Geburtsdatum;K_Geschlecht;K_Pflegegrad;K_Zimmer;K_Aufnahme;K_Versicherung;K_Diagnose;K_Allergien;K_Medikation;K_Notfall;K_NotfallTel;K_Betreuer;K_Notiz
+Maria;Hofer;1938-03-12;w;4;C12;2022-09-15;A123456789;Demenz Alzheimer-Typ;Penicillin;Donepezil 10mg;Anna Hofer;+43 664 1234567;;Aufstehhilfe noetig
+Franz;Gruber;1941-11-28;m;3;B08;2023-04-02;A234567890;Parkinson;Keine;Levodopa 250mg;Markus Gruber;+43 676 2345678;Dr. Weber;Sturzrisiko R3
+Elisabeth;Bauer;1935-07-05;w;5;A02;2021-01-10;A345678901;Schlaganfall-Folgen;Jod;ASS 100mg;Clara Bauer;+43 699 3456789;;Hemiparese links
+Josef;Steiner;1944-09-22;m;2;C05;2023-11-20;A456789012;Diabetes Typ 2;Keine;Metformin 1000mg;Lisa Steiner;+43 660 4567890;;BZ-Kontrolle 4x
+Margarethe;Fuchs;1932-02-14;w;4;A10;2020-06-08;A567890123;COPD III;Hausstaubmilben;Salbutamol;Thomas Fuchs;+43 664 5678901;;O2 2l/min
+Johann;Wagner;1940-05-30;m;3;B14;2024-03-25;A678901234;Herzinsuffizienz;Keine;Ramipril 5mg;Sabine Wagner;+43 676 6789012;;Gewicht taeglich
+Theresia;Moser;1937-08-18;w;5;C03;2021-07-12;A789012345;Demenz Dekubitus;Latex;Pregabalin 75mg;Peter Moser;+43 699 7890123;Mag. Klein;Wendeplan 2h
+Karl;Huber;1946-12-03;m;1;B22;2024-10-14;A890123456;Gonarthrose;Keine;Ibuprofen;Julia Huber;+43 660 8901234;;Rollator
+Hildegard;Berger;1934-04-27;w;4;A15;2020-02-28;A901234567;Osteoporose;Keine;Calcium;Martin Berger;+43 664 9012345;;Sturzprophylaxe
+Alois;Reiter;1939-06-11;m;3;C19;2022-08-18;A012345678;Vorhofflimmern;Keine;Warfarin;Eva Reiter;+43 676 0123456;;INR woechentlich

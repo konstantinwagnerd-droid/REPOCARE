@@ -1,0 +1,21 @@
+Vorname;Nachname;Geburtsdatum;Geschlecht;Pflegegrad;Zimmer;Einzugsdatum;Versicherungsnummer;Hauptdiagnose;Allergien;Medikation;Angehoeriger;AngehoerigerTelefon;Betreuer;Notizen
+Maria;Hofer;12.03.1938;w;4;C12;15.09.2022;A123456789;Demenz vom Alzheimer-Typ;Penicillin;Donepezil 10mg;Anna Hofer;+43 664 1234567;;Benötigt Aufstehhilfe
+Franz;Gruber;28.11.1941;m;3;B08;02.04.2023;A234567890;Parkinson;Keine;Levodopa 250mg;Markus Gruber;+43 676 2345678;Dr. Weber;Sturzrisiko R3
+Elisabeth;Bauer;05.07.1935;w;5;A02;10.01.2021;A345678901;Schlaganfall-Folgen;Jod;ASS 100mg;Clara Bauer;+43 699 3456789;;Hemiparese links
+Josef;Steiner;22.09.1944;m;2;C05;20.11.2023;A456789012;Diabetes mellitus Typ 2;Keine;Metformin 1000mg;Lisa Steiner;+43 660 4567890;;Blutzuckerkontrolle 4x tgl
+Margarethe;Fuchs;14.02.1932;w;4;A10;08.06.2020;A567890123;COPD Stadium III;Hausstaubmilben;Salbutamol;Thomas Fuchs;+43 664 5678901;;Sauerstoff 2l/min
+Johann;Wagner;30.05.1940;m;3;B14;25.03.2024;A678901234;Herzinsuffizienz NYHA III;Keine;Ramipril 5mg, Bisoprolol;Sabine Wagner;+43 676 6789012;;Gewichtskontrolle täglich
+Theresia;Moser;18.08.1937;w;5;C03;12.07.2021;A789012345;Demenz, Dekubitus Grad 2;Latex;Pregabalin 75mg;Peter Moser;+43 699 7890123;Mag. Klein;Wendeplan alle 2h
+Karl;Huber;03.12.1946;m;1;B22;14.10.2024;A890123456;Gonarthrose;Keine;Ibuprofen 400mg;Julia Huber;+43 660 8901234;;Gehhilfe
+Hildegard;Berger;27.04.1934;w;4;A15;30.02.2020;A901234567;Osteoporose, Z.n. Schenkelhalsfraktur;Keine;Calcium, Vitamin D;Martin Berger;+43 664 9012345;;Sturzprophylaxe R4
+Alois;Reiter;11.06.1939;m;3;C19;18.08.2022;A012345678;Vorhofflimmern;Marcumar;Warfarin;Eva Reiter;+43 676 0123456;;INR-Kontrolle wöchentlich
+Anna;Pichler;25.01.1943;w;2;B06;05.05.2023;A111222333;Hypertonie, leichte Demenz;Keine;Amlodipin 5mg;Hans Pichler;+43 699 1112223;;Stimmungstief beobachten
+Rudolf;Leitner;09.10.1936;m;5;A08;22.12.2019;A222333444;Parkinson fortgeschritten;Keine;Madopar, Entacapon;Maria Leitner;+43 660 2223334;Dr. Fritz;PEG-Sonde
+Gertrude;Hofmann;16.03.1938;w;4;C25;14.04.2021;A333444555;Schwere Arthrose;Keine;Tramadol 100mg ret.;Stefanie Hofmann;+43 664 3334445;;Schmerzdokumentation täglich
+Leopold;Eder;02.09.1941;m;3;B17;08.09.2023;A444555666;Zustand nach Myokardinfarkt;Keine;ASS, Statine;Andrea Eder;+43 676 4445556;;Herzfrequenz überwachen
+Rosa;Auer;29.11.1933;w;5;A04;17.02.2020;A555666777;Demenz, Inkontinenz;Keine;Memantin, Tamsulosin;Markus Auer;+43 699 5556667;;Mobilisation 2x tgl
+Ernst;Maier;07.07.1945;m;2;C08;11.11.2024;A666777888;Diabetes, Nephropathie;Keine;Insulin, Ramipril;Petra Maier;+43 660 6667778;;Dialyse 3x/Woche
+Ingrid;Schmidt;13.08.1940;w;4;B11;03.03.2022;A777888999;Multimorbidität;Sulfonamide;Individuell;Georg Schmidt;+43 664 7778889;;Palliativ-Team eingebunden
+Friedrich;Klein;21.02.1937;m;3;A13;29.06.2021;A888999000;Schlaganfall, Aphasie;Keine;Clopidogrel;Theresa Klein;+43 676 8889990;;Logopädie 2x/Woche
+Martha;Weiss;04.10.1942;w;2;C16;16.01.2024;A999000111;Osteoporose;Keine;Bisphosphonate;Franz Weiss;+43 699 9990001;;Rollator
+Kurt;Schwarz;19.05.1936;m;5;A06;07.07.2020;A000111222;Demenz, Parkinson;Keine;Quetiapin, Madopar;Birgit Schwarz;+43 660 0001112;;Weglaufrisiko R6

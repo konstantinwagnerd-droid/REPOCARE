@@ -3,6 +3,9 @@ import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/app/sidebar";
 import { Topbar } from "@/components/app/topbar";
 import { VoiceCommandProvider } from "@/components/voice-commands/VoiceCommandProvider";
+import { AnalyticsTracker } from "@/components/analytics/Tracker";
+import { PrivacyBanner } from "@/components/analytics/PrivacyBanner";
+import { NotificationToaster } from "@/components/notifications/NotificationToaster";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -18,6 +21,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <main className="flex-1 bg-muted/20">{children}</main>
         </div>
       </div>
+      <AnalyticsTracker role={session.user.role} />
+      <NotificationToaster />
+      <PrivacyBanner />
     </VoiceCommandProvider>
   );
 }

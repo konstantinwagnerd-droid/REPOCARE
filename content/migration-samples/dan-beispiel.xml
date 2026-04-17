@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DANExport version="4.2" exportiert="2026-04-17T10:15:00">
+  <Bewohner>
+    <VName>Maria</VName><NName>Hofer</NName><GebDat>1938-03-12</GebDat>
+    <Geschl>w</Geschl><PGrad>4</PGrad><Zi>C12</Zi>
+    <EinzDat>2022-09-15</EinzDat><VersNr>A123456789</VersNr>
+    <Diagnose>Demenz vom Alzheimer-Typ</Diagnose>
+    <Allergie>Penicillin</Allergie><Medikation>Donepezil 10mg</Medikation>
+    <Kontakt>Anna Hofer</Kontakt><KontaktTel>+43 664 1234567</KontaktTel>
+    <Vormund></Vormund><Bemerkung>Benötigt Aufstehhilfe</Bemerkung>
+  </Bewohner>
+  <Bewohner>
+    <VName>Franz</VName><NName>Gruber</NName><GebDat>1941-11-28</GebDat>
+    <Geschl>m</Geschl><PGrad>3</PGrad><Zi>B08</Zi>
+    <EinzDat>2023-04-02</EinzDat><VersNr>A234567890</VersNr>
+    <Diagnose>Parkinson</Diagnose>
+    <Allergie>Keine</Allergie><Medikation>Levodopa 250mg</Medikation>
+    <Kontakt>Markus Gruber</Kontakt><KontaktTel>+43 676 2345678</KontaktTel>
+    <Vormund>Dr. Weber</Vormund><Bemerkung>Sturzrisiko R3</Bemerkung>
+  </Bewohner>
+  <Bewohner>
+    <VName>Elisabeth</VName><NName>Bauer</NName><GebDat>1935-07-05</GebDat>
+    <Geschl>w</Geschl><PGrad>5</PGrad><Zi>A02</Zi>
+    <EinzDat>2021-01-10</EinzDat><VersNr>A345678901</VersNr>
+    <Diagnose>Schlaganfall-Folgen</Diagnose>
+    <Allergie>Jod</Allergie><Medikation>ASS 100mg</Medikation>
+    <Kontakt>Clara Bauer</Kontakt><KontaktTel>+43 699 3456789</KontaktTel>
+    <Vormund></Vormund><Bemerkung>Hemiparese links</Bemerkung>
+  </Bewohner>
+  <Bewohner>
+    <VName>Josef</VName><NName>Steiner</NName><GebDat>1944-09-22</GebDat>
+    <Geschl>m</Geschl><PGrad>2</PGrad><Zi>C05</Zi>
+    <EinzDat>2023-11-20</EinzDat><VersNr>A456789012</VersNr>
+    <Diagnose>Diabetes mellitus Typ 2</Diagnose>
+    <Allergie>Keine</Allergie><Medikation>Metformin 1000mg</Medikation>
+    <Kontakt>Lisa Steiner</Kontakt><KontaktTel>+43 660 4567890</KontaktTel>
+    <Vormund></Vormund><Bemerkung>Blutzuckerkontrolle 4x tgl</Bemerkung>
+  </Bewohner>
+  <Bewohner>
+    <VName>Margarethe</VName><NName>Fuchs</NName><GebDat>1932-02-14</GebDat>
+    <Geschl>w</Geschl><PGrad>4</PGrad><Zi>A10</Zi>
+    <EinzDat>2020-06-08</EinzDat><VersNr>A567890123</VersNr>
+    <Diagnose>COPD Stadium III</Diagnose>
+    <Allergie>Hausstaubmilben</Allergie><Medikation>Salbutamol</Medikation>
+    <Kontakt>Thomas Fuchs</Kontakt><KontaktTel>+43 664 5678901</KontaktTel>
+    <Vormund></Vormund><Bemerkung>Sauerstoff 2l/min</Bemerkung>
+  </Bewohner>
+  <Bewohner>
+    <VName>Johann</VName><NName>Wagner</NName><GebDat>1940-05-30</GebDat>
+    <Geschl>m</Geschl><PGrad>3</PGrad><Zi>B14</Zi>
+    <EinzDat>2024-03-25</EinzDat><VersNr>A678901234</VersNr>
+    <Diagnose>Herzinsuffizienz NYHA III</Diagnose>
+    <Allergie>Keine</Allergie><Medikation>Ramipril 5mg, Bisoprolol</Medikation>
+    <Kontakt>Sabine Wagner</Kontakt><KontaktTel>+43 676 6789012</KontaktTel>
+    <Vormund></Vormund><Bemerkung>Gewichtskontrolle täglich</Bemerkung>
+  </Bewohner>
+  <Bewohner>
+    <VName>Theresia</VName><NName>Moser</NName><GebDat>1937-08-18</GebDat>
+    <Geschl>w</Geschl><PGrad>5</PGrad><Zi>C03</Zi>
+    <EinzDat>2021-07-12</EinzDat><VersNr>A789012345</VersNr>
+    <Diagnose>Demenz, Dekubitus Grad 2</Diagnose>
+    <Allergie>Latex</Allergie><Medikation>Pregabalin 75mg</Medikation>
+    <Kontakt>Peter Moser</Kontakt><KontaktTel>+43 699 7890123</KontaktTel>
+    <Vormund>Mag. Klein</Vormund><Bemerkung>Wendeplan alle 2h</Bemerkung>
+  </Bewohner>
+  <Bewohner>
+    <VName>Karl</VName><NName>Huber</NName><GebDat>1946-12-03</GebDat>
+    <Geschl>m</Geschl><PGrad>1</PGrad><Zi>B22</Zi>
+    <EinzDat>2024-10-14</EinzDat><VersNr>A890123456</VersNr>
+    <Diagnose>Gonarthrose</Diagnose>
+    <Allergie>Keine</Allergie><Medikation>Ibuprofen 400mg</Medikation>
+    <Kontakt>Julia Huber</Kontakt><KontaktTel>+43 660 8901234</KontaktTel>
+    <Vormund></Vormund><Bemerkung>Gehhilfe</Bemerkung>
+  </Bewohner>
+  <Bewohner>
+    <VName>Hildegard</VName><NName>Berger</NName><GebDat>1934-04-27</GebDat>
+    <Geschl>w</Geschl><PGrad>4</PGrad><Zi>A15</Zi>
+    <EinzDat>2020-02-28</EinzDat><VersNr>A901234567</VersNr>
+    <Diagnose>Osteoporose, Z.n. Schenkelhalsfraktur</Diagnose>
+    <Allergie>Keine</Allergie><Medikation>Calcium, Vitamin D</Medikation>
+    <Kontakt>Martin Berger</Kontakt><KontaktTel>+43 664 9012345</KontaktTel>
+    <Vormund></Vormund><Bemerkung>Sturzprophylaxe R4</Bemerkung>
+  </Bewohner>
+  <Bewohner>
+    <VName>Alois</VName><NName>Reiter</NName><GebDat>1939-06-11</GebDat>
+    <Geschl>m</Geschl><PGrad>3</PGrad><Zi>C19</Zi>
+    <EinzDat>2022-08-18</EinzDat><VersNr>A012345678</VersNr>
+    <Diagnose>Vorhofflimmern</Diagnose>
+    <Allergie>Marcumar</Allergie><Medikation>Warfarin</Medikation>
+    <Kontakt>Eva Reiter</Kontakt><KontaktTel>+43 676 0123456</KontaktTel>
+    <Vormund></Vormund><Bemerkung>INR-Kontrolle wöchentlich</Bemerkung>
+  </Bewohner>
+</DANExport>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VivendiExport erstelltAm="2026-04-17">
+  <Klient>
+    <Vorname>Maria</Vorname><Nachname>Hofer</Nachname>
+    <Geburtstag>12.03.1938</Geburtstag><Geschlecht>weiblich</Geschlecht>
+    <Pflegegrad>4</Pflegegrad><Zimmernummer>C12</Zimmernummer>
+    <AufnahmeDatum>15.09.2022</AufnahmeDatum><KVNummer>A123456789</KVNummer>
+    <Diagnose>Demenz vom Alzheimer-Typ</Diagnose>
+    <Allergien>Penicillin</Allergien>
+    <Medikamente>Donepezil 10mg</Medikamente>
+    <Bezugsperson>Anna Hofer</Bezugsperson>
+    <BezugspersonTelefon>+43 664 1234567</BezugspersonTelefon>
+    <Betreuer></Betreuer>
+    <Freitext>Benötigt Aufstehhilfe beim morgendlichen Transfer</Freitext>
+  </Klient>
+  <Klient>
+    <Vorname>Franz</Vorname><Nachname>Gruber</Nachname>
+    <Geburtstag>28.11.1941</Geburtstag><Geschlecht>männlich</Geschlecht>
+    <Pflegegrad>3</Pflegegrad><Zimmernummer>B08</Zimmernummer>
+    <AufnahmeDatum>02.04.2023</AufnahmeDatum><KVNummer>A234567890</KVNummer>
+    <Diagnose>Parkinson</Diagnose>
+    <Allergien>Keine bekannt</Allergien>
+    <Medikamente>Levodopa 250mg, 3x täglich</Medikamente>
+    <Bezugsperson>Markus Gruber</Bezugsperson>
+    <BezugspersonTelefon>+43 676 2345678</BezugspersonTelefon>
+    <Betreuer>Dr. Weber (RA)</Betreuer>
+    <Freitext>Sturzrisiko R3 — Handlauf und Nachtlicht nötig</Freitext>
+  </Klient>
+  <Klient>
+    <Vorname>Elisabeth</Vorname><Nachname>Bauer</Nachname>
+    <Geburtstag>05.07.1935</Geburtstag><Geschlecht>weiblich</Geschlecht>
+    <Pflegegrad>5</Pflegegrad><Zimmernummer>A02</Zimmernummer>
+    <AufnahmeDatum>10.01.2021</AufnahmeDatum><KVNummer>A345678901</KVNummer>
+    <Diagnose>Schlaganfall-Folgen (Apoplex 2020)</Diagnose>
+    <Allergien>Jod (Kontrastmittel)</Allergien>
+    <Medikamente>ASS 100mg</Medikamente>
+    <Bezugsperson>Clara Bauer</Bezugsperson>
+    <BezugspersonTelefon>+43 699 3456789</BezugspersonTelefon>
+    <Betreuer></Betreuer>
+    <Freitext>Hemiparese links, Rollstuhlmobilisation</Freitext>
+  </Klient>
+  <Klient>
+    <Vorname>Josef</Vorname><Nachname>Steiner</Nachname>
+    <Geburtstag>22.09.1944</Geburtstag><Geschlecht>männlich</Geschlecht>
+    <Pflegegrad>2</Pflegegrad><Zimmernummer>C05</Zimmernummer>
+    <AufnahmeDatum>20.11.2023</AufnahmeDatum><KVNummer>A456789012</KVNummer>
+    <Diagnose>Diabetes mellitus Typ 2</Diagnose>
+    <Allergien>Keine</Allergien>
+    <Medikamente>Metformin 1000mg 2x tgl</Medikamente>
+    <Bezugsperson>Lisa Steiner</Bezugsperson>
+    <BezugspersonTelefon>+43 660 4567890</BezugspersonTelefon>
+    <Betreuer></Betreuer>
+    <Freitext>BZ-Kontrolle 4x täglich, Diät-Kost</Freitext>
+  </Klient>
+  <Klient>
+    <Vorname>Margarethe</Vorname><Nachname>Fuchs</Nachname>
+    <Geburtstag>14.02.1932</Geburtstag><Geschlecht>weiblich</Geschlecht>
+    <Pflegegrad>4</Pflegegrad><Zimmernummer>A10</Zimmernummer>
+    <AufnahmeDatum>08.06.2020</AufnahmeDatum><KVNummer>A567890123</KVNummer>
+    <Diagnose>COPD Stadium III (GOLD)</Diagnose>
+    <Allergien>Hausstaubmilben</Allergien>
+    <Medikamente>Salbutamol-Spray bei Bedarf</Medikamente>
+    <Bezugsperson>Thomas Fuchs</Bezugsperson>
+    <BezugspersonTelefon>+43 664 5678901</BezugspersonTelefon>
+    <Betreuer></Betreuer>
+    <Freitext>Sauerstoff 2l/min dauerhaft</Freitext>
+  </Klient>
+  <Klient>
+    <Vorname>Johann</Vorname><Nachname>Wagner</Nachname>
+    <Geburtstag>30.05.1940</Geburtstag><Geschlecht>männlich</Geschlecht>
+    <Pflegegrad>3</Pflegegrad><Zimmernummer>B14</Zimmernummer>
+    <AufnahmeDatum>25.03.2024</AufnahmeDatum><KVNummer>A678901234</KVNummer>
+    <Diagnose>Herzinsuffizienz NYHA III</Diagnose>
+    <Allergien>Keine</Allergien>
+    <Medikamente>Ramipril 5mg, Bisoprolol 2.5mg</Medikamente>
+    <Bezugsperson>Sabine Wagner</Bezugsperson>
+    <BezugspersonTelefon>+43 676 6789012</BezugspersonTelefon>
+    <Betreuer></Betreuer>
+    <Freitext>Gewicht täglich, Ödeme beobachten</Freitext>
+  </Klient>
+  <Klient>
+    <Vorname>Theresia</Vorname><Nachname>Moser</Nachname>
+    <Geburtstag>18.08.1937</Geburtstag><Geschlecht>weiblich</Geschlecht>
+    <Pflegegrad>5</Pflegegrad><Zimmernummer>C03</Zimmernummer>
+    <AufnahmeDatum>12.07.2021</AufnahmeDatum><KVNummer>A789012345</KVNummer>
+    <Diagnose>Demenz, Dekubitus Grad 2 sacral</Diagnose>
+    <Allergien>Latex</Allergien>
+    <Medikamente>Pregabalin 75mg 2x tgl</Medikamente>
+    <Bezugsperson>Peter Moser</Bezugsperson>
+    <BezugspersonTelefon>+43 699 7890123</BezugspersonTelefon>
+    <Betreuer>Mag. Klein</Betreuer>
+    <Freitext>Wendeplan alle 2h, Wechseldruckmatratze</Freitext>
+  </Klient>
+  <Klient>
+    <Vorname>Karl</Vorname><Nachname>Huber</Nachname>
+    <Geburtstag>03.12.1946</Geburtstag><Geschlecht>männlich</Geschlecht>
+    <Pflegegrad>1</Pflegegrad><Zimmernummer>B22</Zimmernummer>
+    <AufnahmeDatum>14.10.2024</AufnahmeDatum><KVNummer>A890123456</KVNummer>
+    <Diagnose>Gonarthrose bilateral</Diagnose>
+    <Allergien>Keine</Allergien>
+    <Medikamente>Ibuprofen 400mg bei Bedarf</Medikamente>
+    <Bezugsperson>Julia Huber</Bezugsperson>
+    <BezugspersonTelefon>+43 660 8901234</BezugspersonTelefon>
+    <Betreuer></Betreuer>
+    <Freitext>Mobil mit Rollator</Freitext>
+  </Klient>
+  <Klient>
+    <Vorname>Hildegard</Vorname><Nachname>Berger</Nachname>
+    <Geburtstag>27.04.1934</Geburtstag><Geschlecht>weiblich</Geschlecht>
+    <Pflegegrad>4</Pflegegrad><Zimmernummer>A15</Zimmernummer>
+    <AufnahmeDatum>28.02.2020</AufnahmeDatum><KVNummer>A901234567</KVNummer>
+    <Diagnose>Osteoporose, Z.n. Schenkelhalsfraktur li</Diagnose>
+    <Allergien>Keine</Allergien>
+    <Medikamente>Calcium 500mg, Vitamin D 1000IE</Medikamente>
+    <Bezugsperson>Martin Berger</Bezugsperson>
+    <BezugspersonTelefon>+43 664 9012345</BezugspersonTelefon>
+    <Betreuer></Betreuer>
+    <Freitext>Sturzprophylaxe R4, Hüftprotektoren</Freitext>
+  </Klient>
+  <Klient>
+    <Vorname>Alois</Vorname><Nachname>Reiter</Nachname>
+    <Geburtstag>11.06.1939</Geburtstag><Geschlecht>männlich</Geschlecht>
+    <Pflegegrad>3</Pflegegrad><Zimmernummer>C19</Zimmernummer>
+    <AufnahmeDatum>18.08.2022</AufnahmeDatum><KVNummer>A012345678</KVNummer>
+    <Diagnose>Vorhofflimmern, chronisch</Diagnose>
+    <Allergien>Keine</Allergien>
+    <Medikamente>Warfarin (INR-gesteuert)</Medikamente>
+    <Bezugsperson>Eva Reiter</Bezugsperson>
+    <BezugspersonTelefon>+43 676 0123456</BezugspersonTelefon>
+    <Betreuer></Betreuer>
+    <Freitext>INR-Kontrolle wöchentlich</Freitext>
+  </Klient>
+</VivendiExport>
