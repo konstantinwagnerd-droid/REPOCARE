@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, FileText, Mic, Search, LogOut, Sparkles, Settings, Shield, Plug, LayoutGrid, Database, Bell, BarChart3, Radar, Receipt, Flag, UserCheck, Clock, GraduationCap, Award, Activity, Palette, Network, ArrowLeftRight, Download, Command } from "lucide-react";
+import { LayoutDashboard, Users, FileText, Mic, Search, LogOut, Sparkles, Settings, Shield, Plug, LayoutGrid, Database, Bell, BarChart3, Radar, Receipt, Flag, UserCheck, Clock, GraduationCap, Award, Activity, Palette, Network, ArrowLeftRight, Download, Command, FlaskConical, Zap, CloudCog } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import type { Role } from "@/db/schema";
@@ -43,6 +43,10 @@ const adminNav = [
   { href: "/admin/billing", label: "API-Billing", icon: Receipt, group: "Integrationen", tour: "admin-billing" },
   { href: "/admin/migration", label: "Migration", icon: ArrowLeftRight, group: "Integrationen", tour: "admin-migration" },
   { href: "/admin/knowledge-graph", label: "Knowledge-Graph", icon: Network, group: "Integrationen" },
+  { href: "/admin/crm-sync", label: "CRM-Sync", icon: CloudCog, group: "Integrationen" },
+
+  { href: "/admin/ab-testing", label: "A/B-Testing", icon: FlaskConical, group: "Marketing" },
+  { href: "/admin/marketing-automation", label: "Marketing-Automation", icon: Zap, group: "Marketing" },
 
   { href: "/admin/feature-flags", label: "Feature-Flags", icon: Flag, group: "System", tour: "admin-flags" },
   { href: "/admin/whitelabel", label: "Whitelabel", icon: Palette, group: "System", tour: "admin-whitelabel" },
