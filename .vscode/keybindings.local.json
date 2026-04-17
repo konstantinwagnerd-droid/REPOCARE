@@ -1,0 +1,30 @@
+[
+  {
+    "//": "Diese Datei ist nur Referenz — VS Code lädt User-Keybindings global.",
+    "//2": "Wenn du diese willst, kopiere den Inhalt in: Strg+Shift+P → 'Preferences: Open Keyboard Shortcuts (JSON)'",
+    "key": "ctrl+shift+s",
+    "command": "workbench.action.tasks.runTask",
+    "args": "CareAI · Lint",
+    "when": "config.workbench.colorTheme"
+  },
+  {
+    "key": "ctrl+alt+d",
+    "command": "workbench.action.tasks.runTask",
+    "args": "CareAI · 4. Dev-Server starten"
+  },
+  {
+    "key": "ctrl+alt+s",
+    "command": "workbench.action.tasks.runTask",
+    "args": "CareAI · Drizzle Studio öffnen"
+  },
+  {
+    "key": "ctrl+alt+b",
+    "command": "workbench.action.tasks.runTask",
+    "args": "CareAI · Build (Production)"
+  },
+  {
+    "key": "ctrl+alt+t",
+    "command": "workbench.action.tasks.runTask",
+    "args": "CareAI · TypeCheck"
+  }
+]

@@ -1,0 +1,66 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Next.js: dev server (Node)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run dev",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Next.js: dev server (debug Server)",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"],
+      "env": { "NODE_OPTIONS": "--inspect" }
+    },
+    {
+      "name": "Next.js: debug Client (Chrome)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}",
+      "sourceMaps": true,
+      "userDataDir": "${workspaceFolder}/.vscode/.chrome"
+    },
+    {
+      "name": "Next.js: full stack (Server + Chrome)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run dev",
+      "serverReadyAction": {
+        "pattern": "started server on .+, url: (https?://\\S+)",
+        "uriFormat": "%s",
+        "action": "debugWithChrome",
+        "killOnServerStop": true,
+        "webRoot": "${workspaceFolder}"
+      }
+    },
+    {
+      "name": "Drizzle: db:seed",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run db:seed",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Drizzle: db:push",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run db:push",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Drizzle: db:studio",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run db:studio",
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}

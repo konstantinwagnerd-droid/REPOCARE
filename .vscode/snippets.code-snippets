@@ -1,0 +1,115 @@
+{
+  "Server Component (RSC)": {
+    "scope": "typescriptreact",
+    "prefix": "rsc",
+    "body": [
+      "export default async function ${1:Page}() {",
+      "  return (",
+      "    <div className=\"container mx-auto p-8\">",
+      "      <h1 className=\"font-serif text-3xl tracking-tight\">${2:Titel}</h1>",
+      "      $0",
+      "    </div>",
+      "  );",
+      "}",
+      ""
+    ]
+  },
+  "Client Component": {
+    "scope": "typescriptreact",
+    "prefix": "rcc",
+    "body": [
+      "\"use client\";",
+      "",
+      "import { useState } from \"react\";",
+      "",
+      "export function ${1:Component}() {",
+      "  const [${2:state}, set${2/(.*)/${2:/capitalize}/}] = useState($3);",
+      "  return (",
+      "    <div>",
+      "      $0",
+      "    </div>",
+      "  );",
+      "}",
+      ""
+    ]
+  },
+  "Server Action": {
+    "scope": "typescript,typescriptreact",
+    "prefix": "sa",
+    "body": [
+      "\"use server\";",
+      "",
+      "import { z } from \"zod\";",
+      "import { auth } from \"@/lib/auth\";",
+      "import { db } from \"@/db/client\";",
+      "import { logChange } from \"@/lib/audit\";",
+      "",
+      "const Schema = z.object({",
+      "  $1",
+      "});",
+      "",
+      "export async function ${2:action}(input: z.infer<typeof Schema>) {",
+      "  const session = await auth();",
+      "  if (!session?.user) throw new Error(\"Nicht autorisiert\");",
+      "",
+      "  const data = Schema.parse(input);",
+      "  $0",
+      "}",
+      ""
+    ]
+  },
+  "API Route Handler": {
+    "scope": "typescript",
+    "prefix": "api",
+    "body": [
+      "import { NextRequest, NextResponse } from \"next/server\";",
+      "import { auth } from \"@/lib/auth\";",
+      "",
+      "export const runtime = \"nodejs\";",
+      "",
+      "export async function ${1|GET,POST,PUT,DELETE,PATCH|}(req: NextRequest) {",
+      "  const session = await auth();",
+      "  if (!session?.user) return NextResponse.json({ error: \"unauthorized\" }, { status: 401 });",
+      "",
+      "  $0",
+      "  return NextResponse.json({ ok: true });",
+      "}",
+      ""
+    ]
+  },
+  "Drizzle Query": {
+    "scope": "typescript,typescriptreact",
+    "prefix": "dq",
+    "body": [
+      "const ${1:rows} = await db.query.${2:table}.findMany({",
+      "  where: (t, { eq }) => eq(t.${3:tenantId}, ${4:tenantId}),",
+      "  $0",
+      "});",
+      ""
+    ]
+  },
+  "shadcn Card": {
+    "scope": "typescriptreact",
+    "prefix": "card",
+    "body": [
+      "<Card>",
+      "  <CardHeader>",
+      "    <CardTitle>${1:Titel}</CardTitle>",
+      "    <CardDescription>${2:Beschreibung}</CardDescription>",
+      "  </CardHeader>",
+      "  <CardContent>",
+      "    $0",
+      "  </CardContent>",
+      "</Card>",
+      ""
+    ]
+  },
+  "Lucide Icon import": {
+    "scope": "typescript,typescriptreact",
+    "prefix": "lucide",
+    "body": [
+      "import { ${1:IconName} } from \"lucide-react\";",
+      ""
+    ]
+  }
+}

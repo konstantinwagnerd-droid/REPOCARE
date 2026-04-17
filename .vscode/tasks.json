@@ -1,0 +1,82 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "CareAI · 1. Install",
+      "type": "shell",
+      "command": "npm install",
+      "presentation": { "panel": "shared", "reveal": "always", "clear": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "CareAI · 2. DB Push (Schema)",
+      "type": "shell",
+      "command": "npm run db:push",
+      "presentation": { "panel": "shared", "reveal": "always", "clear": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "CareAI · 3. DB Seed (Demo-Daten)",
+      "type": "shell",
+      "command": "npm run db:seed",
+      "presentation": { "panel": "shared", "reveal": "always", "clear": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "CareAI · 4. Dev-Server starten",
+      "type": "shell",
+      "command": "npm run dev",
+      "isBackground": true,
+      "presentation": { "panel": "dedicated", "reveal": "always" },
+      "problemMatcher": {
+        "owner": "next",
+        "pattern": [{ "regexp": "." }],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Ready in"
+        }
+      }
+    },
+    {
+      "label": "CareAI · Build (Production)",
+      "type": "shell",
+      "command": "npm run build",
+      "presentation": { "panel": "shared", "reveal": "always", "clear": true },
+      "problemMatcher": ["$tsc"]
+    },
+    {
+      "label": "CareAI · Lint",
+      "type": "shell",
+      "command": "npm run lint",
+      "presentation": { "panel": "shared", "reveal": "always", "clear": true },
+      "problemMatcher": ["$eslint-stylish"]
+    },
+    {
+      "label": "CareAI · TypeCheck",
+      "type": "shell",
+      "command": "npm run typecheck",
+      "presentation": { "panel": "shared", "reveal": "always", "clear": true },
+      "problemMatcher": ["$tsc"]
+    },
+    {
+      "label": "CareAI · Drizzle Studio öffnen",
+      "type": "shell",
+      "command": "npm run db:studio",
+      "isBackground": true,
+      "presentation": { "panel": "dedicated", "reveal": "always" },
+      "problemMatcher": []
+    },
+    {
+      "label": "CareAI · Komplett-Setup (alles in einem)",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "CareAI · 1. Install",
+        "CareAI · 2. DB Push (Schema)",
+        "CareAI · 3. DB Seed (Demo-Daten)",
+        "CareAI · 4. Dev-Server starten"
+      ],
+      "problemMatcher": []
+    }
+  ]
+}

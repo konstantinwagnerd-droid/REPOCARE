@@ -1,0 +1,190 @@
+{
+  "//": "VS Code Workspace-Settings für CareAI — diese Settings gelten nur in diesem Projekt.",
+
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "editor.rulers": [110],
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active",
+  "editor.stickyScroll.enabled": true,
+  "editor.suggest.preview": true,
+  "editor.linkedEditing": true,
+  "editor.fontLigatures": true,
+
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "files.trimFinalNewlines": true,
+  "files.encoding": "utf8",
+  "files.exclude": {
+    "**/.next": true,
+    "**/node_modules": true,
+    "**/.turbo": true,
+    "**/local.db": false,
+    "**/.git": true
+  },
+  "files.watcherExclude": {
+    "**/.next/**": true,
+    "**/node_modules/**": true,
+    "**/local.db/**": true,
+    "**/.git/**": true
+  },
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+
+  "search.exclude": {
+    "**/.next": true,
+    "**/node_modules": true,
+    "**/local.db": true,
+    "**/drizzle/meta": true,
+    "**/pnpm-lock.yaml": true,
+    "**/package-lock.json": true
+  },
+
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "typescript.preferences.quoteStyle": "double",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "typescript.suggest.autoImports": true,
+  "typescript.inlayHints.parameterNames.enabled": "literals",
+  "typescript.inlayHints.variableTypes.enabled": false,
+  "typescript.inlayHints.functionLikeReturnTypes.enabled": false,
+  "javascript.updateImportsOnFileMove.enabled": "always",
+
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "eslint.run": "onSave",
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"],
+    ["cn\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"],
+    ["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+  ],
+  "tailwindCSS.includeLanguages": {
+    "typescript": "javascript",
+    "typescriptreact": "javascript"
+  },
+  "tailwindCSS.classAttributes": ["class", "className", "classList", "ngClass"],
+
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": {
+      "comments": "off",
+      "strings": "off",
+      "other": "off"
+    }
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  "git.enableSmartCommit": true,
+
+  "explorer.confirmDelete": true,
+  "explorer.confirmDragAndDrop": false,
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "*.ts": "${capture}.test.ts, ${capture}.spec.ts",
+    "*.tsx": "${capture}.test.tsx, ${capture}.spec.tsx, ${capture}.module.css",
+    "package.json": "package-lock.json, pnpm-lock.yaml, .npmrc, .nvmrc, .node-version",
+    "next.config.ts": "next-env.d.ts, next.config.*",
+    "tailwind.config.*": "postcss.config.*",
+    "drizzle.config.*": "drizzle/**",
+    ".env": ".env.*",
+    "README.md": "QUALITY-BAR-AMPLIFIED.md, RESEARCH-SPEC.md, NOTICE*, LICENSE*"
+  },
+
+  "workbench.tree.indent": 16,
+  "workbench.editor.labelFormat": "short",
+  "workbench.iconTheme": "material-icon-theme",
+  "workbench.colorCustomizations": {
+    "activityBar.activeBorder": "#0F766E",
+    "statusBar.background": "#0F766E",
+    "statusBar.foreground": "#FFFFFF",
+    "statusBarItem.hoverBackground": "#0E5E58"
+  },
+
+  "terminal.integrated.defaultProfile.windows": "Git Bash",
+  "terminal.integrated.fontSize": 13,
+  "terminal.integrated.cursorBlinking": true,
+
+  "emmet.includeLanguages": {
+    "typescript": "html",
+    "typescriptreact": "html"
+  },
+
+  "cSpell.enabled": true,
+  "cSpell.language": "en,de,de-AT",
+  "cSpell.words": [
+    "CareAI",
+    "Pflegekraft",
+    "Pflegekräfte",
+    "Pflegegrad",
+    "Pflegegeld",
+    "Pflegedienstleitung",
+    "Bewohner",
+    "Bewohnerin",
+    "Bewohnerinnen",
+    "Pflegebericht",
+    "Schichtbericht",
+    "Wunddoku",
+    "Sturzrisiko",
+    "Dekubitus",
+    "Mobilisation",
+    "PDL",
+    "GuKG",
+    "Strukturmodell",
+    "Maßnahmenplan",
+    "Vivendi",
+    "Medifox",
+    "Konstantin",
+    "drizzle",
+    "pglite",
+    "shadcn",
+    "lucide",
+    "fraunces",
+    "manrope",
+    "geist",
+    "petrol",
+    "dnd",
+    "cmdk",
+    "sonner",
+    "zod"
+  ]
+}

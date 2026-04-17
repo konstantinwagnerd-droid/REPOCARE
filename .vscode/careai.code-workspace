@@ -1,0 +1,23 @@
+{
+  "folders": [
+    {
+      "name": "CareAI App",
+      "path": ".."
+    }
+  ],
+  "settings": {
+    "//": "Workspace-Spezifische Overrides — leer, alles in .vscode/settings.json"
+  },
+  "extensions": {
+    "recommendations": [
+      "esbenp.prettier-vscode",
+      "dbaeumer.vscode-eslint",
+      "bradlc.vscode-tailwindcss",
+      "yoavbls.pretty-ts-errors",
+      "usernamehw.errorlens",
+      "streetsidesoftware.code-spell-checker",
+      "drizzle-team.drizzle-vscode",
+      "humao.rest-client"
+    ]
+  }
+}
