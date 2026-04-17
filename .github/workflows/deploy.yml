@@ -77,12 +77,49 @@ jobs:
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             export APP_VERSION=sha-${GITHUB_SHA:0:7}
             ./scripts/deploy/deploy.sh
-      - name: Smoke test
+      - name: Smoke test (health)
         run: |
           for i in {1..20}; do
             if curl -sf "https://${{ secrets.DEPLOY_DOMAIN }}/api/health"; then
-              echo "OK"; exit 0
+              echo "OK"; break
             fi
             sleep 3
+            if [ $i -eq 20 ]; then echo "health failed"; exit 1; fi
           done
-          echo "smoke test failed"; exit 1
+
+  smoke:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - name: Run Playwright Smoke-Suite
+        env:
+          SMOKE_BASE_URL: https://${{ secrets.DEPLOY_DOMAIN }}
+          SMOKE_USER: ${{ secrets.SMOKE_USER }}
+          SMOKE_PW: ${{ secrets.SMOKE_PW }}
+        run: bash scripts/smoke/run-smoke.sh --base-url "$SMOKE_BASE_URL"
+      - name: Upload smoke report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-report
+          path: smoke-report/
+          retention-days: 14
+      - name: Rollback on failure
+        if: failure()
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          script: |
+            set -e
+            cd /srv/careai
+            ./scripts/deploy/rollback.sh || echo "rollback script not found - manual intervention needed"
