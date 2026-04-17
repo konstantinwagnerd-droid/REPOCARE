@@ -1,4 +1,4 @@
-import type { EvaluationContext, EvaluationResult, FeatureFlag, TargetingRule } from "./types";
+import type { EvaluationContext, EvaluationResult, TargetingRule } from "./types";
 import { getFlag, listFlags } from "./store";
 
 // Deterministischer 0–99 Hash (FNV-1a-artig) aus (flagKey + identifier)

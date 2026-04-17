@@ -1,4 +1,4 @@
-import type { FacilityComparison, FacilityKpiSnapshot } from "./types";
+import type { FacilityComparison } from "./types";
 import type { GroupRecord } from "./types";
 import { snapshotsForGroup } from "./seed";
 import { median, extractNumeric, type NumericKpiKey } from "./rollup";

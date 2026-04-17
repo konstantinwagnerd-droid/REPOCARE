@@ -47,6 +47,7 @@ export function MedikationsplanDoc({ data, meta }: { data: BmpData; meta: BaseDo
         </View>
         {data.barcodeDataUrl ? (
           <View style={{ alignItems: "flex-end" }}>
+            {/* eslint-disable-next-line jsx-a11y/alt-text -- @react-pdf/renderer Image, nicht HTML <img> */}
             <Image src={data.barcodeDataUrl} style={{ width: 80, height: 80 }} />
             <Text style={styles.hashText}>BMP-Datamatrix (Mock)</Text>
           </View>

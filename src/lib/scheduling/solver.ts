@@ -36,7 +36,7 @@ export function solve(input: SolverInput): Solution {
   let best = current.slice();
   let bestScore = currentScore;
   let bestEval = currentEval;
-  let bestSoll = currentSoll;
+  let _bestSoll = currentSoll;
 
   const T0 = 1000;
   const Tmin = 0.1;
@@ -59,7 +59,7 @@ export function solve(input: SolverInput): Solution {
         best = neighbor.slice();
         bestScore = neScore;
         bestEval = neEval;
-        bestSoll = neSoll;
+        _bestSoll = neSoll;
       }
     }
     T = Math.max(Tmin, T0 * Math.pow(0.995, iter));

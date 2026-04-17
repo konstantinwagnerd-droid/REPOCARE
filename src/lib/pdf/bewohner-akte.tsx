@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, View, Page } from "@react-pdf/renderer";
+import { Text, View } from "@react-pdf/renderer";
 import { BaseDocument, BaseDocMeta, styles, fmtDate, fmtDateTime, PageHeader, PageFooter, Watermark, brand } from "./pdf-base";
 
 export interface AkteSection {

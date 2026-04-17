@@ -1,4 +1,4 @@
-import type { AuditResult, Violation } from "./types";
+import type { AuditResult } from "./types";
 
 export function toMarkdown(result: AuditResult): string {
   const lines: string[] = [];

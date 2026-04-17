@@ -1,4 +1,4 @@
-import type { AnalyticsEventName, AnalyticsSummary, DailyRollup, RawEvent } from "./types";
+import type { AnalyticsSummary, DailyRollup, RawEvent } from "./types";
 
 /**
  * In-Memory aggregate store. Keine Rohdaten, nur tageweise Rollups.

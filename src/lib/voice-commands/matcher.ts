@@ -17,7 +17,7 @@ export function normalize(raw: string): string {
  * Match utterance against intent registry. Returns best match or null.
  * Scoring: first-match wins (regex order). Fuzzy fallback: substring score.
  */
-export function match(utterance: string, context: Partial<VoiceActionContext> = {}): MatchResult {
+export function match(utterance: string, _context: Partial<VoiceActionContext> = {}): MatchResult {
   const text = normalize(utterance);
   for (const intent of intents) {
     for (const re of intent.patterns) {

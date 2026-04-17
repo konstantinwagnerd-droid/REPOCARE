@@ -74,7 +74,7 @@ export function layout(graph: Graph, opts: RenderOptions = {}): { nodes: LayoutN
   const filteredEdges = graph.edges.filter((e) => idSet.has(e.from) && idSet.has(e.to));
 
   const r = rand(42);
-  const nodes: LayoutNode[] = filteredNodes.map((n, i) => ({
+  const nodes: LayoutNode[] = filteredNodes.map((n) => ({
     ...n,
     x: width / 2 + (r() - 0.5) * width * 0.6,
     y: height / 2 + (r() - 0.5) * height * 0.6,
@@ -160,7 +160,6 @@ export function renderSvg(graph: Graph, opts: RenderOptions = {}): string {
 
   const nodeSvg = nodes
     .map((n) => {
-      const highlighted = hN.has(n.id) || hN.size === 0;
       const dim = opts.highlightNodeIds && opts.highlightNodeIds.length > 0 && !hN.has(n.id);
       const fill = colorByType[n.type];
       const opacity = dim ? 0.25 : 1;

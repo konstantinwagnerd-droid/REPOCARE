@@ -55,7 +55,6 @@ export const memoCache = new MemoCache();
  */
 export async function nextCache<T>(key: string, producer: () => Promise<T>, opts: { tags?: string[]; revalidate?: number }): Promise<T> {
   try {
-    // @ts-ignore — resolved at runtime by Next.js
     const { unstable_cache } = await import("next/cache");
     return unstable_cache(producer, [key], { tags: opts.tags ?? [], revalidate: opts.revalidate })();
   } catch {

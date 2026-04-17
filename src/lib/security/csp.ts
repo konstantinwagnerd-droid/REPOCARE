@@ -22,7 +22,7 @@ export function generateNonce(): string {
     : Buffer.from(bytes).toString("base64");
 }
 
-export function buildCSP(nonce: string, opts: { reportOnly?: boolean } = {}): string {
+export function buildCSP(nonce: string, _opts: { reportOnly?: boolean } = {}): string {
   const directives: Record<string, string[]> = {
     "default-src": ["'self'"],
     "script-src": [

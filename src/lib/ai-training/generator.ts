@@ -214,7 +214,7 @@ function generateCareReport(count: number, seed: number): DatasetEntry[] {
   for (let i = 0; i < count; i++) {
     const kw = pick(keywords, rnd);
     const input = `Stichworte: ${kw.join(", ")}. Bitte vollständigen Pflegebericht formulieren.`;
-    const output = expandKeywords(kw, rnd);
+    const output = expandKeywords(kw);
     entries.push({
       id: `rep-${String(i + 1).padStart(4, "0")}`,
       input,
@@ -226,7 +226,7 @@ function generateCareReport(count: number, seed: number): DatasetEntry[] {
   return entries;
 }
 
-function expandKeywords(kw: string[], _rnd: () => number): string {
+function expandKeywords(kw: string[]): string {
   return (
     `Im Verlauf der Schicht wurde beobachtet: ${kw[0]}. ${kw[1]}. ${kw[2]}. ` +
     `Pflegerische Maßnahmen wurden gemäß Expertenstandard durchgeführt. ` +

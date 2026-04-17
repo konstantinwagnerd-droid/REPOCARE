@@ -119,7 +119,6 @@ export function savePostMortem(pm: PostMortem): PostMortem {
 }
 
 export function addSignOff(incidentId: string, signOff: SignOff): PostMortem | undefined {
-  const s = getStore();
   const pm = getPostMortemByIncident(incidentId);
   if (!pm) return undefined;
   pm.signOffs.push(signOff);

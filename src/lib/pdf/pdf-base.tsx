@@ -160,6 +160,7 @@ export function PageFooter({ meta }: { meta: BaseDocMeta }) {
         <Text style={styles.hashText}>SHA-256: {meta.documentHash}</Text>
       </View>
       <View style={{ alignItems: "flex-end" }}>
+        {/* eslint-disable-next-line jsx-a11y/alt-text -- @react-pdf/renderer Image, nicht HTML <img> */}
         {meta.qrDataUrl ? <Image style={styles.qrImg} src={meta.qrDataUrl} /> : null}
         <Text
           render={({ pageNumber, totalPages }) => `Seite ${pageNumber} / ${totalPages}`}

@@ -18,7 +18,7 @@ function hash(str: string): number {
   return Math.abs(h) / 0xffffffff;
 }
 
-function ownValue(facilityId: string, period: string, qiId: string, median: number, sd: number, higherIsBetter: boolean): number {
+function ownValue(facilityId: string, period: string, qiId: string, median: number, sd: number, _higherIsBetter: boolean): number {
   const h = hash(`${facilityId}:${period}:${qiId}`);
   // bias so dass Hälfte über/unter Median liegt
   const deviation = (h - 0.5) * 3 * sd;
