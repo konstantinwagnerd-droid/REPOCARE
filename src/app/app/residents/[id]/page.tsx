@@ -12,7 +12,9 @@ import { calcAge, formatDate, formatDateTime, initials, timeAgo } from "@/lib/ut
 import { VitalsChart } from "@/components/app/vitals-chart";
 import { ExportButton } from "@/components/app/export-button";
 import { AkteExportDialog } from "@/components/app/akte-export-dialog";
-import { ArrowLeft, Phone, AlertTriangle, TrendingUp, TrendingDown, Minus, Mic, Plus, Camera, Droplets, Lock, FileDown } from "lucide-react";
+import { ArrowLeft, Phone, AlertTriangle, TrendingUp, TrendingDown, Minus, Mic, Plus, Camera, Droplets, Lock } from "lucide-react";
+import { HelpTip } from "@/components/tooltip/HelpTip";
+import { GlossarTip } from "@/components/tooltip/GlossarTip";
 
 const riskLabels: Record<string, { name: string; color: string }> = {
   sturz: { name: "Sturzrisiko", color: "bg-amber-100 text-amber-900" },
@@ -170,7 +172,14 @@ export default async function ResidentDetail({ params }: { params: Promise<{ id:
             <Card>
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
-                  <CardTitle>Strukturierte Informationssammlung (SIS)</CardTitle>
+                  <CardTitle className="flex items-center gap-2">
+                    Strukturierte Informationssammlung (<GlossarTip term="sis">SIS</GlossarTip>)
+                    <HelpTip label="Was ist SIS?">
+                      Die SIS erfasst Pflegebedarf in 6 Themenfeldern (kognitiv, Mobilitaet, Selbstversorgung,
+                      Leben in Beziehungen, Leben in besonderen Situationen, Haushaltsfuehrung) — inklusive
+                      Befund, Ressourcen und Bedarfe.
+                    </HelpTip>
+                  </CardTitle>
                   {sis && <p className="text-sm text-muted-foreground">Zuletzt aktualisiert {formatDateTime(sis.updatedAt)}</p>}
                 </div>
                 <Button variant="outline">Bearbeiten</Button>

@@ -176,7 +176,7 @@ export function SampleDataClient() {
           <CardContent>
             {!stats ? (
               <div className="grid place-items-center py-12 text-sm text-muted-foreground">
-                Klicken Sie „Generieren", um eine Voransicht zu sehen.
+                Klicken Sie &bdquo;Generieren&ldquo;, um eine Voransicht zu sehen.
               </div>
             ) : (
               <div className="space-y-5">

@@ -69,7 +69,7 @@ export function ImpersonationClient({ users, history, current }: Props) {
             <div>
               <div className="text-xs uppercase tracking-wider text-accent">Aktuell aktiv</div>
               <div className="font-serif text-xl font-semibold">Eingeloggt als {current.targetName} ({current.targetRole})</div>
-              <div className="text-sm text-muted-foreground">Grund: „{current.reason}" · Seit {fmtDateTime(current.startedAt)}</div>
+              <div className="text-sm text-muted-foreground">Grund: &bdquo;{current.reason}&ldquo; · Seit {fmtDateTime(current.startedAt)}</div>
             </div>
             <Button variant="destructive" onClick={stop}><LogOut className="mr-2 h-4 w-4" />Impersonation beenden</Button>
           </CardContent>
@@ -121,7 +121,7 @@ export function ImpersonationClient({ users, history, current }: Props) {
                 <div className="mt-1 text-xs text-muted-foreground">
                   {fmtDateTime(h.startedAt)}{h.endedAt ? ` · ${fmtDuration(h.endedAt - h.startedAt)}` : " · läuft"}
                 </div>
-                <div className="mt-1 text-xs italic">„{h.reason}"</div>
+                <div className="mt-1 text-xs italic">&bdquo;{h.reason}&ldquo;</div>
               </div>
             ))}
           </CardContent>

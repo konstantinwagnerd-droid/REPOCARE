@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Search, Mic, AlertTriangle, Moon, Sun } from "lucide-react";
+import { Bell, Search, Mic, AlertTriangle, Moon, Sun, HelpCircle } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { initials } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -8,10 +8,12 @@ import { useTheme } from "next-themes";
 import { useState } from "react";
 import { CommandPalette } from "./command-palette";
 import { toast } from "sonner";
+import { useOptionalTour } from "@/components/tour/TourProvider";
 
 export function Topbar({ userName, facility }: { userName: string; facility: string }) {
   const { resolvedTheme, setTheme } = useTheme();
   const [, setCmdOpen] = useState(false);
+  const tourCtx = useOptionalTour();
 
   const handleEmergency = () => {
     toast.error("Notfall gemeldet! Bitte sofort zur Station.", {
@@ -23,7 +25,7 @@ export function Topbar({ userName, facility }: { userName: string; facility: str
   return (
     <>
       <CommandPalette />
-      <div className="flex h-16 items-center justify-between border-b border-border bg-background px-6">
+      <div data-tour="topbar" className="flex h-16 items-center justify-between border-b border-border bg-background px-6">
         <div>
           <div className="text-xs uppercase tracking-wider text-muted-foreground">{facility}</div>
           <div className="font-serif text-sm font-semibold">
@@ -65,6 +67,17 @@ export function Topbar({ userName, facility }: { userName: string; facility: str
           >
             {resolvedTheme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
+
+          {/* Tour / Hilfe */}
+          {tourCtx && (
+            <button
+              onClick={() => tourCtx?.startTourForRole("pflegekraft")}
+              aria-label="Tour / Hilfe"
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-border hover:bg-secondary transition-colors"
+            >
+              <HelpCircle className="h-4 w-4" />
+            </button>
+          )}
 
           {/* Notifications */}
           <button aria-label="Benachrichtigungen" className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-border hover:bg-secondary transition-colors">

@@ -74,7 +74,7 @@ export default function HistoriePage() {
                   </section>
                 )}
                 {e.consultation.note && (
-                  <p className="text-sm text-muted-foreground">„{e.consultation.note}"</p>
+                  <p className="text-sm text-muted-foreground">&bdquo;{e.consultation.note}&ldquo;</p>
                 )}
               </CardContent>
             </Card>

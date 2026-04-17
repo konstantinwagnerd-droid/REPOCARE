@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ExportButton } from "@/components/app/export-button";
 import { formatDateTime } from "@/lib/utils";
+import { HelpTip } from "@/components/tooltip/HelpTip";
 
 export default async function AuditPage() {
   const session = await auth();
@@ -33,7 +34,13 @@ export default async function AuditPage() {
         <CardContent className="overflow-x-auto p-0">
           <table className="w-full text-sm">
             <thead className="bg-muted/40 text-left text-xs uppercase text-muted-foreground">
-              <tr><th className="p-3">Zeit</th><th>Nutzer:in</th><th>Aktion</th><th>Entität</th><th>IP</th></tr>
+              <tr>
+                <th className="p-3">Zeit <HelpTip label="Zeitstempel">Exakter UTC-Zeitstempel der Aktion, anzeigt in lokaler Zeit. Unveraenderbar.</HelpTip></th>
+                <th>Nutzer:in <HelpTip label="Nutzer">Wer hat die Aktion ausgeloest? Bei impersonierten Sessions wird der urspruengliche Admin protokolliert.</HelpTip></th>
+                <th>Aktion <HelpTip label="Aktion">Typ: create, update, delete, login, export. Bestimmt MDK-Relevanz.</HelpTip></th>
+                <th>Entität <HelpTip label="Entitaet">Betroffener Datensatz (Bewohner, Medikation, Bericht ...) mit eindeutiger ID.</HelpTip></th>
+                <th>IP <HelpTip label="IP-Adresse">IP und User-Agent helfen bei forensischer Analyse von Auffaelligkeiten.</HelpTip></th>
+              </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {entries.map(({ a, u }) => (

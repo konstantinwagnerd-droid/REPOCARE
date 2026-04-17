@@ -141,7 +141,7 @@ export function FeatureFlagsClient({ initialFlags }: Props) {
                           <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
                             {r.roles?.map((x) => <Badge key={x} variant="outline"><UsersIcon className="mr-1 h-3 w-3" />{x}</Badge>)}
                             {r.tenantIds?.map((x) => <Badge key={x} variant="outline">tenant:{x}</Badge>)}
-                            {r.emailContains && <Badge variant="outline">email ~ "{r.emailContains}"</Badge>}
+                            {r.emailContains && <Badge variant="outline">email ~ &quot;{r.emailContains}&quot;</Badge>}
                             {typeof r.rolloutPercent === "number" && <Badge variant="outline"><Percent className="mr-1 h-3 w-3" />{r.rolloutPercent}% Rollout</Badge>}
                             {r.variant && <Badge variant="outline">variant: {r.variant}</Badge>}
                           </div>

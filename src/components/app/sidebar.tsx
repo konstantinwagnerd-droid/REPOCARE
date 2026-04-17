@@ -2,16 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, FileText, Mic, Search, LogOut, Sparkles, Settings, Shield, FileCheck, ClipboardCheck, Plug, LayoutGrid, Database, Bell, BarChart3, Radar, Receipt, Flag, UserCheck, Clock, GraduationCap, Award, Activity, Palette, Network, ArrowLeftRight, Download, Command, Stethoscope, Monitor } from "lucide-react";
+import { LayoutDashboard, Users, FileText, Mic, Search, LogOut, Sparkles, Settings, Shield, Plug, LayoutGrid, Database, Bell, BarChart3, Radar, Receipt, Flag, UserCheck, Clock, GraduationCap, Award, Activity, Palette, Network, ArrowLeftRight, Download, Command } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import type { Role } from "@/db/schema";
 
 const pflegeNav = [
-  { href: "/app", label: "Übersicht", icon: LayoutDashboard },
-  { href: "/app/residents", label: "Bewohner:innen", icon: Users },
-  { href: "/app/handover", label: "Schichtbericht", icon: FileText },
-  { href: "/app/voice", label: "Spracheingabe", icon: Mic },
+  { href: "/app", label: "Übersicht", icon: LayoutDashboard, tour: "dashboard" },
+  { href: "/app/residents", label: "Bewohner:innen", icon: Users, tour: "nav-bewohner" },
+  { href: "/app/handover", label: "Schichtbericht", icon: FileText, tour: "nav-handover" },
+  { href: "/app/voice", label: "Spracheingabe", icon: Mic, tour: "nav-voice" },
   { href: "/app/voice-commands", label: "Voice-Commands", icon: Command },
   { href: "/app/search", label: "Suchen", icon: Search },
   { href: "/app/zeiterfassung", label: "Zeiterfassung", icon: Clock },
@@ -21,18 +21,18 @@ const pflegeNav = [
 const adminNav = [
   { href: "/admin", label: "Übersicht", icon: LayoutDashboard, group: "Allgemein" },
   { href: "/admin/residents", label: "Bewohnende", icon: Users, group: "Allgemein" },
-  { href: "/admin/staff", label: "Mitarbeitende", icon: Users, group: "Allgemein" },
+  { href: "/admin/staff", label: "Mitarbeitende", icon: Users, group: "Allgemein", tour: "admin-users" },
   { href: "/admin/schedule", label: "Dienstplan", icon: FileText, group: "Allgemein" },
   { href: "/admin/zeiterfassung", label: "Zeiterfassung", icon: Clock, group: "Allgemein" },
 
-  { href: "/admin/analytics", label: "Analytics", icon: BarChart3, group: "Auswertung" },
+  { href: "/admin/analytics", label: "Analytics", icon: BarChart3, group: "Auswertung", tour: "admin-analytics" },
   { href: "/admin/reports", label: "Reports", icon: FileText, group: "Auswertung" },
   { href: "/admin/report-builder", label: "Report-Builder", icon: LayoutGrid, group: "Auswertung" },
   { href: "/admin/anomaly", label: "Anomalien", icon: Radar, group: "Auswertung" },
   { href: "/admin/benchmarks", label: "Benchmarks", icon: Activity, group: "Auswertung" },
   { href: "/admin/exports", label: "Exporte", icon: Download, group: "Auswertung" },
 
-  { href: "/admin/audit", label: "Audit-Log", icon: Shield, group: "Compliance" },
+  { href: "/admin/audit", label: "Audit-Log", icon: Shield, group: "Compliance", tour: "admin-audit" },
   { href: "/admin/backup", label: "Backup", icon: Database, group: "Compliance" },
   { href: "/admin/dsgvo", label: "DSGVO", icon: Shield, group: "Compliance" },
   { href: "/admin/lms", label: "Lernplattform", icon: GraduationCap, group: "Compliance" },
@@ -40,19 +40,20 @@ const adminNav = [
 
   { href: "/admin/webhooks", label: "Webhooks", icon: Plug, group: "Integrationen" },
   { href: "/admin/notifications", label: "Notifications", icon: Bell, group: "Integrationen" },
-  { href: "/admin/billing", label: "API-Billing", icon: Receipt, group: "Integrationen" },
-  { href: "/admin/migration", label: "Migration", icon: ArrowLeftRight, group: "Integrationen" },
+  { href: "/admin/billing", label: "API-Billing", icon: Receipt, group: "Integrationen", tour: "admin-billing" },
+  { href: "/admin/migration", label: "Migration", icon: ArrowLeftRight, group: "Integrationen", tour: "admin-migration" },
   { href: "/admin/knowledge-graph", label: "Knowledge-Graph", icon: Network, group: "Integrationen" },
 
-  { href: "/admin/feature-flags", label: "Feature-Flags", icon: Flag, group: "System" },
-  { href: "/admin/whitelabel", label: "Whitelabel", icon: Palette, group: "System" },
+  { href: "/admin/feature-flags", label: "Feature-Flags", icon: Flag, group: "System", tour: "admin-flags" },
+  { href: "/admin/whitelabel", label: "Whitelabel", icon: Palette, group: "System", tour: "admin-whitelabel" },
+  { href: "/admin/tours", label: "Tour-Demo", icon: Sparkles, group: "System" },
   { href: "/admin/impersonation", label: "Impersonation", icon: UserCheck, group: "System" },
   { href: "/admin/settings", label: "Einstellungen", icon: Settings, group: "System" },
 ];
 
 const familyNav = [
-  { href: "/family", label: "Übersicht", icon: LayoutDashboard },
-  { href: "/family/messages", label: "Nachrichten", icon: FileText },
+  { href: "/family", label: "Übersicht", icon: LayoutDashboard, tour: "family-home" },
+  { href: "/family/messages", label: "Nachrichten", icon: FileText, tour: "family-messages" },
 ];
 
 export function Sidebar({ role, userName, base = "app" }: { role: Role; userName: string; base?: "app" | "admin" | "family" }) {
@@ -84,6 +85,7 @@ export function Sidebar({ role, userName, base = "app" }: { role: Role; userName
                 )}
                 <Link
                   href={item.href}
+                  data-tour={(item as { tour?: string }).tour}
                   className={cn(
                     "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
                     active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-secondary hover:text-foreground",

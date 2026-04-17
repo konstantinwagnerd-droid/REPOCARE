@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Activity, AlertTriangle, Bed, HeartHandshake, Percent, TrendingUp, UserCog, Users } from "lucide-react";
+import { Activity, AlertTriangle, HeartHandshake, Percent, TrendingUp, UserCog } from "lucide-react";
 import { resolveActiveGroup, currentMonth } from "./_lib/context";
 import { rollupGroup, rollupTrend } from "@/lib/multi-tenant/rollup";
 import { last12Months } from "@/lib/multi-tenant/seed";

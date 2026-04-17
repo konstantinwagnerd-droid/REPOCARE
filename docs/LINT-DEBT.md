@@ -1,63 +1,61 @@
 # Lint-Schuld — CareAI
 
-Stand: 2026-04-17 (Ende Autonom-Session, nach Wave 9 + Final)
+Stand: 2026-04-17 (nach UX-Finale / Tour-Feature-Session)
 
 ## Zusammenfassung
 
-- **Errors:** 39
-- **Warnings:** 3
-- **Gesamt:** 42 Issues
-- **Einschätzung:** **Refactor-Backlog** — KEIN Demo-Blocker. TypeScript kompiliert clean (Exit 0), alle 52 Unit-Tests grün. Lint-Issues sind Code-Hygiene, nicht Correctness.
+- **Vorher:** 42 Issues (39 Errors + 3 Warnings)
+- **Nachher:** 18 Issues (16 Errors + 2 Warnings)
+- **Reduktion:** 57%
+- **Einschätzung:** Kein Demo-Blocker. TypeScript-Kompilation unveraendert. Alle verbleibenden Issues liegen in `src/lib/` — in der aktuellen Session war `src/lib/` als TABU markiert.
 
-## Top-5-Kategorien
+## Was gefixt wurde (24 Issues)
 
-| # | Kategorie | Count | Beispiele |
-|---|-----------|-------|-----------|
-| 1 | `@typescript-eslint/no-unused-vars` | ~28 | Unused imports (`useMemo`, `Page`, `Violation`), unused args (`_rnd`, `_facilityId`, `opts`, `context`), unused locals (`s`, `bestSoll`, `highlighted`) |
-| 2 | `react/no-unescaped-entities` | 1 | `"` statt `&quot;` in `SampleDataClient.tsx:179` |
-| 3 | `@next/next/no-img-element` | 1 | `<img>` statt `<Image>` in `WoundTimelapseClient.tsx:226` |
-| 4 | `jsx-a11y/alt-text` | 2 | `<Image>` ohne `alt` in PDF-Komponenten |
-| 5 | `@typescript-eslint/ban-ts-comment` | 1 | `@ts-ignore` → `@ts-expect-error` in `performance/cache.ts:58` |
+| Datei | Fix |
+|------|-----|
+| `src/app/(marketing)/rechtliches/hinweisgeberschutz/page.tsx` | `&quot;` statt `"` |
+| `src/app/admin/a11y-audit/view.tsx` | Unused `Badge`-Import entfernt |
+| `src/app/admin/billing/client.tsx` | Apostrophe escaped |
+| `src/app/admin/feature-flags/client.tsx` | Apostrophe escaped (2x) |
+| `src/app/admin/impersonation/client.tsx` | Apostrophe escaped (2x) |
+| `src/app/app/residents/[id]/page.tsx` | Unused `FileDown`-Import |
+| `src/app/gruppe/page.tsx` | Unused `Bed`, `Users` |
+| `src/app/lms/page.tsx` | Unused `role`-Variable |
+| `src/app/telemedizin/historie/page.tsx` | Apostrophe escaped |
+| `src/app/telemedizin/raum/[id]/raum-client.tsx` | Unused Card-Imports, unused `e` |
+| `src/components/app/sidebar.tsx` | Unused Lucide-Icons (4) |
+| `src/components/sample-data/SampleDataClient.tsx` | Apostrophe escaped |
+| `src/components/whitelabel/WhitelabelEditor.tsx` | Unused `useMemo` |
+| `src/components/wound-timelapse/WoundTimelapseClient.tsx` | `<img>` mit eslint-disable-next-line + Begruendung |
 
-## Einschätzung
+## Verbleibende Issues (18 — alle in `src/lib/`)
 
-| Kategorie | Blocker? | Aufwand (Fix) |
-|-----------|----------|---------------|
-| Unused vars | Nein (ignorable) | 15–30 Min (massen-fix via `--fix` + Review) |
-| React escapes | Nein | 1 Min |
-| next/image | Nein (nur Perf-Warning) | 5 Min |
-| Alt-text | PDF-Komponenten: okay mit `alt=""` | 2 Min |
-| ts-comment | Nein | 1 Min |
+| Datei | Issue | Typ |
+|------|-------|-----|
+| `src/lib/a11y-audit/reporter.ts` | unused `Violation` | Refactor |
+| `src/lib/ai-training/generator.ts` | unused `_rnd` | Refactor |
+| `src/lib/analytics/store.ts` | unused `AnalyticsEventName` | Refactor |
+| `src/lib/email-transport/providers/resend.ts` | unused `retry` | Logik pruefen |
+| `src/lib/feature-flags/evaluate.ts` | unused `FeatureFlag` | Refactor |
+| `src/lib/incident-pm/store.ts` | unused `s` | Refactor |
+| `src/lib/knowledge-graph/viz.ts` | unused `i`, `highlighted` | Refactor |
+| `src/lib/multi-tenant/access.ts` | unused `_facilityId` | Refactor |
+| `src/lib/multi-tenant/comparator.ts` | unused `FacilityKpiSnapshot` | Refactor |
+| `src/lib/pdf/bewohner-akte.tsx` | unused `Page` | Refactor |
+| `src/lib/pdf/medikationsplan.tsx` | Image alt-text | a11y |
+| `src/lib/pdf/pdf-base.tsx` | Image alt-text | a11y |
+| `src/lib/performance/cache.ts` | @ts-ignore → @ts-expect-error | Trivial |
+| `src/lib/quality-benchmarks/calculator.ts` | unused `higherIsBetter` | Refactor |
+| `src/lib/scheduling/solver.ts` | unused `bestSoll` | Refactor |
+| `src/lib/security/csp.ts` | unused `opts` | Refactor |
+| `src/lib/voice-commands/matcher.ts` | unused `context` | Refactor |
 
-**Fazit:** Alle Issues sind in <1h in einem dedizierten Cleanup-Sprint fixbar. Haben keinen Einfluss auf Build, Tests oder Runtime-Verhalten. Für aws-PreSeed-Einreichung und Investor-Demo **unkritisch** — `npm run build` und `npm run test` laufen durch.
+## Einschaetzung
 
-## Nächste Schritte (wenn User das will)
+**Alle verbleibenden Issues sind in Business-Logik-Modulen (`src/lib/`).** Sie sind unkritisch (Code-Hygiene, kein Correctness-Problem) und koennen in einem dedizierten lib/-Cleanup-Sprint in ca. 30 Minuten behoben werden. Build, Tests und Runtime sind unbetroffen.
 
-1. `npx next lint --fix` für auto-fixable Issues
-2. Manuelles Review der unused-vars-Liste (Underscore-Prefix oder echter Dead-Code?)
-3. `<img>` → `next/image` für LCP-Verbesserung
-4. Re-run Lint → Ziel: 0 Errors
+## Naechste Schritte
 
-## Betroffene Dateien (19)
-
-```
-src/components/sample-data/SampleDataClient.tsx
-src/components/whitelabel/WhitelabelEditor.tsx
-src/components/wound-timelapse/WoundTimelapseClient.tsx
-src/lib/a11y-audit/reporter.ts
-src/lib/ai-training/generator.ts
-src/lib/analytics/store.ts
-src/lib/feature-flags/evaluate.ts
-src/lib/incident-pm/store.ts
-src/lib/knowledge-graph/viz.ts
-src/lib/multi-tenant/access.ts
-src/lib/multi-tenant/comparator.ts
-src/lib/pdf/bewohner-akte.tsx
-src/lib/pdf/medikationsplan.tsx
-src/lib/pdf/pdf-base.tsx
-src/lib/performance/cache.ts
-src/lib/quality-benchmarks/calculator.ts
-src/lib/scheduling/solver.ts
-src/lib/security/csp.ts
-src/lib/voice-commands/matcher.ts
-```
+1. Dedicated lib/-Cleanup-Sprint (ca. 30 Min fuer alle 18 Issues)
+2. ESLint-Regel `@typescript-eslint/no-unused-vars` mit `argsIgnorePattern: "^_"` konfigurieren — dann koennen bewusste Unused-Args mit `_`-Prefix akzeptiert werden
+3. Bei `src/lib/pdf/*.tsx`: `alt=""` als dekorativ deklarieren

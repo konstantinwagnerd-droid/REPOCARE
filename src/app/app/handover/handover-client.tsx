@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, Sparkles, Copy, Check } from "lucide-react";
+import { HelpTip } from "@/components/tooltip/HelpTip";
+import { KeyboardHint } from "@/components/tooltip/KeyboardHint";
 
 const mockHandover = `ÜBERGABE FRÜHDIENST → SPÄTDIENST — Station A, ${new Date().toLocaleDateString("de-AT")}
 
@@ -51,12 +53,19 @@ export function HandoverGenerator() {
           <Sparkles className="h-7 w-7" />
         </span>
         <div>
-          <h3 className="font-serif text-xl font-semibold">Übergabe automatisch erstellen</h3>
+          <h3 className="flex items-center justify-center gap-2 font-serif text-xl font-semibold">
+            Übergabe automatisch erstellen
+            <HelpTip label="Wie funktioniert das?">
+              Die Uebergabe wird SIS-strukturiert aus Berichten, Vitalwerten, Wundverlauf und Vorfaellen der letzten 8h generiert.
+              Sie koennen die Formatierung vor dem Speichern manuell anpassen.
+            </HelpTip>
+          </h3>
           <p className="mt-1 max-w-md text-sm text-muted-foreground">
             CareAI analysiert alle Berichte und Ereignisse der letzten 8 Stunden und erstellt einen strukturierten Übergabebericht.
           </p>
         </div>
         <Button onClick={generate} variant="accent" size="lg"><Sparkles className="h-4 w-4" /> Bericht generieren</Button>
+        <KeyboardHint keys={["Mod", "Enter"]} className="mt-1" />
       </div>
     );
   }

@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
@@ -37,7 +36,7 @@ export function RaumClient({ consultation }: Props) {
         }
         stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         if (videoRef.current) videoRef.current.srcObject = stream;
-      } catch (e) {
+      } catch {
         setErr('Kamera/Mikrofon konnten nicht aktiviert werden. Prüfen Sie die Berechtigungen.');
       }
     })();

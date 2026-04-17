@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 import { format, startOfWeek, addDays } from "date-fns";
 import { de } from "date-fns/locale";
+import { HelpTip } from "@/components/tooltip/HelpTip";
+import { GlossarTip } from "@/components/tooltip/GlossarTip";
 
 export default async function SchedulePage() {
   const session = await auth();
@@ -23,7 +25,13 @@ export default async function SchedulePage() {
   return (
     <div className="space-y-8 p-6 lg:p-10">
       <div>
-        <h1 className="font-serif text-4xl font-semibold tracking-tight">Dienstplan</h1>
+        <h1 className="flex items-center gap-2 font-serif text-4xl font-semibold tracking-tight">
+          Dienstplan
+          <HelpTip label="Dienstplan-Solver" size="md">
+            Der automatische Solver beachtet Constraints: <GlossarTip term="azg">AZG</GlossarTip>-Hoechstzeiten,
+            Ruhepausen, Qualifikations-Matching, Wunschdienste und gesetzliche Besetzungs-Untergrenzen.
+          </HelpTip>
+        </h1>
         <p className="mt-1 text-muted-foreground">Woche vom {formatDate(weekStart)} — {allShifts.length} geplante Schichten.</p>
       </div>
 

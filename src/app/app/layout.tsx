@@ -8,6 +8,7 @@ import { PrivacyBanner } from "@/components/analytics/PrivacyBanner";
 import { NotificationToaster } from "@/components/notifications/NotificationToaster";
 import { ImpersonationBanner } from "@/components/impersonation/banner";
 import { OfflineBanner } from "@/components/sample-data/OfflineBanner";
+import { TourProvider } from "@/components/tour/TourProvider";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -16,18 +17,20 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <VoiceCommandProvider>
-      <ImpersonationBanner />
-      <div className="flex min-h-screen">
-        <Sidebar role={session.user.role} userName={session.user.name ?? "Team"} base="app" />
-        <div className="flex flex-1 flex-col">
-          <Topbar userName={session.user.name ?? "Team"} facility="Pflegezentrum Hietzing" />
-          <main className="flex-1 bg-muted/20">{children}</main>
+      <TourProvider role={session.user.role}>
+        <ImpersonationBanner />
+        <div className="flex min-h-screen">
+          <Sidebar role={session.user.role} userName={session.user.name ?? "Team"} base="app" />
+          <div className="flex flex-1 flex-col">
+            <Topbar userName={session.user.name ?? "Team"} facility="Pflegezentrum Hietzing" />
+            <main className="flex-1 bg-muted/20">{children}</main>
+          </div>
         </div>
-      </div>
-      <AnalyticsTracker role={session.user.role} />
-      <NotificationToaster />
-      <PrivacyBanner />
-      <OfflineBanner />
+        <AnalyticsTracker role={session.user.role} />
+        <NotificationToaster />
+        <PrivacyBanner />
+        <OfflineBanner />
+      </TourProvider>
     </VoiceCommandProvider>
   );
 }

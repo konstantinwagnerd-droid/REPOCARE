@@ -37,7 +37,7 @@ export default function WhistleblowerPage() {
           </li>
           <li><strong>Extern</strong> an die Bundesstelle Hinweisgeberschutz (DE, BaFin) bzw. die WKStA (AT)</li>
           <li>
-            <strong>Postalisch</strong> an die Compliance-Ansprechperson (Stichwort "Hinweis"):<br />
+            <strong>Postalisch</strong> an die Compliance-Ansprechperson (Stichwort &quot;Hinweis&quot;):<br />
             CareAI GmbH i.Gr., z.H. Compliance, Stephansplatz 4, 1010 Wien, AT
           </li>
         </ul>

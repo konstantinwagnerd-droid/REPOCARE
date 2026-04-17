@@ -15,7 +15,8 @@ import { badgesForUser, computeLeaderboard, computeStreak, pointsForUser } from 
 
 export default async function LmsHome() {
   const session = await auth();
-  const role = (session?.user?.role as "pflegekraft" | "pdl" | "admin") ?? DEMO_CURRENT_USER.role;
+  // Rolle wird aktuell nicht fuer Branching verwendet — Platzhalter fuer spaetere Role-Gates.
+  void (session?.user?.role ?? DEMO_CURRENT_USER.role);
   const user = DEMO_CURRENT_USER;
 
   const d = db();

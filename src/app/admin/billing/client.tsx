@@ -213,7 +213,7 @@ export function BillingClient({ initialKeys, initialUsage, initialInvoices, plan
           <Card>
             <CardHeader><CardTitle>Rechnungen ({invoices.length})</CardTitle></CardHeader>
             <CardContent className="space-y-2">
-              {invoices.length === 0 && <p className="text-sm text-muted-foreground">Noch keine Rechnungen. Klicke bei einem API-Key auf „Rechnung".</p>}
+              {invoices.length === 0 && <p className="text-sm text-muted-foreground">Noch keine Rechnungen. Klicke bei einem API-Key auf &bdquo;Rechnung&ldquo;.</p>}
               {invoices.map((inv) => (
                 <div key={inv.id} className="rounded-xl border border-border p-4">
                   <div className="flex items-center justify-between">

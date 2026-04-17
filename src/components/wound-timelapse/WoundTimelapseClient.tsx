@@ -223,6 +223,7 @@ function SnapPicture({ snap, label, big }: { snap: WoundSnapshot; label: string;
     <div>
       {label ? <div className="mb-1 text-xs font-medium text-muted-foreground">{label} · {snap.date}</div> : null}
       <div className={`relative overflow-hidden rounded-xl border border-border bg-secondary ${big ? "aspect-video" : "aspect-square"}`}>
+        {/* eslint-disable-next-line @next/next/no-img-element -- dynamischer Data-URL-/Blob-Quelle, kein next/image-Vorteil */}
         <img src={snap.photoUrl} alt={`Wundfoto vom ${snap.date}, Grad ${snap.grade}`} className="h-full w-full object-cover" />
         <div className="absolute left-2 top-2"><Badge variant="default">Grad {snap.grade}</Badge></div>
         <div className="absolute bottom-2 right-2 rounded-md bg-background/90 px-2 py-1 text-[10px] font-mono">
