@@ -1,16 +1,19 @@
+/**
+ * Voice → SIS-strukturierte JSON.
+ * Default: Mock (demo). Echt wenn LLM_PROVIDER!=mock und ENABLE_REAL_LLM=true.
+ */
 import { NextRequest, NextResponse } from "next/server";
+import { llmComplete } from "@/lib/llm/client";
+import { buildCareReportPrompt } from "@/lib/llm/prompts/care-report-generation";
+import { parseJSONSafely } from "@/lib/llm/safety";
+import { logger } from "@/lib/monitoring/logger";
 
-// Mock structuring endpoint — returns SIS-structured JSON from transcript
-export async function POST(req: NextRequest) {
-  const { transcript } = await req.json().catch(() => ({ transcript: "" }));
-  await new Promise((r) => setTimeout(r, 2000));
-
-  // In production this would call Claude API; here we return realistic demo output
+function mockResult(transcript: string) {
   const hasWound = transcript.toLowerCase().includes("wund");
   const hasMobil = transcript.toLowerCase().includes("mobil");
-  const hasVitals = transcript.toLowerCase().includes("blutdruck") || transcript.toLowerCase().includes("puls");
-
-  return NextResponse.json({
+  const hasVitals =
+    transcript.toLowerCase().includes("blutdruck") || transcript.toLowerCase().includes("puls");
+  return {
     summary:
       "Ruhige Nacht, Blutdruck im Normbereich. Wundverlauf positiv (Granulation). Mobilisation durchgeführt. Nahrungsaufnahme vollständig.",
     vitals: [
@@ -30,5 +33,34 @@ export async function POST(req: NextRequest) {
       { text: "Angehörigen Herrn Berger über Wundverlauf informieren (PDL)", urgency: "info" },
     ].filter(Boolean),
     concerns: [],
-  });
+  };
+}
+
+export async function POST(req: NextRequest) {
+  const { transcript, residentName, pflegegrad, tenantId, userId } = await req
+    .json()
+    .catch(() => ({ transcript: "" }));
+
+  const providerName = process.env.LLM_PROVIDER ?? "mock";
+  const realEnabled = process.env.ENABLE_REAL_LLM === "true";
+
+  if (providerName === "mock" || !realEnabled) {
+    await new Promise((r) => setTimeout(r, 1000));
+    return NextResponse.json({ ...mockResult(transcript), provider: "mock" });
+  }
+
+  try {
+    const prompt = buildCareReportPrompt({
+      transcript,
+      residentName: residentName ?? "Bewohner:in",
+      pflegegrad: pflegegrad ?? 3,
+    });
+    const resp = await llmComplete({ ...prompt, tenantId, userId });
+    const parsed = parseJSONSafely<ReturnType<typeof mockResult>>(resp.content);
+    return NextResponse.json({ ...parsed, provider: resp.provider, model: resp.model });
+  } catch (e) {
+    logger.error("voice.structure.error", { err: String(e) });
+    // Fallback auf Mock — kein Blackout für den User.
+    return NextResponse.json({ ...mockResult(transcript), provider: "mock-fallback" });
+  }
 }

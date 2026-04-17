@@ -5,6 +5,9 @@ const cacheImmutable = "public, max-age=31536000, immutable";
 const cacheShort = "public, max-age=60, stale-while-revalidate=600";
 
 const nextConfig: NextConfig = {
+  // Standalone output lets the Docker image ship a minimal Node server
+  // (see Dockerfile runner stage). Next.js 15 writes .next/standalone.
+  output: "standalone",
   experimental: {
     typedRoutes: false,
     optimizePackageImports: ["lucide-react", "date-fns", "recharts", "framer-motion"],

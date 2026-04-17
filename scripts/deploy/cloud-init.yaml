@@ -1,0 +1,55 @@
+# Cloud-Init für Hetzner CX22 (Ubuntu 24.04)
+# Usage: bei Server-Erstellung im Hetzner Cloud Console als User-Data einfügen.
+#cloud-config
+package_update: true
+package_upgrade: true
+packages:
+  - docker.io
+  - docker-compose-plugin
+  - ufw
+  - fail2ban
+  - unattended-upgrades
+  - gnupg2
+  - ca-certificates
+  - curl
+  - git
+  - htop
+
+users:
+  - name: careai
+    groups: [sudo, docker]
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAA_REPLACE_WITH_YOUR_PUBKEY careai-deploy
+
+write_files:
+  - path: /etc/fail2ban/jail.local
+    content: |
+      [sshd]
+      enabled = true
+      port = 22
+      maxretry = 5
+      findtime = 10m
+      bantime = 1h
+
+  - path: /etc/ssh/sshd_config.d/harden.conf
+    content: |
+      PermitRootLogin no
+      PasswordAuthentication no
+      ChallengeResponseAuthentication no
+      UsePAM yes
+
+runcmd:
+  - ufw default deny incoming
+  - ufw default allow outgoing
+  - ufw allow 22/tcp
+  - ufw allow 80/tcp
+  - ufw allow 443/tcp
+  - ufw --force enable
+  - systemctl enable --now fail2ban
+  - systemctl enable --now docker
+  - systemctl restart ssh
+  - mkdir -p /srv/careai
+  - chown careai:careai /srv/careai
+  - echo "[cloud-init] CareAI host ready" | tee /var/log/careai-bootstrap.log
