@@ -62,34 +62,34 @@ export function CommandPalette() {
       <CommandList>
         <CommandEmpty>Kein Ergebnis. Versuchen Sie einen anderen Suchbegriff.</CommandEmpty>
 
-        <CommandGroup heading="Navigation">
-          <CommandItem onSelect={() => run(() => router.push("/app"))}>
+        <CommandGroup heading="Häufig">
+          <CommandItem keywords={["start", "übersicht", "home", "dashboard"]} onSelect={() => run(() => router.push("/app"))}>
             <LayoutDashboard className="mr-2 h-4 w-4" />
             Dashboard
             <CommandShortcut>G D</CommandShortcut>
           </CommandItem>
-          <CommandItem onSelect={() => run(() => router.push("/app/residents"))}>
+          <CommandItem keywords={["akte", "patient", "klient", "bewohner", "personen"]} onSelect={() => run(() => router.push("/app/residents"))}>
             <Users className="mr-2 h-4 w-4" />
             Bewohner:innen
             <CommandShortcut>G B</CommandShortcut>
           </CommandItem>
-          <CommandItem onSelect={() => run(() => router.push("/app/handover"))}>
+          <CommandItem keywords={["bericht", "neu", "diktat", "voice", "sprechen"]} onSelect={() => run(() => router.push("/app/voice"))}>
+            <Plus className="mr-2 h-4 w-4" />
+            Neuer Bericht
+            <CommandShortcut>N</CommandShortcut>
+          </CommandItem>
+          <CommandItem keywords={["schicht", "übergabe", "handover"]} onSelect={() => run(() => router.push("/app/handover"))}>
             <FileText className="mr-2 h-4 w-4" />
             Schichtbericht
-          </CommandItem>
-          <CommandItem onSelect={() => run(() => router.push("/app/voice"))}>
-            <Mic className="mr-2 h-4 w-4" />
-            Spracheingabe starten
-            <CommandShortcut>N</CommandShortcut>
           </CommandItem>
         </CommandGroup>
 
         <CommandSeparator />
 
-        <CommandGroup heading="Aktionen">
-          <CommandItem onSelect={() => run(() => router.push("/app/voice"))}>
-            <Plus className="mr-2 h-4 w-4" />
-            Neuer Bericht
+        <CommandGroup heading="Navigation">
+          <CommandItem keywords={["mikro", "diktat", "audio"]} onSelect={() => run(() => router.push("/app/voice"))}>
+            <Mic className="mr-2 h-4 w-4" />
+            Spracheingabe starten
           </CommandItem>
           <CommandItem onSelect={() => run(() => router.push("/admin/audit"))}>
             <ShieldCheck className="mr-2 h-4 w-4" />

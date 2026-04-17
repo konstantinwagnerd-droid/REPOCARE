@@ -20,13 +20,13 @@ export function StatCard({
   accent?: boolean;
 }) {
   return (
-    <Card className={cn("h-full", accent && "bg-gradient-to-br from-primary-50 to-background")}>
+    <Card className={cn("group h-full transition-shadow duration-200 hover:shadow-md", accent && "bg-gradient-to-br from-primary-50 to-background")}>
       <CardContent className="p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{label}</div>
-            <div className="mt-2 font-serif text-4xl font-semibold">{value}</div>
-            {hint && <div className="mt-1 text-sm text-muted-foreground">{hint}</div>}
+            <div className="mt-2 font-serif text-4xl font-semibold tracking-[-0.02em]">{value}</div>
+            {hint && <div className="mt-1 text-sm leading-relaxed text-muted-foreground">{hint}</div>}
           </div>
           {Icon && (
             <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
@@ -119,7 +119,7 @@ export function MetricTile({
   return (
     <div className="rounded-2xl border border-border/60 bg-card p-5">
       <div className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{label}</div>
-      <div className="mt-2 font-serif text-3xl font-semibold">{value}</div>
+      <div className="mt-2 font-serif text-3xl font-semibold tracking-[-0.02em]">{value}</div>
       {trend && trendValue && (
         <div className={cn("mt-1 text-sm font-medium", trendColor)}>
           {arrow} {trendValue}
@@ -147,8 +147,8 @@ export function SectionHeader({
           {eyebrow}
         </div>
       )}
-      <h2 className="font-serif text-4xl font-semibold tracking-tight md:text-5xl">{title}</h2>
-      {description && <p className="mt-4 text-lg text-muted-foreground">{description}</p>}
+      <h2 className="font-serif text-4xl font-semibold tracking-[-0.02em] md:text-5xl">{title}</h2>
+      {description && <p className="mt-4 text-lg leading-relaxed text-muted-foreground">{description}</p>}
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, FileText, Mic, Search, LogOut, Sparkles, Settings, Shield, FileCheck, ClipboardCheck, Plug, LayoutGrid, Database, Bell, BarChart3, Radar, Receipt, Flag, UserCheck, Clock } from "lucide-react";
+import { LayoutDashboard, Users, FileText, Mic, Search, LogOut, Sparkles, Settings, Shield, FileCheck, ClipboardCheck, Plug, LayoutGrid, Database, Bell, BarChart3, Radar, Receipt, Flag, UserCheck, Clock, GraduationCap, Award, Activity, Palette, Network, ArrowLeftRight, Download, Command, Stethoscope, Monitor } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import type { Role } from "@/db/schema";
@@ -12,29 +12,42 @@ const pflegeNav = [
   { href: "/app/residents", label: "Bewohner:innen", icon: Users },
   { href: "/app/handover", label: "Schichtbericht", icon: FileText },
   { href: "/app/voice", label: "Spracheingabe", icon: Mic },
+  { href: "/app/voice-commands", label: "Voice-Commands", icon: Command },
   { href: "/app/search", label: "Suchen", icon: Search },
   { href: "/app/zeiterfassung", label: "Zeiterfassung", icon: Clock },
   { href: "/app/notifications", label: "Benachrichtigungen", icon: Bell },
 ];
 
 const adminNav = [
-  { href: "/admin", label: "Übersicht", icon: LayoutDashboard },
-  { href: "/admin/residents", label: "Bewohnende", icon: Users },
-  { href: "/admin/staff", label: "Mitarbeitende", icon: Users },
-  { href: "/admin/schedule", label: "Dienstplan", icon: FileText },
-  { href: "/admin/audit", label: "Audit-Log", icon: Shield },
-  { href: "/admin/reports", label: "Reports", icon: FileText },
-  { href: "/admin/report-builder", label: "Dashboard-Builder", icon: LayoutGrid },
-  { href: "/admin/webhooks", label: "Webhooks", icon: Plug },
-  { href: "/admin/backup", label: "Backup", icon: Database },
-  { href: "/admin/notifications", label: "Notifications", icon: Bell },
-  { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
-  { href: "/admin/anomaly", label: "Anomalien", icon: Radar },
-  { href: "/admin/zeiterfassung", label: "Zeiterfassung", icon: Clock },
-  { href: "/admin/billing", label: "API-Billing", icon: Receipt },
-  { href: "/admin/feature-flags", label: "Feature-Flags", icon: Flag },
-  { href: "/admin/impersonation", label: "Impersonation", icon: UserCheck },
-  { href: "/admin/settings", label: "Einstellungen", icon: Settings },
+  { href: "/admin", label: "Übersicht", icon: LayoutDashboard, group: "Allgemein" },
+  { href: "/admin/residents", label: "Bewohnende", icon: Users, group: "Allgemein" },
+  { href: "/admin/staff", label: "Mitarbeitende", icon: Users, group: "Allgemein" },
+  { href: "/admin/schedule", label: "Dienstplan", icon: FileText, group: "Allgemein" },
+  { href: "/admin/zeiterfassung", label: "Zeiterfassung", icon: Clock, group: "Allgemein" },
+
+  { href: "/admin/analytics", label: "Analytics", icon: BarChart3, group: "Auswertung" },
+  { href: "/admin/reports", label: "Reports", icon: FileText, group: "Auswertung" },
+  { href: "/admin/report-builder", label: "Report-Builder", icon: LayoutGrid, group: "Auswertung" },
+  { href: "/admin/anomaly", label: "Anomalien", icon: Radar, group: "Auswertung" },
+  { href: "/admin/benchmarks", label: "Benchmarks", icon: Activity, group: "Auswertung" },
+  { href: "/admin/exports", label: "Exporte", icon: Download, group: "Auswertung" },
+
+  { href: "/admin/audit", label: "Audit-Log", icon: Shield, group: "Compliance" },
+  { href: "/admin/backup", label: "Backup", icon: Database, group: "Compliance" },
+  { href: "/admin/dsgvo", label: "DSGVO", icon: Shield, group: "Compliance" },
+  { href: "/admin/lms", label: "Lernplattform", icon: GraduationCap, group: "Compliance" },
+  { href: "/admin/badges", label: "Badges", icon: Award, group: "Compliance" },
+
+  { href: "/admin/webhooks", label: "Webhooks", icon: Plug, group: "Integrationen" },
+  { href: "/admin/notifications", label: "Notifications", icon: Bell, group: "Integrationen" },
+  { href: "/admin/billing", label: "API-Billing", icon: Receipt, group: "Integrationen" },
+  { href: "/admin/migration", label: "Migration", icon: ArrowLeftRight, group: "Integrationen" },
+  { href: "/admin/knowledge-graph", label: "Knowledge-Graph", icon: Network, group: "Integrationen" },
+
+  { href: "/admin/feature-flags", label: "Feature-Flags", icon: Flag, group: "System" },
+  { href: "/admin/whitelabel", label: "Whitelabel", icon: Palette, group: "System" },
+  { href: "/admin/impersonation", label: "Impersonation", icon: UserCheck, group: "System" },
+  { href: "/admin/settings", label: "Einstellungen", icon: Settings, group: "System" },
 ];
 
 const familyNav = [
@@ -54,23 +67,35 @@ export function Sidebar({ role, userName, base = "app" }: { role: Role; userName
         </span>
         CareAI
       </div>
-      <nav className="flex-1 space-y-1 p-3">
-        {nav.map((item) => {
-          const active = pathname === item.href || (item.href !== "/app" && item.href !== "/admin" && pathname.startsWith(item.href));
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
-                active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-secondary hover:text-foreground",
-              )}
-            >
-              <item.icon className="h-4 w-4" />
-              {item.label}
-            </Link>
-          );
-        })}
+      <nav className="flex-1 space-y-1 overflow-y-auto p-3">
+        {(() => {
+          let lastGroup: string | undefined;
+          return nav.map((item) => {
+            const active = pathname === item.href || (item.href !== "/app" && item.href !== "/admin" && pathname.startsWith(item.href));
+            const itemGroup = (item as { group?: string }).group;
+            const showHeading = itemGroup && itemGroup !== lastGroup;
+            if (itemGroup) lastGroup = itemGroup;
+            return (
+              <div key={item.href}>
+                {showHeading && (
+                  <div className="mb-1 mt-3 px-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70 first:mt-0">
+                    {itemGroup}
+                  </div>
+                )}
+                <Link
+                  href={item.href}
+                  className={cn(
+                    "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
+                    active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+                  )}
+                >
+                  <item.icon className="h-4 w-4" />
+                  {item.label}
+                </Link>
+              </div>
+            );
+          });
+        })()}
         {(role === "admin" || role === "pdl") && base !== "admin" && (
           <Link href="/admin" className="mt-4 flex items-center gap-3 rounded-xl border border-dashed border-border px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-secondary">
             <Shield className="h-4 w-4" /> Admin öffnen
