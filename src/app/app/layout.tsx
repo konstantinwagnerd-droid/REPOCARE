@@ -6,6 +6,7 @@ import { VoiceCommandProvider } from "@/components/voice-commands/VoiceCommandPr
 import { AnalyticsTracker } from "@/components/analytics/Tracker";
 import { PrivacyBanner } from "@/components/analytics/PrivacyBanner";
 import { NotificationToaster } from "@/components/notifications/NotificationToaster";
+import { ImpersonationBanner } from "@/components/impersonation/banner";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -14,6 +15,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <VoiceCommandProvider>
+      <ImpersonationBanner />
       <div className="flex min-h-screen">
         <Sidebar role={session.user.role} userName={session.user.name ?? "Team"} base="app" />
         <div className="flex flex-1 flex-col">

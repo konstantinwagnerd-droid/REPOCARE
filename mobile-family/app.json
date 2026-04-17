@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "CareAI Family",
+    "slug": "careai-family-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "careai-family",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0F766E"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "at.careai.family",
+      "buildNumber": "1",
+      "infoPlist": {
+        "UIBackgroundModes": ["remote-notification"]
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#0F766E"
+      },
+      "package": "at.careai.family",
+      "versionCode": 1,
+      "permissions": ["POST_NOTIFICATIONS", "VIBRATE"]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": ["expo-router", "expo-notifications", "expo-font"],
+    "experiments": { "typedRoutes": true },
+    "extra": {
+      "apiUrl": "https://careai.demo",
+      "eas": { "projectId": "00000000-0000-0000-0000-000000000000" }
+    }
+  }
+}
