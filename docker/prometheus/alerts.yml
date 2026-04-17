@@ -1,0 +1,117 @@
+groups:
+  - name: careai-availability
+    interval: 30s
+    rules:
+      - alert: AppDown
+        expr: up{job="careai-app"} == 0
+        for: 2m
+        labels: { severity: critical, runbook: "https://docs.careai.at/runbooks/app-down" }
+        annotations:
+          summary: "CareAI App ist nicht erreichbar"
+          description: "Instanz {{ $labels.instance }} antwortet seit 2min nicht."
+
+      - alert: PostgresDown
+        expr: up{job="postgres"} == 0
+        for: 1m
+        labels: { severity: critical, runbook: "https://docs.careai.at/runbooks/postgres-down" }
+        annotations:
+          summary: "Postgres ist down"
+          description: "Datenbank antwortet nicht — sofort eskalieren."
+
+  - name: careai-performance
+    interval: 30s
+    rules:
+      - alert: HighErrorRate
+        expr: 100 * sum(rate(http_requests_total{job="careai-app",status=~"5.."}[5m])) / sum(rate(http_requests_total{job="careai-app"}[5m])) > 1
+        for: 5m
+        labels: { severity: warning, runbook: "https://docs.careai.at/runbooks/error-rate" }
+        annotations:
+          summary: "5xx-Fehlerquote > 1%"
+          description: "Aktuelle Rate: {{ $value | printf \"%.2f\" }}%."
+
+      - alert: SlowResponses
+        expr: histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{job="careai-app"}[5m]))) > 2
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "P95-Latenz > 2s"
+          description: "P95 aktuell {{ $value | printf \"%.2fs\" }}."
+
+      - alert: DBPoolExhausted
+        expr: pg_stat_activity_count / pg_settings_max_connections > 0.85
+        for: 5m
+        labels: { severity: warning }
+        annotations:
+          summary: "DB-Connection-Pool > 85 %"
+
+  - name: careai-infra
+    interval: 1m
+    rules:
+      - alert: HighDiskUsage
+        expr: 100 - ((node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100) > 80
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "Disk-Auslastung > 80 %"
+
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.9
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "RAM > 90 %"
+
+      - alert: ContainerRestartLoop
+        expr: increase(kube_pod_container_status_restarts_total[15m]) > 3
+        for: 5m
+        labels: { severity: warning }
+        annotations:
+          summary: "Container restartet > 3x in 15min"
+
+  - name: careai-compliance
+    interval: 1m
+    rules:
+      - alert: CertExpiringSoon
+        expr: (careai_cert_expiry_timestamp - time()) / 86400 < 30
+        for: 1h
+        labels: { severity: warning, runbook: "https://docs.careai.at/runbooks/cert-renewal" }
+        annotations:
+          summary: "TLS-Zertifikat laeuft in < 30 Tagen ab"
+
+      - alert: BackupFailed
+        expr: increase(careai_backup_failed_total[24h]) > 0
+        for: 1h
+        labels: { severity: critical, runbook: "https://docs.careai.at/runbooks/backup-failed" }
+        annotations:
+          summary: "Backup fehlgeschlagen in letzten 24h"
+
+      - alert: AuditLogStalled
+        expr: time() - careai_audit_log_last_write_timestamp > 600
+        for: 5m
+        labels: { severity: critical }
+        annotations:
+          summary: "Audit-Log schreibt seit > 10min nicht mehr"
+
+      - alert: DSGVOQueueGrowing
+        expr: careai_dsgvo_requests_queue > 10
+        for: 1h
+        labels: { severity: warning }
+        annotations:
+          summary: "DSGVO-Anfragen-Queue > 10"
+
+  - name: careai-llm
+    interval: 1m
+    rules:
+      - alert: LLMBudgetExceeded
+        expr: 100 * careai_llm_budget_used_eur / careai_llm_budget_total_eur > 90
+        for: 5m
+        labels: { severity: warning, runbook: "https://docs.careai.at/runbooks/llm-budget" }
+        annotations:
+          summary: "LLM-Budget > 90% verbraucht"
+
+      - alert: LLMHighErrorRate
+        expr: 100 * sum by (provider) (rate(careai_llm_errors_total[5m])) / sum by (provider) (rate(careai_llm_requests_total[5m])) > 5
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "LLM-Fehlerquote > 5% bei {{ $labels.provider }}"

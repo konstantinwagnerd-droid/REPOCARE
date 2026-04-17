@@ -1,0 +1,32 @@
+{
+  "title": "CareAI — Compliance & DSGVO",
+  "uid": "careai-compliance",
+  "tags": ["careai", "compliance", "dsgvo"],
+  "timezone": "Europe/Vienna",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5m",
+  "time": { "from": "now-7d", "to": "now" },
+  "panels": [
+    { "id": 1, "title": "DSGVO-Anfragen Queue", "type": "stat",
+      "gridPos": {"x":0,"y":0,"w":6,"h":4},
+      "targets": [{ "expr": "careai_dsgvo_requests_queue", "refId": "A" }] },
+    { "id": 2, "title": "DSGVO-Anfragen erledigt (7d)", "type": "stat",
+      "gridPos": {"x":6,"y":0,"w":6,"h":4},
+      "targets": [{ "expr": "sum(increase(careai_dsgvo_requests_completed_total[7d]))", "refId": "A" }] },
+    { "id": 3, "title": "Backup-Success-Rate (7d)", "type": "gauge",
+      "gridPos": {"x":12,"y":0,"w":6,"h":6},
+      "targets": [{ "expr": "100 * sum(increase(careai_backup_success_total[7d])) / (sum(increase(careai_backup_success_total[7d])) + sum(increase(careai_backup_failed_total[7d])))", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "percent", "min":0, "max":100, "thresholds":{"mode":"absolute","steps":[{"color":"red","value":0},{"color":"yellow","value":95},{"color":"green","value":99}] } } } },
+    { "id": 4, "title": "TLS-Cert Expiry (Tage)", "type": "stat",
+      "gridPos": {"x":18,"y":0,"w":6,"h":4},
+      "targets": [{ "expr": "(careai_cert_expiry_timestamp - time()) / 86400", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit":"d", "thresholds":{"mode":"absolute","steps":[{"color":"red","value":0},{"color":"yellow","value":30},{"color":"green","value":60}] } } } },
+    { "id": 5, "title": "Anomaly Detections / Tag", "type": "timeseries",
+      "gridPos": {"x":0,"y":6,"w":24,"h":8},
+      "targets": [{ "expr": "sum by (severity) (increase(careai_anomaly_detected_total[1d]))", "refId": "A", "legendFormat": "{{severity}}" }] },
+    { "id": 6, "title": "Audit-Log Retention (Tage)", "type": "stat",
+      "gridPos": {"x":0,"y":14,"w":6,"h":4},
+      "targets": [{ "expr": "careai_audit_log_retention_days", "refId": "A" }] }
+  ]
+}

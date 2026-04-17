@@ -1,0 +1,30 @@
+{
+  "title": "CareAI — LLM Usage",
+  "uid": "careai-llm",
+  "tags": ["careai", "llm"],
+  "timezone": "Europe/Vienna",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "1m",
+  "time": { "from": "now-24h", "to": "now" },
+  "panels": [
+    { "id": 1, "title": "Tokens (in/out) pro Provider", "type": "timeseries",
+      "gridPos": {"x":0,"y":0,"w":12,"h":8},
+      "targets": [
+        { "expr": "sum by (provider, direction) (rate(careai_llm_tokens_total[5m]))", "refId": "A", "legendFormat": "{{provider}}-{{direction}}" }
+      ] },
+    { "id": 2, "title": "Cost (EUR/h)", "type": "timeseries",
+      "gridPos": {"x":12,"y":0,"w":12,"h":8},
+      "targets": [{ "expr": "sum by (provider) (rate(careai_llm_cost_eur_total[1h])) * 3600", "refId": "A", "legendFormat": "{{provider}}" }] },
+    { "id": 3, "title": "Latency P95 (s) pro Provider", "type": "timeseries",
+      "gridPos": {"x":0,"y":8,"w":12,"h":8},
+      "targets": [{ "expr": "histogram_quantile(0.95, sum by (le,provider) (rate(careai_llm_latency_seconds_bucket[5m])))", "refId": "A", "legendFormat": "{{provider}}" }] },
+    { "id": 4, "title": "Errors (Rate %)", "type": "timeseries",
+      "gridPos": {"x":12,"y":8,"w":12,"h":8},
+      "targets": [{ "expr": "100 * sum by (provider) (rate(careai_llm_errors_total[5m])) / sum by (provider) (rate(careai_llm_requests_total[5m]))", "refId": "A", "legendFormat": "{{provider}}" }] },
+    { "id": 5, "title": "Budget-Verbrauch (Monat %)", "type": "gauge",
+      "gridPos": {"x":0,"y":16,"w":8,"h":6},
+      "targets": [{ "expr": "100 * careai_llm_budget_used_eur / careai_llm_budget_total_eur", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "thresholds": { "mode":"absolute", "steps": [{"color":"green","value":0},{"color":"yellow","value":70},{"color":"red","value":90}] } } } }
+  ]
+}

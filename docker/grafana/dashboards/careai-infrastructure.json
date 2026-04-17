@@ -1,0 +1,31 @@
+{
+  "title": "CareAI — Infrastructure",
+  "uid": "careai-infra",
+  "tags": ["careai", "infra"],
+  "timezone": "Europe/Vienna",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "time": { "from": "now-1h", "to": "now" },
+  "panels": [
+    { "id": 1, "title": "CPU Usage (%) pro Container", "type": "timeseries",
+      "gridPos": {"x":0,"y":0,"w":12,"h":8},
+      "targets": [{ "expr": "sum by (name) (rate(container_cpu_usage_seconds_total{name!=\"\"}[5m])) * 100", "refId": "A", "legendFormat": "{{name}}" }] },
+    { "id": 2, "title": "RAM Usage (MB) pro Container", "type": "timeseries",
+      "gridPos": {"x":12,"y":0,"w":12,"h":8},
+      "targets": [{ "expr": "container_memory_working_set_bytes{name!=\"\"} / 1024 / 1024", "refId": "A", "legendFormat": "{{name}}" }] },
+    { "id": 3, "title": "Disk Usage (%)", "type": "gauge",
+      "gridPos": {"x":0,"y":8,"w":8,"h":6},
+      "targets": [{ "expr": "100 - ((node_filesystem_avail_bytes{mountpoint=\"/\"} / node_filesystem_size_bytes{mountpoint=\"/\"}) * 100)", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "thresholds": { "mode":"absolute", "steps": [{"color":"green","value":0},{"color":"yellow","value":70},{"color":"red","value":85}] } } } },
+    { "id": 4, "title": "Network I/O (MB/s)", "type": "timeseries",
+      "gridPos": {"x":8,"y":8,"w":16,"h":8},
+      "targets": [
+        { "expr": "sum by (name) (rate(container_network_receive_bytes_total[5m])) / 1024 / 1024", "refId": "A", "legendFormat": "{{name}} rx" },
+        { "expr": "sum by (name) (rate(container_network_transmit_bytes_total[5m])) / 1024 / 1024", "refId": "B", "legendFormat": "{{name}} tx" }
+      ] },
+    { "id": 5, "title": "Load Avg (1m)", "type": "stat",
+      "gridPos": {"x":0,"y":14,"w":8,"h":4},
+      "targets": [{ "expr": "node_load1", "refId": "A" }] }
+  ]
+}

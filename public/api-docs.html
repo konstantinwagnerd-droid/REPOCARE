@@ -7,11 +7,29 @@
     <meta name="description" content="OpenAPI-Referenz der CareAI-Plattform" />
     <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui.css" />
     <style>
-      body { margin: 0; background: #0B1220; }
+      body { margin: 0; background: #0B1220; color: #e5e7eb; font-family: Inter, system-ui, sans-serif; }
       .topbar { display: none; }
+      header.careai-hero {
+        padding: 24px 32px; background: linear-gradient(120deg, #0ea5e9 0%, #6366f1 100%);
+        color: white;
+      }
+      header.careai-hero h1 { margin: 0; font-size: 24px; font-weight: 700; }
+      header.careai-hero p { margin: 4px 0 0; opacity: 0.9; font-size: 14px; }
+      header.careai-hero a { color: white; text-decoration: underline; }
+      .swagger-ui { filter: none; }
+      .swagger-ui .info { margin: 24px 32px; }
+      .swagger-ui .scheme-container { background: #111827; box-shadow: none; }
     </style>
   </head>
   <body>
+    <header class="careai-hero">
+      <h1>CareAI API Reference</h1>
+      <p>
+        OpenAPI 3.1 — <a href="/openapi.yaml">openapi.yaml</a> |
+        Support: <a href="mailto:engineering@careai.at">engineering@careai.at</a> |
+        TryIt unten aktiviert (Bearer/Session-Cookie)
+      </p>
+    </header>
     <div id="swagger-ui"></div>
     <script src="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-bundle.js"></script>
     <script>
@@ -24,6 +42,12 @@
           docExpansion: "list",
           tryItOutEnabled: true,
           persistAuthorization: true,
+          filter: true,
+          displayRequestDuration: true,
+          defaultModelsExpandDepth: 1,
+          defaultModelExpandDepth: 2,
+          tagsSorter: "alpha",
+          operationsSorter: "alpha",
         });
       };
     </script>

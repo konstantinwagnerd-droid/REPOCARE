@@ -1,0 +1,76 @@
+name: Bug Report
+description: Ein Fehler in der CareAI App
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Danke, dass du dir die Zeit nimmst! Bitte fuelle alle Felder aus.
+        **Keine personenbezogenen Daten** (Bewohner-Namen, Geburtsdaten, Diagnosen)
+        — sofort schwaerzen oder anonymisieren.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: Was ist passiert?
+      description: Beschreibe das Problem so konkret wie moeglich.
+    validations: { required: true }
+  - type: textarea
+    id: steps
+    attributes:
+      label: Schritte zur Reproduktion
+      placeholder: |
+        1. Gehe zu ...
+        2. Klicke auf ...
+        3. Sieh ...
+    validations: { required: true }
+  - type: textarea
+    id: expected
+    attributes:
+      label: Erwartetes Verhalten
+    validations: { required: true }
+  - type: textarea
+    id: actual
+    attributes:
+      label: Tatsaechliches Verhalten
+    validations: { required: true }
+  - type: input
+    id: browser
+    attributes:
+      label: Browser / Umgebung
+      placeholder: "Chrome 131 / Windows 11 / iOS 18"
+  - type: input
+    id: role
+    attributes:
+      label: Rolle
+      placeholder: "Pflegekraft / PDL / Admin / Angehoerige:r"
+  - type: input
+    id: tenant
+    attributes:
+      label: Tenant (optional, nicht-sensibel)
+      placeholder: "demo-pflegeheim"
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Schweregrad
+      options:
+        - low (Kosmetik)
+        - medium (Workaround moeglich)
+        - high (kein Workaround)
+        - critical (Produktion steht)
+    validations: { required: true }
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / Screenshots
+      description: RequestId, Console-Output, Screenshots (PII bitte schwaerzen).
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pflicht-Checks
+      options:
+        - label: "Ich habe keine PII (Namen, Geburtsdaten, Diagnosen) eingefuegt"
+          required: true
+        - label: "Ich habe bereits nach Duplikaten gesucht"
+          required: true

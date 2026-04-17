@@ -1,42 +1,143 @@
 openapi: 3.1.0
 info:
   title: CareAI API
-  version: "0.1.0"
+  version: "0.2.0"
   description: |
-    Interne und externe Schnittstellen für die CareAI-Plattform.
+    Interne und externe Schnittstellen fuer die CareAI-Plattform.
     Alle Endpunkte sind DSGVO-konform und revisionssicher auditiert.
+
+    ## Authentifizierung
+    - **Session-Cookie** (`next-auth.session-token`) fuer Browser-Clients.
+    - **Bearer-Token** fuer Machine-to-Machine und Metrics-Scraping.
+
+    ## Fehlercodes
+    - `400` Validation — Request-Body/Query verletzt Schema.
+    - `401` Unauthenticated — kein oder ungueltiges Credential.
+    - `403` Forbidden — RBAC-Regel verletzt (role/tenant mismatch).
+    - `404` Not Found — Ressource existiert nicht / nicht sichtbar.
+    - `409` Conflict — Versionskonflikt (Optimistic Locking) oder Duplikat.
+    - `429` Rate Limit — pro IP/User/Tenant.
+    - `500` Internal — unerwartet (Sentry-requestId im Body).
   contact:
     name: CareAI Engineering
     email: engineering@careai.at
+  license:
+    name: Proprietary
 servers:
   - url: https://app.careai.at
     description: Production
+  - url: https://staging.careai.at
+    description: Staging
   - url: http://localhost:3000
     description: Local development
 security:
   - sessionCookie: []
+  - bearer: []
+tags:
+  - { name: Monitoring, description: Health, Readiness, Metrics }
+  - { name: Auth, description: Login, Logout, Session }
+  - { name: Marketing, description: Oeffentliche Lead-Endpoints }
+  - { name: Care, description: Pflegeberichte, Schichtuebergaben }
+  - { name: Voice, description: Sprach-Eingabe und -Strukturierung }
+  - { name: Exports, description: PDF/ZIP/CSV Exports }
+  - { name: Sync, description: Offline-Sync fuer Mobile }
+  - { name: Integrations, description: FHIR, GDT, ELGA, DTA, Abrechnung }
+  - { name: Webhooks, description: Admin-Webhook-Verwaltung }
+  - { name: Reports, description: Auswertungen und KPIs }
+  - { name: Backup, description: Backup- und Restore-Operationen }
+  - { name: Notifications, description: Push-, E-Mail-, Telegram-Benachrichtigungen }
+  - { name: Anomaly, description: Anomaly-Detection Events }
+  - { name: FeatureFlags, description: Feature-Flag-Verwaltung }
+  - { name: Billing, description: Abos, Rechnungen, Stripe }
+  - { name: Impersonation, description: Support-Login als Kunde }
+  - { name: PressRelease, description: Auto-generierte Pressemitteilungen }
+  - { name: Compliance, description: DSGVO-Anfragen, Audit }
+
 components:
   securitySchemes:
     sessionCookie:
       type: apiKey
       in: cookie
       name: next-auth.session-token
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
     bearerMetrics:
       type: http
       scheme: bearer
+
+  parameters:
+    PaginationLimit:
+      in: query
+      name: limit
+      schema: { type: integer, default: 50, minimum: 1, maximum: 500 }
+    PaginationCursor:
+      in: query
+      name: cursor
+      schema: { type: string }
+    TenantHeader:
+      in: header
+      name: x-tenant-id
+      schema: { type: string, format: uuid }
+      description: Nur fuer Cross-Tenant-Admins noetig.
+
+  responses:
+    BadRequest:
+      description: Validation error
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+          example: { error: "validation_failed", details: { field: "email", reason: "invalid format" }, requestId: "req_abc123" }
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+          example: { error: "unauthenticated", requestId: "req_abc123" }
+    Forbidden:
+      description: RBAC denies access
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+          example: { error: "forbidden", requiredRole: "admin", requestId: "req_abc123" }
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    Conflict:
+      description: Version conflict or duplicate
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    RateLimit:
+      description: Too many requests
+      headers:
+        Retry-After: { schema: { type: integer }, description: Sekunden bis Retry }
+    ServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+
   schemas:
     Error:
       type: object
       required: [error]
       properties:
-        error: { type: string }
-        requestId: { type: string }
+        error: { type: string, example: "validation_failed" }
+        message: { type: string }
+        details: { type: object, additionalProperties: true }
+        requestId: { type: string, example: "req_abc123" }
+
     Health:
       type: object
       properties:
         status: { type: string, enum: [ok, degraded, down] }
-        uptime: { type: integer }
+        uptime: { type: integer, description: Sekunden seit Start }
         timestamp: { type: string, format: date-time }
+        version: { type: string }
         checks:
           type: object
           additionalProperties:
@@ -45,6 +146,7 @@ components:
               status: { type: string, enum: [ok, fail] }
               latencyMs: { type: integer }
               error: { type: string }
+
     DemoRequest:
       type: object
       required: [name, email, company, residents]
@@ -54,48 +156,116 @@ components:
         company: { type: string, minLength: 2 }
         residents: { type: integer, minimum: 1, maximum: 10000 }
         phone: { type: string }
-        message: { type: string }
+        message: { type: string, maxLength: 2000 }
+
+    CareReport:
+      type: object
+      required: [id, residentId, authorId, createdAt, body]
+      properties:
+        id: { type: string, format: uuid }
+        residentId: { type: string, format: uuid }
+        authorId: { type: string, format: uuid }
+        createdAt: { type: string, format: date-time }
+        body: { type: string }
+        tags: { type: array, items: { type: string } }
+        vitalSigns: { type: object, additionalProperties: { type: number } }
+
+    SyncPacket:
+      type: object
+      required: [clientId, since, changes]
+      properties:
+        clientId: { type: string, format: uuid }
+        since: { type: string, format: date-time }
+        changes:
+          type: array
+          items:
+            type: object
+            properties:
+              op: { type: string, enum: [create, update, delete] }
+              entity: { type: string, enum: [report, resident, task, note] }
+              id: { type: string, format: uuid }
+              version: { type: integer }
+              payload: { type: object, additionalProperties: true }
+
+    WebhookSubscription:
+      type: object
+      required: [id, url, events, active]
+      properties:
+        id: { type: string, format: uuid }
+        url: { type: string, format: uri }
+        events: { type: array, items: { type: string } }
+        secret: { type: string, writeOnly: true }
+        active: { type: boolean }
+        createdAt: { type: string, format: date-time }
+
+    FeatureFlag:
+      type: object
+      required: [key, enabled]
+      properties:
+        key: { type: string, pattern: "^[a-z0-9_-]+$" }
+        enabled: { type: boolean }
+        rolloutPercent: { type: integer, minimum: 0, maximum: 100 }
+        tenantOverrides:
+          type: object
+          additionalProperties: { type: boolean }
+
+    Invoice:
+      type: object
+      properties:
+        id: { type: string }
+        amountEur: { type: number }
+        status: { type: string, enum: [draft, open, paid, overdue, void] }
+        dueDate: { type: string, format: date }
+        pdfUrl: { type: string, format: uri }
+
 paths:
+  # ────────────────────────────── Monitoring ──────────────────────────────
   /api/health:
     get:
       tags: [Monitoring]
-      summary: Liveness probe
+      summary: Liveness Probe
+      description: Gibt `200 OK` zurueck solange der Prozess laeuft.
       security: []
       responses:
         "200":
-          description: Service is live
+          description: Service lebt
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Health" }
+
   /api/health/ready:
     get:
       tags: [Monitoring]
-      summary: Readiness probe (prüft DB)
+      summary: Readiness Probe
+      description: Prueft DB, Redis, Object-Storage. `503` wenn nicht ready.
       security: []
       responses:
-        "200":
-          description: ready or degraded
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/Health" }
-        "503":
-          description: not ready
+        "200": { description: Ready, content: { application/json: { schema: { $ref: "#/components/schemas/Health" } } } }
+        "503": { description: Not ready }
+
   /api/metrics:
     get:
       tags: [Monitoring]
-      summary: Prometheus-kompatible Metrics
-      security:
-        - bearerMetrics: []
+      summary: Prometheus-Metriken
+      description: Bearer-geschuetzt (Token aus `METRICS_BEARER_TOKEN`).
+      security: [{ bearerMetrics: [] }]
       responses:
         "200":
-          description: Metrics im Prometheus-Textformat
+          description: Prometheus-Textformat
           content:
             text/plain:
               schema: { type: string }
+              example: |
+                # HELP http_requests_total Total HTTP requests
+                http_requests_total{method="GET",status="200"} 12345
+        "401": { $ref: "#/components/responses/Unauthorized" }
+
+  # ──────────────────────────────── Auth ────────────────────────────────
   /api/auth/signin:
     post:
       tags: [Auth]
       summary: Login
+      security: []
       requestBody:
         required: true
         content:
@@ -107,9 +277,11 @@ paths:
                 email: { type: string, format: email }
                 password: { type: string, format: password }
       responses:
-        "200": { description: OK }
-        "401": { description: Invalid credentials }
-        "429": { description: Rate limit exceeded }
+        "200": { description: OK — Session-Cookie gesetzt }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "429": { $ref: "#/components/responses/RateLimit" }
+
+  # ────────────────────────────── Marketing ──────────────────────────────
   /api/demo-request:
     post:
       tags: [Marketing]
@@ -122,11 +294,10 @@ paths:
             schema: { $ref: "#/components/schemas/DemoRequest" }
       responses:
         "200": { description: Accepted }
-        "400":
-          description: Validation error
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/Error" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "429": { $ref: "#/components/responses/RateLimit" }
+
+  # ──────────────────────────────── Care ────────────────────────────────
   /api/care-reports:
     get:
       tags: [Care]
@@ -135,50 +306,609 @@ paths:
         - in: query
           name: residentId
           schema: { type: string, format: uuid }
-        - in: query
-          name: limit
-          schema: { type: integer, default: 50 }
+        - { $ref: "#/components/parameters/PaginationLimit" }
+        - { $ref: "#/components/parameters/PaginationCursor" }
       responses:
-        "200": { description: OK }
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items: { type: array, items: { $ref: "#/components/schemas/CareReport" } }
+                  nextCursor: { type: string }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
     post:
       tags: [Care]
       summary: Neuen Bericht anlegen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CareReport" }
       responses:
         "201": { description: Created }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "409": { $ref: "#/components/responses/Conflict" }
+
+  /api/handover:
+    post:
+      tags: [Care]
+      summary: Schichtuebergabe (bestehend, deprecated)
+      deprecated: true
+      responses:
+        "200": { description: OK }
+
+  /api/handover/generate:
+    post:
+      tags: [Care]
+      summary: Schichtuebergabe generieren (LLM)
+      description: Erzeugt strukturierten Schichtbericht aus allen Notizen der Schicht.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [shiftId]
+              properties:
+                shiftId: { type: string, format: uuid }
+                style: { type: string, enum: [kurz, ausfuehrlich, klinisch] }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  summary: { type: string }
+                  bullets: { type: array, items: { type: string } }
+                  tokensUsed: { type: integer }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "500": { $ref: "#/components/responses/ServerError" }
+
+  # ──────────────────────────────── Voice ────────────────────────────────
   /api/voice/transcribe:
     post:
       tags: [Voice]
       summary: Audio transkribieren
+      description: Multipart `audio/*` hochladen, Whisper-Transkript zurueckbekommen.
       requestBody:
+        required: true
         content:
           multipart/form-data:
             schema:
               type: object
+              required: [audio]
               properties:
                 audio: { type: string, format: binary }
+                language: { type: string, default: "de" }
       responses:
-        "200": { description: OK }
-        "429": { description: Rate limit }
+        "200":
+          description: Transkript
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  text: { type: string }
+                  confidence: { type: number }
+                  durationSec: { type: number }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "429": { $ref: "#/components/responses/RateLimit" }
+
+  /api/voice/structure:
+    post:
+      tags: [Voice]
+      summary: Transkript in Pflegebericht strukturieren
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text, residentId]
+              properties:
+                text: { type: string }
+                residentId: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Strukturiertes Pflege-Payload
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CareReport" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+
+  # ──────────────────────────────── Sync ────────────────────────────────
+  /api/sync/pull:
+    get:
+      tags: [Sync]
+      summary: Aenderungen seit Cursor laden
+      parameters:
+        - in: query
+          name: since
+          required: true
+          schema: { type: string, format: date-time }
+      responses:
+        "200":
+          description: Changes
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SyncPacket" }
+
+  /api/sync/push:
+    post:
+      tags: [Sync]
+      summary: Lokale Aenderungen hochladen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SyncPacket" }
+      responses:
+        "200": { description: OK — Server-Version zurueck }
+        "409": { $ref: "#/components/responses/Conflict" }
+
+  /api/sync/status:
+    get:
+      tags: [Sync]
+      summary: Sync-Status pro Client
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lastSyncAt: { type: string, format: date-time }
+                  pendingOps: { type: integer }
+                  conflicts: { type: integer }
+
+  # ──────────────────────────────── Exports ────────────────────────────────
   /api/exports/resident/{id}:
     get:
       tags: [Exports]
-      summary: Bewohner-Akte als PDF/ZIP
+      summary: Bewohner-Akte (PDF/ZIP)
       parameters:
-        - in: path
-          name: id
-          required: true
-          schema: { type: string, format: uuid }
+        - { in: path, name: id, required: true, schema: { type: string, format: uuid } }
+        - { in: query, name: format, schema: { type: string, enum: [pdf, zip], default: pdf } }
       responses:
-        "200": { description: OK }
-  /api/handover:
+        "200":
+          description: Datei
+          content:
+            application/pdf: { schema: { type: string, format: binary } }
+            application/zip: { schema: { type: string, format: binary } }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /api/exports/reports:
     post:
-      tags: [Care]
-      summary: Schichtbericht generieren
+      tags: [Exports]
+      summary: Berichte-Bulk-Export (CSV/PDF)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                from: { type: string, format: date }
+                to: { type: string, format: date }
+                format: { type: string, enum: [csv, pdf, xlsx] }
+      responses:
+        "202": { description: "Job enqueued, jobId zurueck" }
+
+  /api/exports/dsgvo:
+    post:
+      tags: [Exports, Compliance]
+      summary: DSGVO-Export Art. 15 (Auskunft)
+      responses:
+        "202": { description: Accepted }
+
+  /api/exports/audit:
+    get:
+      tags: [Exports]
+      summary: Audit-Log Export (CSV)
+      parameters:
+        - { in: query, name: from, schema: { type: string, format: date-time } }
+        - { in: query, name: to, schema: { type: string, format: date-time } }
+      responses:
+        "200":
+          description: CSV
+          content:
+            text/csv: { schema: { type: string } }
+
+  /api/exports/handover:
+    post:
+      tags: [Exports]
+      summary: Schichtuebergabe als PDF exportieren
+      responses:
+        "200": { description: PDF, content: { application/pdf: { schema: { type: string, format: binary } } } }
+
+  /api/exports/invoices:
+    get:
+      tags: [Exports, Billing]
+      summary: Rechnungen-Export (ZIP mit PDFs)
+      responses:
+        "200": { description: ZIP }
+
+  # ──────────────────────────────── Integrations ────────────────────────────────
+  /api/integrations/fhir/patient:
+    post:
+      tags: [Integrations]
+      summary: FHIR-Patient synchronisieren
+      requestBody:
+        required: true
+        content:
+          application/fhir+json:
+            schema: { type: object }
+      responses:
+        "201": { description: Created }
+        "400": { $ref: "#/components/responses/BadRequest" }
+
+  /api/integrations/gdt/export:
+    post:
+      tags: [Integrations]
+      summary: GDT-Datei an Arztpraxis
       responses:
         "200": { description: OK }
+
+  /api/integrations/elga/upload:
+    post:
+      tags: [Integrations]
+      summary: ELGA (e-Medikation/Befund) Upload
+      responses:
+        "200": { description: OK }
+        "403": { $ref: "#/components/responses/Forbidden" }
+
+  /api/integrations/dta/generate:
+    post:
+      tags: [Integrations]
+      summary: DTA-Datei (Abrechnung mit Krankenkasse)
+      responses:
+        "200": { description: OK }
+
+  /api/integrations/abrechnung/run:
+    post:
+      tags: [Integrations, Billing]
+      summary: Monatliche Abrechnung anstossen
+      responses:
+        "202": { description: Accepted }
+
+  # ──────────────────────────────── Webhooks ────────────────────────────────
+  /api/webhooks/admin:
+    get:
+      tags: [Webhooks]
+      summary: Subscriptions auflisten
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: "#/components/schemas/WebhookSubscription" } }
+    post:
+      tags: [Webhooks]
+      summary: Neue Subscription anlegen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WebhookSubscription" }
+      responses:
+        "201": { description: Created }
+        "400": { $ref: "#/components/responses/BadRequest" }
+
+  /api/webhooks/admin/{id}:
+    delete:
+      tags: [Webhooks]
+      summary: Subscription loeschen
+      parameters:
+        - { in: path, name: id, required: true, schema: { type: string, format: uuid } }
+      responses:
+        "204": { description: No Content }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /api/webhooks/admin/{id}/rotate-secret:
+    post:
+      tags: [Webhooks]
+      summary: Webhook-Secret rotieren
+      parameters:
+        - { in: path, name: id, required: true, schema: { type: string, format: uuid } }
+      responses:
+        "200": { description: Neues Secret einmalig zurueck }
+
+  /api/webhooks/admin/{id}/test:
+    post:
+      tags: [Webhooks]
+      summary: Test-Event senden
+      parameters:
+        - { in: path, name: id, required: true, schema: { type: string, format: uuid } }
+      responses:
+        "200": { description: Delivered }
+        "502": { description: Endpoint nicht erreichbar }
+
+  # ──────────────────────────────── Reports ────────────────────────────────
+  /api/reports/kpis:
+    get:
+      tags: [Reports]
+      summary: KPI-Dashboard-Daten
+      responses:
+        "200": { description: OK }
+
+  /api/reports/pflege-qualitaet:
+    get:
+      tags: [Reports]
+      summary: Pflege-Qualitaets-Report
+      responses:
+        "200": { description: OK }
+
+  /api/reports/abrechnung:
+    get:
+      tags: [Reports, Billing]
+      summary: Abrechnungs-Report (Zeitraum)
+      parameters:
+        - { in: query, name: from, schema: { type: string, format: date } }
+        - { in: query, name: to, schema: { type: string, format: date } }
+      responses:
+        "200": { description: OK }
+
+  # ──────────────────────────────── Backup ────────────────────────────────
+  /api/backup/trigger:
+    post:
+      tags: [Backup]
+      summary: Manuelles Backup ausloesen (Admin)
+      responses:
+        "202": { description: Accepted, Job enqueued }
+        "403": { $ref: "#/components/responses/Forbidden" }
+
+  /api/backup/status:
+    get:
+      tags: [Backup]
+      summary: Backup-Historie
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id: { type: string }
+                    startedAt: { type: string, format: date-time }
+                    status: { type: string, enum: [running, success, failed] }
+                    sizeBytes: { type: integer }
+
+  /api/backup/restore:
+    post:
+      tags: [Backup]
+      summary: Restore aus Snapshot (Break-Glass)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [backupId, confirmation]
+              properties:
+                backupId: { type: string }
+                confirmation: { type: string, enum: ["YES-RESTORE-PRODUCTION"] }
+      responses:
+        "202": { description: Accepted }
+        "403": { $ref: "#/components/responses/Forbidden" }
+
+  # ──────────────────────────────── Notifications ────────────────────────────────
+  /api/notifications:
+    get:
+      tags: [Notifications]
+      summary: Eigene Notifications
+      responses:
+        "200": { description: OK }
+    post:
+      tags: [Notifications]
+      summary: Notification senden (Admin)
+      responses:
+        "201": { description: Created }
+
+  /api/notifications/{id}/read:
+    post:
+      tags: [Notifications]
+      summary: Als gelesen markieren
+      parameters:
+        - { in: path, name: id, required: true, schema: { type: string, format: uuid } }
+      responses:
+        "204": { description: No Content }
+
+  /api/notifications/preferences:
+    get:
+      tags: [Notifications]
+      summary: Benachrichtigungs-Praeferenzen
+      responses:
+        "200": { description: OK }
+    put:
+      tags: [Notifications]
+      summary: Praeferenzen aktualisieren
+      responses:
+        "200": { description: OK }
+
+  # ──────────────────────────────── Anomaly ────────────────────────────────
+  /api/anomaly/events:
+    get:
+      tags: [Anomaly]
+      summary: Anomalie-Events
+      parameters:
+        - { in: query, name: severity, schema: { type: string, enum: [info, warning, critical] } }
+      responses:
+        "200": { description: OK }
+
+  /api/anomaly/events/{id}/ack:
+    post:
+      tags: [Anomaly]
+      summary: Event bestaetigen / schliessen
+      parameters:
+        - { in: path, name: id, required: true, schema: { type: string, format: uuid } }
+      responses:
+        "204": { description: No Content }
+
+  # ──────────────────────────────── Feature Flags ────────────────────────────────
+  /api/feature-flags:
+    get:
+      tags: [FeatureFlags]
+      summary: Alle Flags (fuer aktuellen Tenant)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: "#/components/schemas/FeatureFlag" } }
+
+  /api/feature-flags/{key}:
+    put:
+      tags: [FeatureFlags]
+      summary: Flag setzen (Admin)
+      parameters:
+        - { in: path, name: key, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/FeatureFlag" }
+      responses:
+        "200": { description: OK }
+        "403": { $ref: "#/components/responses/Forbidden" }
+
+  # ──────────────────────────────── Billing ────────────────────────────────
+  /api/billing/subscription:
+    get:
+      tags: [Billing]
+      summary: Aktuelles Abo
+      responses:
+        "200": { description: OK }
+
+  /api/billing/invoices:
+    get:
+      tags: [Billing]
+      summary: Rechnungen-Liste
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: "#/components/schemas/Invoice" } }
+
+  /api/billing/portal:
+    post:
+      tags: [Billing]
+      summary: Stripe-Portal-Link erstellen
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url: { type: string, format: uri }
+
+  /api/billing/webhook:
+    post:
+      tags: [Billing]
+      summary: Stripe-Webhook-Receiver
+      security: []
+      description: Signatur-Pruefung via `Stripe-Signature`-Header.
+      responses:
+        "200": { description: OK }
+        "400": { $ref: "#/components/responses/BadRequest" }
+
+  # ──────────────────────────────── Impersonation ────────────────────────────────
+  /api/impersonation/start:
+    post:
+      tags: [Impersonation]
+      summary: Als Kunde einloggen (Support)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tenantId, userId, reason]
+              properties:
+                tenantId: { type: string, format: uuid }
+                userId: { type: string, format: uuid }
+                reason: { type: string, minLength: 10 }
+      responses:
+        "200": { description: OK — Session ueber 30min }
+        "403": { $ref: "#/components/responses/Forbidden" }
+
+  /api/impersonation/stop:
+    post:
+      tags: [Impersonation]
+      summary: Impersonation beenden
+      responses:
+        "204": { description: No Content }
+
+  # ──────────────────────────────── Press Release ────────────────────────────────
+  /api/press-release/generate:
+    post:
+      tags: [PressRelease]
+      summary: Pressemitteilung erzeugen (LLM)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [topic, tone]
+              properties:
+                topic: { type: string }
+                tone: { type: string, enum: [formell, warm, visionaer] }
+                targetWords: { type: integer, default: 400 }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  headline: { type: string }
+                  subheadline: { type: string }
+                  body: { type: string }
+
+  /api/press-release/list:
+    get:
+      tags: [PressRelease]
+      summary: Historische Pressemitteilungen
+      responses:
+        "200": { description: OK }
+
+  # ──────────────────────────────── Compliance ────────────────────────────────
   /api/dsgvo/export:
     post:
       tags: [Compliance]
       summary: DSGVO-Auskunfts-Export (Art. 15)
       responses:
         "202": { description: Accepted — Export wird generiert }
+
+  /api/dsgvo/delete:
+    post:
+      tags: [Compliance]
+      summary: DSGVO-Loeschantrag (Art. 17)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [subjectId, confirmation]
+              properties:
+                subjectId: { type: string, format: uuid }
+                confirmation: { type: string, enum: ["YES-DELETE"] }
+      responses:
+        "202": { description: Accepted }
+        "403": { $ref: "#/components/responses/Forbidden" }

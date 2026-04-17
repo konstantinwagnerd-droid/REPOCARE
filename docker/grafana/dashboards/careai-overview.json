@@ -1,0 +1,52 @@
+{
+  "title": "CareAI — Overview",
+  "uid": "careai-overview",
+  "tags": ["careai", "overview"],
+  "timezone": "Europe/Vienna",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "time": { "from": "now-6h", "to": "now" },
+  "panels": [
+    {
+      "id": 1, "title": "Service Health", "type": "stat",
+      "gridPos": {"x":0,"y":0,"w":6,"h":4},
+      "targets": [{ "expr": "up{job=\"careai-app\"}", "refId": "A" }],
+      "fieldConfig": { "defaults": { "mappings": [{"type":"value","options":{"0":{"text":"DOWN","color":"red"},"1":{"text":"UP","color":"green"}}}] } }
+    },
+    {
+      "id": 2, "title": "Request Rate (req/s)", "type": "timeseries",
+      "gridPos": {"x":6,"y":0,"w":9,"h":8},
+      "targets": [{ "expr": "sum by (method) (rate(http_requests_total{job=\"careai-app\"}[5m]))", "refId": "A", "legendFormat": "{{method}}" }]
+    },
+    {
+      "id": 3, "title": "Error Rate (5xx, %)", "type": "timeseries",
+      "gridPos": {"x":15,"y":0,"w":9,"h":8},
+      "targets": [{ "expr": "100 * sum(rate(http_requests_total{job=\"careai-app\",status=~\"5..\"}[5m])) / sum(rate(http_requests_total{job=\"careai-app\"}[5m]))", "refId": "A" }]
+    },
+    {
+      "id": 4, "title": "Response Time P95 (s)", "type": "timeseries",
+      "gridPos": {"x":0,"y":8,"w":12,"h":8},
+      "targets": [{ "expr": "histogram_quantile(0.95, sum by (le,route) (rate(http_request_duration_seconds_bucket{job=\"careai-app\"}[5m])))", "refId": "A", "legendFormat": "{{route}}" }]
+    },
+    {
+      "id": 5, "title": "Active Users", "type": "stat",
+      "gridPos": {"x":12,"y":8,"w":6,"h":4},
+      "targets": [{ "expr": "careai_active_sessions", "refId": "A" }]
+    },
+    {
+      "id": 6, "title": "DB Connection Pool", "type": "timeseries",
+      "gridPos": {"x":18,"y":8,"w":6,"h":8},
+      "targets": [
+        { "expr": "pg_stat_activity_count{job=\"postgres\"}", "refId": "A", "legendFormat": "active" },
+        { "expr": "pg_settings_max_connections", "refId": "B", "legendFormat": "max" }
+      ]
+    },
+    {
+      "id": 7, "title": "Uptime", "type": "stat",
+      "gridPos": {"x":12,"y":12,"w":6,"h":4},
+      "targets": [{ "expr": "time() - process_start_time_seconds{job=\"careai-app\"}", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "s" } }
+    }
+  ]
+}

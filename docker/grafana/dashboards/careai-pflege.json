@@ -1,0 +1,30 @@
+{
+  "title": "CareAI — Pflege-KPIs",
+  "uid": "careai-pflege",
+  "tags": ["careai", "pflege"],
+  "timezone": "Europe/Vienna",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "1m",
+  "time": { "from": "now-24h", "to": "now" },
+  "panels": [
+    { "id": 1, "title": "Pflegeberichte pro Stunde", "type": "timeseries",
+      "gridPos": {"x":0,"y":0,"w":12,"h":8},
+      "targets": [{ "expr": "sum(rate(careai_care_reports_created_total[1h])) * 3600", "refId": "A" }] },
+    { "id": 2, "title": "Voice-Requests (gesamt)", "type": "stat",
+      "gridPos": {"x":12,"y":0,"w":6,"h":4},
+      "targets": [{ "expr": "sum(careai_voice_requests_total)", "refId": "A" }] },
+    { "id": 3, "title": "Exporte (24h)", "type": "stat",
+      "gridPos": {"x":18,"y":0,"w":6,"h":4},
+      "targets": [{ "expr": "sum(increase(careai_exports_total[24h]))", "refId": "A" }] },
+    { "id": 4, "title": "Aktive Bewohner", "type": "stat",
+      "gridPos": {"x":12,"y":4,"w":6,"h":4},
+      "targets": [{ "expr": "careai_residents_active", "refId": "A" }] },
+    { "id": 5, "title": "Schichtuebergaben generiert", "type": "stat",
+      "gridPos": {"x":18,"y":4,"w":6,"h":4},
+      "targets": [{ "expr": "sum(increase(careai_handover_generated_total[24h]))", "refId": "A" }] },
+    { "id": 6, "title": "Anomalien erkannt (Sturz/Vitals)", "type": "timeseries",
+      "gridPos": {"x":0,"y":8,"w":24,"h":8},
+      "targets": [{ "expr": "sum by (type) (rate(careai_anomaly_detected_total[5m]))", "refId": "A", "legendFormat": "{{type}}" }] }
+  ]
+}

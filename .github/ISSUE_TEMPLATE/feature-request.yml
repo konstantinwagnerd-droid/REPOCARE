@@ -1,0 +1,58 @@
+name: Feature Request
+description: Neues Feature oder Erweiterung vorschlagen
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Welches Problem loest das Feature?
+      description: Was geht heute nicht oder ist aufwaendig?
+    validations: { required: true }
+  - type: textarea
+    id: solution
+    attributes:
+      label: Vorgeschlagene Loesung
+    validations: { required: true }
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativen
+      description: Was wurde noch erwogen?
+  - type: dropdown
+    id: user
+    attributes:
+      label: Primaere Zielgruppe
+      options:
+        - Pflegekraft
+        - PDL / Heimleitung
+        - Admin / IT
+        - Angehoerige
+        - Tech-Partner (API-Consumer)
+    validations: { required: true }
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Geschaetzter Impact
+      options:
+        - klein (1 Tenant, Nice-to-have)
+        - mittel (mehrere Tenants, deutliche Erleichterung)
+        - gross (strategisch, Umsatz-/Positionierungs-Effekt)
+    validations: { required: true }
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Akzeptanzkriterien (Given/When/Then)
+      placeholder: |
+        Given ich als PDL eingeloggt bin
+        When ich auf „Schichtuebergabe generieren" klicke
+        Then sehe ich in < 10 s einen fertigen Vorschlag
+    validations: { required: true }
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Compliance-Checks
+      options:
+        - label: "Kein PII-Leak bei Implementierung erwartet"
+        - label: "DSGVO-Auskunft/Loeschung mitgedacht"
+        - label: "A11y und i18n mitgedacht"
