@@ -1,0 +1,72 @@
+[
+  {
+    "name": "sis-classification",
+    "file": "sis-classification.jsonl",
+    "sampleCount": 500,
+    "sizeKb": 134.3,
+    "piiFindings": 0,
+    "piiScanPassed": true,
+    "seed": 1001,
+    "lastGenerated": "2026-04-17T19:01:32.737Z"
+  },
+  {
+    "name": "vital-anomaly-detection",
+    "file": "vital-anomaly-detection.jsonl",
+    "sampleCount": 300,
+    "sizeKb": 145.3,
+    "piiFindings": 0,
+    "piiScanPassed": true,
+    "seed": 2001,
+    "lastGenerated": "2026-04-17T19:01:32.754Z"
+  },
+  {
+    "name": "medication-interaction",
+    "file": "medication-interaction.jsonl",
+    "sampleCount": 200,
+    "sizeKb": 74.6,
+    "piiFindings": 0,
+    "piiScanPassed": true,
+    "seed": 3001,
+    "lastGenerated": "2026-04-17T19:01:32.760Z"
+  },
+  {
+    "name": "care-report-generation",
+    "file": "care-report-generation.jsonl",
+    "sampleCount": 400,
+    "sizeKb": 198.6,
+    "piiFindings": 0,
+    "piiScanPassed": true,
+    "seed": 4001,
+    "lastGenerated": "2026-04-17T19:01:32.764Z"
+  },
+  {
+    "name": "voice-transcription-corrections",
+    "file": "voice-transcription-corrections.jsonl",
+    "sampleCount": 200,
+    "sizeKb": 48.6,
+    "piiFindings": 0,
+    "piiScanPassed": true,
+    "seed": 5001,
+    "lastGenerated": "2026-04-17T19:01:32.767Z"
+  },
+  {
+    "name": "dementia-validation-prompts",
+    "file": "dementia-validation-prompts.jsonl",
+    "sampleCount": 150,
+    "sizeKb": 59.4,
+    "piiFindings": 0,
+    "piiScanPassed": true,
+    "seed": 6001,
+    "lastGenerated": "2026-04-17T19:01:32.770Z"
+  },
+  {
+    "name": "incident-postmortem-drafting",
+    "file": "incident-postmortem-drafting.jsonl",
+    "sampleCount": 100,
+    "sizeKb": 156.8,
+    "piiFindings": 0,
+    "piiScanPassed": true,
+    "seed": 7001,
+    "lastGenerated": "2026-04-17T19:01:32.775Z"
+  }
+]
