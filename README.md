@@ -57,6 +57,10 @@ Weitere Screenshots unter [`docs/screenshots/`](docs/screenshots/).
 | Qualitätsindikatoren (§ 113) | beta | `src/lib/quality-benchmarks/` |
 | Incident-Post-Mortem | beta | `src/app/admin/incidents/` |
 | Impersonation für Support | beta | `src/lib/impersonation/` |
+| Press-Release-Generator (5 Templates, Live-Preview, Quality-Score) | prod | `src/app/admin/press-release/` |
+| A11Y-Audit (In-App) | beta | `src/app/admin/a11y-audit/` |
+| Performance-Baseline | beta | `src/app/admin/performance/` |
+| AI-Training Datasets | beta | `src/app/admin/ai-training/` |
 
 ### Integrationen
 
@@ -128,7 +132,7 @@ Passwort für alle: **`Demo2026!`**
 CareAI-App/
 ├── src/
 │   ├── app/              Next.js 15 App-Router (136 Routes)
-│   │   ├── (marketing)   Blog, Case-Studies, Presse, Karriere, Pricing
+│   │   ├── (marketing)   Blog, Case-Studies, Presse, Karriere, Pricing (DE + /en Subtree)
 │   │   ├── (auth)        Login, Signup, Verify, Forgot-Password
 │   │   ├── (app)/app     Pflegekraft-Bereich
 │   │   ├── (investors)   Pitch, Data-Room, Cap-Table, Financial-Model

@@ -20,7 +20,10 @@
     "test:lighthouse": "playwright test e2e/lighthouse.spec.ts",
     "analyze": "ANALYZE=true next build",
     "email:dev": "email dev --dir emails --port 3333",
-    "screenshots": "node scripts/generate-screenshots.mjs"
+    "screenshots": "node scripts/generate-screenshots.mjs",
+    "a11y": "node scripts/a11y-audit.mjs",
+    "perf": "node scripts/performance-baseline.mjs",
+    "audit:all": "npm run lint && npm run typecheck && npm run test && npm run a11y && npm run perf"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.7.4",

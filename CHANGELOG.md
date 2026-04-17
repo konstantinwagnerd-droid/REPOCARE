@@ -4,6 +4,48 @@ Alle relevanten Änderungen an CareAI werden hier wave-weise dokumentiert. Forma
 
 ---
 
+## Wave 9 — 2026-04-17 (Finale Integration)
+
+### Hinzugefügt
+- `src/lib/press-release/` — Press-Release-Generator-Kern (5 Templates, Quality-Rules, Renderer)
+- `src/app/admin/press-release/` — UI mit Template-Auswahl, dynamischem Form, Live-Preview, Quality-Score
+- `POST /api/press-release/generate` — API-Endpoint, rollengeschützt (admin / pdl)
+- `docs/PRESS-RELEASE-GENERATOR.md` — Doku inkl. Template-Beschreibungen, API-Beispiel
+- Service-Worker-Registrierung in `src/app/layout.tsx` (nur https und localhost)
+- Sitemap-Erweiterung: `/partner`, Presse-Unterseiten, `/help`, EN-Routen, hreflang-Alternates, EN-Blog
+- package.json Scripts: `a11y`, `perf`, `audit:all`
+
+### Geändert
+- `SHOWCASE.md` — Broken-Link-Audit: `/admin/anomaly`, `wunden-timelapse`, `/admin/whitelabel`, `/admin/dashboards` korrigiert
+- `docs/INDEX.md` — neue Sektionen für Qualität + Baselines, neue Doku einsortiert
+
+---
+
+## Wave 8 — 2026-04-17 (Enablement + Outreach)
+
+### Hinzugefügt
+- `docs/INVESTOR-OUTREACH.md` — Investor-Playbook, Zielgruppen-Listen, Templates
+- `docs/DEMO-VIDEO.md` — Storyboard + Produktions-Guide für Investor-Demo-Video
+- `docs/AI-TRAINING.md` — Synthetic-Dataset-Pipeline mit PII-Scan
+- `src/app/admin/ai-training/` — Dataset-Index im Admin-Bereich
+- `src/app/admin/performance/` + `src/lib/performance-baseline/` — Performance-Baseline-Tool
+- `src/app/admin/a11y-audit/` + `src/lib/a11y-audit/` — In-App Accessibility-Audit
+
+---
+
+## Wave 7 — 2026-04-17 (Internationalisierung + Offline)
+
+### Hinzugefügt
+- `/en` Marketing-Routen: Home, About, Contact, Careers, Case Studies, Integrations, Trust, ROI Calculator, Blog
+- `docs/INTERNATIONAL.md` — i18n-Architektur, Sprachauswahl, hreflang
+- `docs/OFFLINE-SYNC-INTEGRATION.md` — Offline-First-Sync mit IndexedDB + Service-Worker
+- `docs/E2E-WITH-PGLITE.md` — E2E-Setup mit PGlite (In-Memory Postgres)
+- `docs/A11Y-AUDIT.md` — WCAG-Checkliste, Axe-Regeln
+- `docs/PERFORMANCE-BASELINE.md` — Performance-Budget-Baseline
+- `public/sw.js` — Service-Worker (Cache-First für statische Assets)
+
+---
+
 ## Wave 6 — 2026-04-17 (Finale Politur)
 
 **Commit:** `c3524d0` + `b2599a7`

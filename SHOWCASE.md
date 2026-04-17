@@ -28,7 +28,7 @@ SIS · Maßnahmenplan · Vitalwerte (live Recharts) · Medikation + MAR · Wundd
 
 ## 5. Wundverlauf-Zeitraffer
 
-**Route:** `/app/bewohner/[id]/wunden`
+**Route:** `/app/bewohner/[id]/wunden-timelapse`
 Scrollt durch die Wundfotos eines Bewohners animiert und zeigt Flächen-, Farb- und Heilungstrend über Zeit.
 
 ## 6. Dienstplan-Solver
@@ -48,7 +48,7 @@ Tastaturgetriebene Navigation durch die gesamte App. Suche nach Bewohner:innen, 
 
 ## 9. Anomalie-Erkennung
 
-**Route:** `/admin/anomalies`
+**Route:** `/admin/anomaly`
 Statistische Outlier-Erkennung auf Vitalwerten (Blutdruck, Puls, Temperatur) und Audit-Mustern.
 
 ## 10. Angehörigen-Portal
@@ -58,8 +58,8 @@ Wohlbefindens-Score, Tagesübersicht, Aktivitäten-Timeline, Nachricht an Team �
 
 ## 11. Qualitätsindikatoren § 113 SGB XI
 
-**Route:** `/admin/qualitaet`
-Automatische Berechnung aller 10 MDK-Indikatoren (Dekubitus, Sturz, Gewichtsabnahme, …) in Echtzeit.
+**Route:** `/admin/dashboards`
+Automatische Berechnung aller 10 MDK-Indikatoren (Dekubitus, Sturz, Gewichtsabnahme, …) in Echtzeit, integriert in das Admin-Dashboard.
 
 ## 12. Multi-Tenant Benchmark
 
@@ -88,7 +88,7 @@ FHIR-basierte Verknüpfung von Diagnosen, Medikamenten, Maßnahmen und Observati
 
 ## 17. Whitelabel-Engine
 
-**Route:** `/admin/settings/whitelabel`
+**Route:** `/admin/whitelabel`
 Pro-Einrichtung-Branding: Logo, Farben, Domain, Footer-Text — ohne Code-Änderung.
 
 ## 18. Investor-Data-Room

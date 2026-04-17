@@ -22,6 +22,15 @@ Alle technischen und produktbezogenen Markdown-Dokumente von CareAI, kategorisie
 | [`SECURITY.md`](SECURITY.md) | DSGVO, EU AI Act, Verschlüsselung, Audit-Konzept |
 | [`ANOMALY-DETECTION.md`](ANOMALY-DETECTION.md) | Statistische Outlier-Erkennung auf Vitals + Audit |
 | [`NOTIFICATIONS.md`](NOTIFICATIONS.md) | Benachrichtigungs-Architektur + DSGVO-Aspekte |
+| [`A11Y-AUDIT.md`](A11Y-AUDIT.md) | Accessibility-Audit, Axe-Regeln, WCAG-Checkliste |
+
+## Qualität + Baselines
+
+| Dokument | Zweck |
+|---|---|
+| [`PERFORMANCE-BASELINE.md`](PERFORMANCE-BASELINE.md) | Performance-Baseline, Lighthouse-Budgets |
+| [`E2E-WITH-PGLITE.md`](E2E-WITH-PGLITE.md) | E2E-Test-Setup mit PGlite (In-Memory Postgres) |
+| [`OFFLINE-SYNC-INTEGRATION.md`](OFFLINE-SYNC-INTEGRATION.md) | Offline-First Sync für Mobile + Service-Worker |
 
 ## Integrationen
 
@@ -56,6 +65,11 @@ Alle technischen und produktbezogenen Markdown-Dokumente von CareAI, kategorisie
 | Dokument | Zweck |
 |---|---|
 | [`PARTNER-PROGRAM.md`](PARTNER-PROGRAM.md) | Referral-, Whitelabel- und Integration-Partner |
+| [`INVESTOR-OUTREACH.md`](INVESTOR-OUTREACH.md) | Investor-Outreach-Playbook, Listen, Templates |
+| [`PRESS-RELEASE-GENERATOR.md`](PRESS-RELEASE-GENERATOR.md) | Internes Tool: 5 PM-Templates, Live-Preview, Quality-Score |
+| [`DEMO-VIDEO.md`](DEMO-VIDEO.md) | Storyboard + Produktions-Guide Investor-Demo-Video |
+| [`INTERNATIONAL.md`](INTERNATIONAL.md) | Internationalisierung (EN-Routen, Sprachauswahl) |
+| [`AI-TRAINING.md`](AI-TRAINING.md) | Synthetic Training Datasets, PII-Scan, Dataset-Index |
 
 ## Content + Design
 
