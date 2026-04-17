@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-04-17T00:00:00.000Z",
+  "route": "/",
+  "note": "Initial baseline — wird von e2e/lighthouse.spec.ts bei jedem Run überschrieben.",
+  "metrics": {
+    "firstContentfulPaint": 0,
+    "domContentLoaded": 0,
+    "loadEvent": 0
+  },
+  "budget": {
+    "lighthousePerformance": 95,
+    "lcpMs": 1500,
+    "clsScore": 0.05,
+    "tbtMs": 100,
+    "fcpMs": 1500
+  }
+}

@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 180 30% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 180 30% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 180 30% 10%;
+    --primary: 174 77% 26%;
+    --primary-foreground: 150 60% 97%;
+    --secondary: 173 28% 94%;
+    --secondary-foreground: 174 77% 20%;
+    --muted: 173 14% 96%;
+    --muted-foreground: 174 10% 40%;
+    --accent: 21 90% 54%;
+    --accent-foreground: 30 60% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 174 12% 88%;
+    --input: 174 12% 90%;
+    --ring: 174 77% 26%;
+    --radius: 0.875rem;
+  }
+
+  .dark {
+    --background: 180 30% 7%;
+    --foreground: 150 30% 95%;
+    --card: 180 25% 9%;
+    --card-foreground: 150 30% 95%;
+    --popover: 180 25% 9%;
+    --popover-foreground: 150 30% 95%;
+    --primary: 174 65% 45%;
+    --primary-foreground: 180 30% 8%;
+    --secondary: 180 20% 15%;
+    --secondary-foreground: 150 30% 95%;
+    --muted: 180 20% 14%;
+    --muted-foreground: 174 10% 65%;
+    --accent: 21 90% 56%;
+    --accent-foreground: 30 60% 98%;
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 180 15% 20%;
+    --input: 180 15% 20%;
+    --ring: 174 65% 45%;
+  }
+
+  * { @apply border-border; }
+  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body { @apply bg-background text-foreground; font-family: var(--font-geist), ui-sans-serif, system-ui, sans-serif; }
+  h1, h2, h3, h4 { font-family: var(--font-fraunces), Georgia, serif; @apply tracking-tight; font-feature-settings: "ss01", "ss02"; }
+  code, pre, .font-mono { font-family: var(--font-geist-mono), ui-monospace, monospace; }
+
+  /* 44px touch targets for gloved hands */
+  button, a[role="button"], [data-touch] { min-height: 44px; }
+
+  /* Focus ring */
+  :focus-visible { @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background; }
+}
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+  .grid-lines {
+    background-image:
+      linear-gradient(to right, hsl(var(--border) / 0.5) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--border) / 0.5) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+  .dot-pattern {
+    background-image: radial-gradient(hsl(var(--primary) / 0.12) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+}

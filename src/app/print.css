@@ -1,0 +1,112 @@
+/**
+ * Print-Optimierungen für Übergabelisten, Dienstplan, Bewohner-Liste.
+ * Wird global importiert und greift via @media print.
+ */
+
+@media print {
+  /* Basis */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  html, body {
+    background: #fff !important;
+    color: #000 !important;
+    font-size: 10pt;
+  }
+
+  /* Navigation & Chrome verbergen */
+  aside,
+  nav,
+  header[data-ui="topbar"],
+  .no-print,
+  button[aria-label="Notfall melden"],
+  [role="toolbar"],
+  .sidebar,
+  .topbar {
+    display: none !important;
+  }
+
+  /* Haupt-Container volle Breite */
+  main, .print-container {
+    margin: 0 !important;
+    padding: 10mm !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  /* Karten flach */
+  .card,
+  [data-slot="card"] {
+    border: 1px solid #d8dedc !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Tabellen nicht splitten */
+  table {
+    page-break-inside: auto;
+    border-collapse: collapse;
+    width: 100%;
+  }
+  tr { page-break-inside: avoid; page-break-after: auto; }
+  thead { display: table-header-group; }
+
+  /* Seitenumbrüche */
+  h1, h2, h3 { page-break-after: avoid; }
+  .page-break { page-break-before: always; }
+
+  /* A4 hoch — Handover / Bewohnerliste */
+  @page handover { size: A4 portrait; margin: 12mm; }
+  @page residents { size: A4 portrait; margin: 12mm; }
+
+  /* A4 quer — Dienstplan */
+  @page dienstplan { size: A4 landscape; margin: 10mm; }
+
+  /* Body-Klassen steuern Seitenstil */
+  body.print-handover { page: handover; }
+  body.print-residents { page: residents; }
+  body.print-dienstplan { page: dienstplan; }
+
+  /* Zwei-Spalten-Layout für Handover */
+  body.print-handover .print-two-col {
+    column-count: 2;
+    column-gap: 8mm;
+    column-rule: 1px solid #d8dedc;
+  }
+  body.print-handover .print-two-col > * {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin-bottom: 6mm;
+  }
+
+  /* Print-Header */
+  .print-header {
+    display: block !important;
+    border-bottom: 2px solid #0E6B67;
+    padding-bottom: 4mm;
+    margin-bottom: 6mm;
+  }
+  .print-header h1 {
+    color: #0E6B67;
+    font-size: 18pt;
+    margin: 0;
+  }
+  .print-header .facility {
+    font-size: 9pt;
+    color: #5c6664;
+  }
+
+  /* Link-URLs anzeigen */
+  a[href]::after { content: ""; }
+
+  /* Dunkle Badges hell machen */
+  .bg-primary, .bg-accent { background: #f0f0f0 !important; color: #000 !important; }
+}
+
+/* Screen: Print-Header verbergen */
+@media screen {
+  .print-header { display: none; }
+}

@@ -1,0 +1,68 @@
+### CareAI API Tests
+### Nutzbar mit der "REST Client"-Erweiterung in VS Code (humao.rest-client)
+### Klick auf "Send Request" über jedem Block
+
+@base = http://localhost:3000
+@email = pflege@careai.demo
+@password = Demo2026!
+
+### 1. Health-Check (öffentlich)
+GET {{base}}/api/health
+
+### 2. Login → Session Cookie holen
+# @name login
+POST {{base}}/api/auth/callback/credentials
+Content-Type: application/x-www-form-urlencoded
+
+email={{email}}&password={{password}}
+
+### 3. Schichtbericht generieren (echte DB-Aggregation der letzten 24h)
+POST {{base}}/api/handover/generate
+Content-Type: application/json
+
+{
+  "shift": "frueh",
+  "station": "wohnbereich-1"
+}
+
+### 4. Spracheingabe — Mock-Transkription
+POST {{base}}/api/voice/transcribe
+Content-Type: application/json
+
+{
+  "audioBase64": "MOCK_AUDIO_DATA"
+}
+
+### 5. Spracheingabe — KI-Strukturierung nach SIS
+POST {{base}}/api/voice/structure
+Content-Type: application/json
+
+{
+  "transcript": "Frau Maier hat heute beim Frühstück gut gegessen, war wach und orientiert. Mobilisation mit Rollator hat gut geklappt, keine Schmerzen geäußert."
+}
+
+### 6. PDF-Export Pflegebericht (sobald Export-Agent fertig)
+GET {{base}}/api/exports/pflegebericht/1/pdf
+
+### 7. PDF-Export Komplette Bewohner-Akte
+POST {{base}}/api/exports/bewohner/1/akte
+Content-Type: application/json
+
+{
+  "from": "2026-03-15",
+  "to": "2026-04-14",
+  "sections": ["stammdaten", "sis", "massnahmen", "berichte", "vital", "medikation"]
+}
+
+### 8. DSGVO Art. 15 — Auskunft
+POST {{base}}/api/exports/dsgvo/auskunft/1
+
+### 9. Audit-Log Export
+POST {{base}}/api/exports/audit-log
+Content-Type: application/json
+
+{
+  "from": "2026-03-15",
+  "to": "2026-04-14",
+  "format": "csv"
+}

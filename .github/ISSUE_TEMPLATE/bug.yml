@@ -1,0 +1,45 @@
+name: Bug report
+description: Ein Fehler in der CareAI App
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: Was ist passiert?
+      description: Beschreibe das Problem so konkret wie möglich.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Schritte zur Reproduktion
+      placeholder: |
+        1. Gehe zu ...
+        2. Klicke auf ...
+        3. Sieh ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Erwartetes Verhalten
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser / Umgebung
+      placeholder: "Chrome 131 / Windows 11"
+  - type: input
+    id: role
+    attributes:
+      label: Rolle
+      placeholder: "Pflegekraft / PDL / Admin / Angehörige:r"
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Schweregrad
+      options: [low, medium, high, critical]
+    validations:
+      required: true

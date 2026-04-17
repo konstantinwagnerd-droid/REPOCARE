@@ -1,0 +1,100 @@
+
+> careai-app@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.0.3
+   - Local:        http://localhost:3000
+   - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 3.8s
+ ○ Compiling / ...
+ ⨯ Failed to find font override values for font `Geist`
+ ⨯ Failed to find font override values for font `Geist Mono`
+ ⨯ Failed to find font override values for font `Geist`
+ ⨯ Failed to find font override values for font `Geist Mono`
+ ✓ Compiled / in 17.1s (3248 modules)
+ GET / 200 in 18268ms
+ ✓ Compiled in 2.7s (1302 modules)
+ ○ Compiling /login ...
+ ✓ Compiled /login in 3.1s (3248 modules)
+ GET /login 200 in 4842ms
+ ✓ Compiled in 2.3s (1313 modules)
+ GET /login? 200 in 320ms
+ ○ Compiling /api/auth/[...nextauth] ...
+ ✓ Compiled /api/auth/[...nextauth] in 18.7s (2536 modules)
+ ○ Compiling /app ...
+ GET /api/auth/session 200 in 41378ms
+ GET /login 200 in 32146ms
+ ✓ Compiled /app in 100.1s (3321 modules)
+ GET /api/auth/session 200 in 69663ms
+ GET /app 307 in 8906ms
+ GET /login 200 in 24502ms
+ ⨯ src\app\app\page.tsx (14:29) @ user
+ ⨯ TypeError: Cannot read properties of null (reading 'user')
+    at AppDashboard (./src/app/app/page.tsx:41:30)
+digest: "2939389334"
+  12 | export default async function AppDashboard() {
+  13 |   const session = await auth();
+> 14 |   const tenantId = session!.user.tenantId;
+     |                             ^
+  15 |   const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  16 |
+  17 |   const [residentList, recentReports, openIncidents, todayVitals, openPlans] = await Promise.all([
+ GET /app 200 in 104834ms
+ GET /login 200 in 257ms
+ GET /api/auth/session 200 in 836ms
+ GET /api/auth/session 200 in 445ms
+ GET /login 200 in 716ms
+ GET /api/auth/session 200 in 577ms
+ GET /api/auth/session 200 in 170ms
+ GET /login 200 in 5320ms
+ ✓ Compiled in 20.5s (3321 modules)
+ GET /api/auth/providers 200 in 4517ms
+ GET /login 200 in 1199ms
+ GET /api/auth/csrf 200 in 51ms
+ POST /api/auth/callback/credentials? 200 in 859ms
+ GET /api/auth/session 200 in 60ms
+ GET /app 200 in 721ms
+ GET /app 200 in 152ms
+ GET /app 200 in 3434ms
+ ✓ Compiled in 10.1s (3321 modules)
+ GET /app 200 in 1526ms
+ GET /app 200 in 2832ms
+ ✓ Compiled in 6.4s (3321 modules)
+ GET /app 200 in 930ms
+ ○ Compiling /app/residents ...
+ ✓ Compiled /app/residents in 14.1s (3316 modules)
+ GET /app/residents 200 in 17201ms
+ GET /app 200 in 2797ms
+ ✓ Compiled in 4.5s (3330 modules)
+ GET /api/auth/session 200 in 691ms
+ GET /api/auth/session 200 in 52ms
+ ○ Compiling /app/residents/[id] ...
+ ✓ Compiled /app/residents/[id] in 6.6s (1923 modules)
+ ✓ Compiled in 9s (1932 modules)
+ GET /app/residents/8f0323a3-2245-4be7-b4ac-1744b70c3450 200 in 19375ms
+ GET /api/auth/session 200 in 3375ms
+ GET /api/auth/session 200 in 77ms
+ GET /app/residents/8f0323a3-2245-4be7-b4ac-1744b70c3450 200 in 11424ms
+ ✓ Compiled in 12.1s (4415 modules)
+ GET /app/residents/8f0323a3-2245-4be7-b4ac-1744b70c3450 200 in 1436ms
+ GET /app/residents/8f0323a3-2245-4be7-b4ac-1744b70c3450 200 in 4639ms
+ ✓ Compiled in 8s (4415 modules)
+ GET /app/residents/8f0323a3-2245-4be7-b4ac-1744b70c3450 200 in 1010ms
+ GET /app/residents/8f0323a3-2245-4be7-b4ac-1744b70c3450 200 in 6766ms
+ ✓ Compiled in 9.6s (4415 modules)
+ GET /app/residents/8f0323a3-2245-4be7-b4ac-1744b70c3450 200 in 874ms
+ GET /app/residents/8f0323a3-2245-4be7-b4ac-1744b70c3450 200 in 4557ms
+ ✓ Compiled in 38.7s (4394 modules)
+ GET /app/residents/8f0323a3-2245-4be7-b4ac-1744b70c3450 200 in 21128ms
+ GET /app/residents/8f0323a3-2245-4be7-b4ac-1744b70c3450 200 in 327ms
+ ✓ Compiled in 9.2s (1946 modules)
+ GET /app/residents/8f0323a3-2245-4be7-b4ac-1744b70c3450 200 in 1198ms
+ GET /app/residents/8f0323a3-2245-4be7-b4ac-1744b70c3450 200 in 12327ms
+ ✓ Compiled in 14.4s (4394 modules)
+ ○ Compiling /app/voice ...
+ GET /app/residents/8f0323a3-2245-4be7-b4ac-1744b70c3450 200 in 2830ms
+ GET /app 200 in 22529ms
+ ✓ Compiled /app/handover in 28s (4820 modules)
+ ○ Compiling / ...

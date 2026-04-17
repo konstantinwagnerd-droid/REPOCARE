@@ -1,0 +1,184 @@
+openapi: 3.1.0
+info:
+  title: CareAI API
+  version: "0.1.0"
+  description: |
+    Interne und externe Schnittstellen für die CareAI-Plattform.
+    Alle Endpunkte sind DSGVO-konform und revisionssicher auditiert.
+  contact:
+    name: CareAI Engineering
+    email: engineering@careai.at
+servers:
+  - url: https://app.careai.at
+    description: Production
+  - url: http://localhost:3000
+    description: Local development
+security:
+  - sessionCookie: []
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: next-auth.session-token
+    bearerMetrics:
+      type: http
+      scheme: bearer
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string }
+        requestId: { type: string }
+    Health:
+      type: object
+      properties:
+        status: { type: string, enum: [ok, degraded, down] }
+        uptime: { type: integer }
+        timestamp: { type: string, format: date-time }
+        checks:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              status: { type: string, enum: [ok, fail] }
+              latencyMs: { type: integer }
+              error: { type: string }
+    DemoRequest:
+      type: object
+      required: [name, email, company, residents]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 100 }
+        email: { type: string, format: email }
+        company: { type: string, minLength: 2 }
+        residents: { type: integer, minimum: 1, maximum: 10000 }
+        phone: { type: string }
+        message: { type: string }
+paths:
+  /api/health:
+    get:
+      tags: [Monitoring]
+      summary: Liveness probe
+      security: []
+      responses:
+        "200":
+          description: Service is live
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Health" }
+  /api/health/ready:
+    get:
+      tags: [Monitoring]
+      summary: Readiness probe (prüft DB)
+      security: []
+      responses:
+        "200":
+          description: ready or degraded
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Health" }
+        "503":
+          description: not ready
+  /api/metrics:
+    get:
+      tags: [Monitoring]
+      summary: Prometheus-kompatible Metrics
+      security:
+        - bearerMetrics: []
+      responses:
+        "200":
+          description: Metrics im Prometheus-Textformat
+          content:
+            text/plain:
+              schema: { type: string }
+  /api/auth/signin:
+    post:
+      tags: [Auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string, format: password }
+      responses:
+        "200": { description: OK }
+        "401": { description: Invalid credentials }
+        "429": { description: Rate limit exceeded }
+  /api/demo-request:
+    post:
+      tags: [Marketing]
+      summary: Demo-Anfrage absenden
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DemoRequest" }
+      responses:
+        "200": { description: Accepted }
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+  /api/care-reports:
+    get:
+      tags: [Care]
+      summary: Berichte auflisten
+      parameters:
+        - in: query
+          name: residentId
+          schema: { type: string, format: uuid }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 50 }
+      responses:
+        "200": { description: OK }
+    post:
+      tags: [Care]
+      summary: Neuen Bericht anlegen
+      responses:
+        "201": { description: Created }
+  /api/voice/transcribe:
+    post:
+      tags: [Voice]
+      summary: Audio transkribieren
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                audio: { type: string, format: binary }
+      responses:
+        "200": { description: OK }
+        "429": { description: Rate limit }
+  /api/exports/resident/{id}:
+    get:
+      tags: [Exports]
+      summary: Bewohner-Akte als PDF/ZIP
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: OK }
+  /api/handover:
+    post:
+      tags: [Care]
+      summary: Schichtbericht generieren
+      responses:
+        "200": { description: OK }
+  /api/dsgvo/export:
+    post:
+      tags: [Compliance]
+      summary: DSGVO-Auskunfts-Export (Art. 15)
+      responses:
+        "202": { description: Accepted — Export wird generiert }

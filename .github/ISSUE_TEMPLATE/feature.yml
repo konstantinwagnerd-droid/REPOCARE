@@ -1,0 +1,31 @@
+name: Feature request
+description: Neue Funktion oder Verbesserung
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / Motivation
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Lösungsvorschlag
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativen, die wir geprüft haben
+  - type: dropdown
+    id: audience
+    attributes:
+      label: Zielnutzer
+      options:
+        - Pflegekraft
+        - PDL
+        - Admin
+        - Angehörige
+        - Compliance / DSB
