@@ -2,7 +2,14 @@
 
 > Pflegekräfte sprechen. CareAI dokumentiert. MDK-fest, DSGVO-sauber, EU-AI-Act-konform.
 
-![Build](https://img.shields.io/badge/build-passing-00c389) ![Tests](https://img.shields.io/badge/tests-17%20suites-00c389) ![Node](https://img.shields.io/badge/node-24-00c389) ![License](https://img.shields.io/badge/license-proprietär-blue) ![Status](https://img.shields.io/badge/status-demo--ready-orange)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-0F766E?logo=typescript)
+![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=nextdotjs)
+![Tests](https://img.shields.io/badge/Tests-52%20unit%20%2F%2012%20E2E-F97316)
+![Status](https://img.shields.io/badge/Status-Ready%20for%20Demo-0F766E)
+![A11y](https://img.shields.io/badge/A11y-WCAG%202.2%20AA-0F766E)
+![Compliance](https://img.shields.io/badge/DSGVO-compliant-0F766E)
+![Node](https://img.shields.io/badge/node-24-00c389)
+![License](https://img.shields.io/badge/license-proprietär-blue)
 
 ---
 

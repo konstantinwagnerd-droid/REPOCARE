@@ -4,6 +4,8 @@ Snapshot der Commit-Historie, Stand 2026-04-17. Jeder Eintrag: Commit-Hash + 1-Z
 
 | Hash | Betreff | Kurzkommentar |
 |---|---|---|
+| *(final, dieser Commit)* | docs: autonom fertig — project summary + lint debt + badges + final snapshot | Test-Run (52/52 grün), TS Exit 0, Lint-Schuld dokumentiert (39 E + 3 W), Badges aktualisiert, PROJECT-SUMMARY.md für Konstantin |
+| `9a5bff8` | feat: wave 9 finale — press-release-generator, service-worker registration, sitemap update, SHOWCASE verify, changelog+docs sweep | Press-Release-Generator, SW-Registration, finale Sitemap, SHOWCASE-Verify, Changelog-Sweep |
 | `e126dce` | feat: wave 8 — i18n (EN), A11y audit, performance baseline, sync endpoint, screenshots, E2E with PGlite | Englische Marketing-Routen, Accessibility-Audit-Tool, Performance-Baseline, Sync-API, PGlite-gestützte E2E-Tests |
 | `9bd4746` | feat: wave 7 — demo videos, AI training datasets, investor outreach | Demo-Video-Storyboard, Synthetic-Dataset-Pipeline mit PII-Scan, Investor-Outreach-Playbook |
 | `f7b9952` | docs: final hygiene + consolidation | Allgemeiner Doku-Aufräumpass, Index-Konsolidierung |
