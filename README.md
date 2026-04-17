@@ -5,7 +5,9 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-0F766E?logo=typescript)
 ![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=nextdotjs)
 ![Tests](https://img.shields.io/badge/Tests-52%20unit%20%2F%2012%20E2E-F97316)
-![Status](https://img.shields.io/badge/Status-Ready%20for%20Demo-0F766E)
+![Lint](https://img.shields.io/badge/Lint-0%20issues-0F766E)
+![Languages](https://img.shields.io/badge/languages-5%20(DE%2FEN%2FFR%2FIT%2FES)-0F766E)
+![Status](https://img.shields.io/badge/Status-Production--grade-0F766E)
 ![A11y](https://img.shields.io/badge/A11y-WCAG%202.2%20AA-0F766E)
 ![Compliance](https://img.shields.io/badge/DSGVO-compliant-0F766E)
 ![Node](https://img.shields.io/badge/node-24-00c389)
@@ -68,6 +70,10 @@ Weitere Screenshots unter [`docs/screenshots/`](docs/screenshots/).
 | A11Y-Audit (In-App) | beta | `src/app/admin/a11y-audit/` |
 | Performance-Baseline | beta | `src/app/admin/performance/` |
 | AI-Training Datasets | beta | `src/app/admin/ai-training/` |
+| Guided Tours (In-App-Onboarding) | prod | `src/app/admin/tours/` |
+| A/B-Testing-Plattform (Chi-Quadrat, Winner-Picking) | prod | `src/app/admin/ab-testing/` |
+| Marketing-Automation (Trigger/Conditions/Actions) | prod | `src/app/admin/marketing-automation/` |
+| CRM-Sync (HubSpot/Pipedrive, bidirektional) | prod | `src/app/admin/crm-sync/` |
 
 ### Integrationen
 
@@ -110,6 +116,8 @@ npm run db:push                   # Schema pushen (Drizzle)
 npm run db:seed                   # 12 Bewohner, 200+ Audit-Events, 5 Pflegekräfte
 npm run dev                       # → http://localhost:3000
 ```
+
+Danach: **[`SHOWCASE.md`](SHOWCASE.md)** (30+ Highlight-Features) und **[`docs/FINAL-TOUR.md`](docs/FINAL-TOUR.md)** (12-Stops-Rundgang) durchklicken.
 
 Ohne Postgres? Die eingebundene `local.db` (SQLite) lädt out-of-the-box. Für Postgres lokal:
 
@@ -211,6 +219,20 @@ Details unter [`docs/SECURITY.md`](docs/SECURITY.md).
 | Q2 2027 | Schweiz-Launch, ambulant-mobile App (Sozialstationen), FHIR-R5-Upgrade |
 
 Detaillierter Plan: siehe [`ROADMAP.md`](ROADMAP.md).
+
+---
+
+## Produktion
+
+CareAI ist **production-grade ready** für Multi-Tenant-Rollout. Operations-Assets:
+
+- **Hetzner-Deploy** — Cloud-Server-Setup, Docker-Compose, TLS: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)
+- **Installer-Script** — Ein-Kommando-Installation für Pilot-Heime: [`docs/INSTALLER.md`](docs/INSTALLER.md)
+- **Grafana-Monitoring** — Dashboards, Alerts, Prometheus-Scraper: [`docs/MONITORING.md`](docs/MONITORING.md)
+- **Disaster-Recovery-Drill** — RTO/RPO-Playbook + regelmäßiger Drill: [`docs/DISASTER-RECOVERY.md`](docs/DISASTER-RECOVERY.md)
+- **Load-Testing + Pentest + Smoke-Tests** — [`docs/LOAD-TESTING.md`](docs/LOAD-TESTING.md), [`docs/PENTEST-CHECKLIST.md`](docs/PENTEST-CHECKLIST.md), [`docs/SMOKE-TESTS.md`](docs/SMOKE-TESTS.md)
+- **Runbooks + Support-Playbooks** — [`docs/runbooks/`](docs/runbooks/), [`docs/support/`](docs/support/)
+- **CE-MDR-Pipeline + Clinical-Validation** — [`docs/regulatory/`](docs/regulatory/), [`docs/clinical/`](docs/clinical/)
 
 ---
 

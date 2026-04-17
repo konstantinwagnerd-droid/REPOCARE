@@ -4,6 +4,104 @@ Alle relevanten Änderungen an CareAI werden hier wave-weise dokumentiert. Forma
 
 ---
 
+## Wave 13 — 2026-04-17 (Finaler Polish)
+
+**Commit:** *(dieser Commit)*
+
+### Geändert
+- `README.md` — Lint-Zero- und 5-Sprachen-Badges, erweiterte Feature-Matrix (Waves 10–12), „Produktion“-Abschnitt mit Hetzner-Deploy/Installer/Grafana-Links
+- `SHOWCASE.md` — auf 30+ Highlight-Features erweitert (Guided Tours, Welcome-Onboarding, A/B-Testing, Marketing-Automation, CRM-Sync, Press-Release-Generator, i18n 5 Sprachen, Ops-/Compliance-Assets). Alle Route-Links verifiziert.
+- `docs/PROJECT-SUMMARY.md` — komplette Neufassung für den 5-Minuten-Orientierungs-Einstieg, Top-15-Highlights, Q2-2026-Next-Steps
+- `docs/GIT-HISTORY.md` — um Waves 10–13 ergänzt
+- `docs/SPRINT-REPORT.md` — auf Final-Stand aktualisiert, Replacement-Cost ~550 Dev-Tage, Status „Production-grade ready for multi-tenant rollout“
+- `docs/LINT-DEBT.md` — „0 Issues — Lint-Zero erreicht“ (Stand Wave 12c)
+- `docs/INDEX.md` — neue Kategorien: Outreach+GTM, Regulatory+Clinical, Marketing-Platform, Platform-Core, i18n, Ops-Runbooks
+- `ROADMAP.md` — CE-Mark-Timeline (18 Monate bis 2027 Q3), Clinical-Validation-Phase (N=150), EU-Expansion (FR/IT/ES produktiv Q4 2026), A/B-Testing + Marketing-Automation Rollout-Plan
+
+---
+
+## Wave 12c — 2026-04-17 (CE-MDR + Clinical + Lint-Zero)
+
+**Commit:** `7d9df4f`
+
+### Hinzugefügt
+- `docs/regulatory/` — CE-MDR-Templates: Risk-File, Clinical-Evaluation, Post-Market-Surveillance
+- `docs/clinical/` — Clinical-Study-Protocol (N=150, 3 Heime, 18 Monate)
+- Store-Assets (App-Icons, Screenshots, Listing-Texte DE/EN/FR/IT/ES)
+
+### Geändert
+- Lint von 18 Issues → **0 Issues** (Lint-Zero erreicht)
+- ESLint-Konfig um `argsIgnorePattern: "^_"` erweitert
+- 18 Files cleanup (unused imports/vars, eslint-disables für @react-pdf/renderer)
+
+---
+
+## Wave 12b — 2026-04-17 (i18n Expansion + Marketing-Platform)
+
+**Commit:** `042ba6c`
+
+### Hinzugefügt
+- `/fr`, `/it`, `/es` — vollständige Marketing-Präsenz in FR/IT/ES inkl. Blog, ROI-Rechner, Case-Studies, Kontakt, About, Trust
+- `/admin/ab-testing` — A/B-Testing-Plattform mit Chi-Quadrat-Signifikanz, Winner-Picking, Assignment/Conversion/Results-APIs
+- `/admin/marketing-automation` — Flows mit Trigger → Conditions → Actions (E-Mail, Lead-Scoring, Drip)
+- `/admin/crm-sync` — bidirektionale HubSpot/Pipedrive-Sync (Push/Pull/Status)
+- `docs/AB-TESTING.md`, `docs/MARKETING-AUTOMATION.md`, `docs/CRM-SYNC.md`, `docs/I18N-EXPANSION.md`
+
+---
+
+## Wave 12a — 2026-04-17 (Grafana + Developer Polish)
+
+**Commit:** `07d268c`
+
+### Hinzugefügt
+- Grafana-Dashboards + Prometheus-Scraper-Konfiguration
+- Swagger-API-Dokumentation Feinschliff
+- Erweiterte Developer-Docs (DEVELOPMENT.md, DATABASE-MIGRATION.md)
+
+---
+
+## Wave 11b — 2026-04-17 (Operations-Kit)
+
+**Commit:** `bd8ff4a`
+
+### Hinzugefügt
+- DR-Drill-Playbook mit realem Failover-Szenario
+- Support-Playbook (Eskalationen, SLA, Templates)
+- Pilot-Kit für 3 Wiener Heime (Setup-Guide, Schulung, Abnahme-Checkliste)
+- Onboarding-Videos (Skripte, Storyboards)
+- Escape-Room / Chaos-Engineering-Runbook
+
+---
+
+## Wave 11a — 2026-04-17 (Production Hardening)
+
+**Commit:** `dac79be`
+
+### Hinzugefügt
+- Installer-Script für Ein-Kommando-Setup auf neuen Servern (`docs/INSTALLER.md`)
+- Smoke-Tests (`docs/SMOKE-TESTS.md`)
+- Load-Testing-Setup mit k6 (`docs/LOAD-TESTING.md`)
+- Pentest-Checkliste (OWASP Top 10 + Pflege-spezifisch, `docs/PENTEST-CHECKLIST.md`)
+
+---
+
+## Wave 10 — 2026-04-17 (Production Readiness + Guided Tours)
+
+**Commit:** `636d9e6` + `1291c37`
+
+### Hinzugefügt
+- Docker-Compose Production-Setup, Dockerfile
+- LLM-Integration-Layer (Multi-Provider: Anthropic, OpenAI, Mock) — `docs/LLM-INTEGRATION.md`
+- E-Mail-Versand (Resend/SMTP-Adapter), Email-Webhooks
+- Storage-Adapter (S3-kompatibel)
+- Deployment-Guide Hetzner (`docs/DEPLOYMENT.md`)
+- `/admin/tours` — Guided-Tour-Builder (Schritte, Zielgruppe, Trigger)
+- Kontext-Tooltips in allen Admin-Seiten
+- `/onboarding-welcome` — personalisierter Willkommens-Flow
+- Lint um 57% reduziert (in Wave 10, final Lint-Zero in Wave 12c)
+
+---
+
 ## Wave 9 — 2026-04-17 (Finale Integration)
 
 ### Hinzugefügt
