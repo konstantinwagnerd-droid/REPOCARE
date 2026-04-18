@@ -19,7 +19,6 @@ export default function LoginPage() {
       <div className="rounded-xl border border-border bg-muted/40 p-4 text-sm">
         <div className="mb-2 font-semibold">Demo-Zugänge</div>
         <ul className="space-y-1 text-xs text-muted-foreground">
-          <li><code className="font-mono">admin@careai.demo</code> · Admin</li>
           <li><code className="font-mono">pdl@careai.demo</code> · Pflegedienstleitung</li>
           <li><code className="font-mono">pflege@careai.demo</code> · Pflegekraft</li>
           <li><code className="font-mono">familie@careai.demo</code> · Angehöriger</li>

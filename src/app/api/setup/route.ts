@@ -15,7 +15,8 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 
 const DDL = `
-DO $$ BEGIN CREATE TYPE role AS ENUM ('admin','pdl','pflegekraft','angehoeriger'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE TYPE role AS ENUM ('owner','admin','pdl','pflegekraft','angehoeriger'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TYPE role ADD VALUE IF NOT EXISTS 'owner' BEFORE 'admin'; EXCEPTION WHEN OTHERS THEN NULL; END $$;
 DO $$ BEGIN CREATE TYPE plan AS ENUM ('starter','professional','enterprise'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 DO $$ BEGIN CREATE TYPE shift AS ENUM ('frueh','spaet','nacht'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 DO $$ BEGIN CREATE TYPE care_plan_status AS ENUM ('offen','laufend','erledigt','pausiert'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
@@ -167,6 +168,18 @@ CREATE TABLE IF NOT EXISTS export_records (
   hash text NOT NULL, filename text NOT NULL,
   recipient text, created_at timestamp NOT NULL DEFAULT now()
 );
+
+-- Multi-Einrichtung pro User: Junction-Table fuer User <-> Tenant N:M Beziehung.
+-- Default-Einrichtung bleibt users.tenant_id; zusaetzliche Einrichtungen via user_tenants.
+CREATE TABLE IF NOT EXISTS user_tenants (
+  user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  role role NOT NULL DEFAULT 'pflegekraft',
+  is_primary boolean NOT NULL DEFAULT false,
+  created_at timestamp NOT NULL DEFAULT now(),
+  PRIMARY KEY (user_id, tenant_id)
+);
+CREATE INDEX IF NOT EXISTS idx_user_tenants_tenant ON user_tenants(tenant_id);
 
 CREATE TABLE IF NOT EXISTS leads (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
