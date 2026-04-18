@@ -66,10 +66,10 @@ async function loadStats(): Promise<Stats> {
       loginsToday: loginsToday[0].c, loginsLast24h: loginsLast24h[0].c,
       sessionsLastHour: sessionsLastHour[0].c,
       auditEventsToday: auditToday[0].c, errorsToday: 0,
-      loginsTrend: loginsByDay.map((r: { c: number }) => r.c),
-      leadsTrend: leadsByDay.map((r: { c: number }) => r.c),
-      auditTrend: auditByDay.map((r: { c: number }) => r.c),
-      sessionsTrend: sessionsByHour.map((r: { c: number }) => r.c),
+      loginsTrend: (loginsByDay as unknown as { c: number }[]).map((r) => r.c),
+      leadsTrend: (leadsByDay as unknown as { c: number }[]).map((r) => r.c),
+      auditTrend: (auditByDay as unknown as { c: number }[]).map((r) => r.c),
+      sessionsTrend: (sessionsByHour as unknown as { c: number }[]).map((r) => r.c),
     };
   } catch {
     return EMPTY_STATS;

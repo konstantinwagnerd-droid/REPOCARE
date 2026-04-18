@@ -13,7 +13,7 @@ export type AuditRow = {
   action: string;
   entityType: string;
   entityId: string;
-  ip: string;
+  ip: string | null;
 };
 
 export function AuditTable({ rows }: { rows: AuditRow[] }) {
