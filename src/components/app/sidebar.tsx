@@ -7,16 +7,18 @@ import { LayoutDashboard, Users, FileText, Mic, Search, LogOut, Sparkles, Settin
 import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import type { Role } from "@/db/schema";
+import { useOptionalT } from "@/lib/i18n";
 
 const pflegeNav = [
-  { href: "/app", label: "Übersicht", icon: LayoutDashboard, tour: "dashboard" },
-  { href: "/app/residents", label: "Bewohner:innen", icon: Users, tour: "nav-bewohner" },
-  { href: "/app/handover", label: "Schichtbericht", icon: FileText, tour: "nav-handover" },
-  { href: "/app/voice", label: "Spracheingabe", icon: Mic, tour: "nav-voice" },
-  { href: "/app/voice-commands", label: "Voice-Commands", icon: Command },
-  { href: "/app/search", label: "Suchen", icon: Search },
-  { href: "/app/zeiterfassung", label: "Zeiterfassung", icon: Clock },
-  { href: "/app/notifications", label: "Benachrichtigungen", icon: Bell },
+  { href: "/app", label: "Übersicht", i18nKey: "nav.overview", icon: LayoutDashboard, tour: "dashboard" },
+  { href: "/app/residents", label: "Bewohner:innen", i18nKey: "nav.residents", icon: Users, tour: "nav-bewohner" },
+  { href: "/app/handover", label: "Schichtbericht", i18nKey: "nav.handover", icon: FileText, tour: "nav-handover" },
+  { href: "/app/voice", label: "Spracheingabe", i18nKey: "nav.voice", icon: Mic, tour: "nav-voice" },
+  { href: "/app/voice-commands", label: "Voice-Commands", i18nKey: "nav.voiceCommands", icon: Command },
+  { href: "/app/search", label: "Suchen", i18nKey: "nav.search", icon: Search },
+  { href: "/app/zeiterfassung", label: "Zeiterfassung", i18nKey: "nav.timeTracking", icon: Clock },
+  { href: "/app/fallbesprechung", label: "Fallbesprechung", i18nKey: "nav.caseConference", icon: FileText },
+  { href: "/app/notifications", label: "Benachrichtigungen", i18nKey: "nav.notifications", icon: Bell },
 ];
 
 const adminNav = [
@@ -41,6 +43,7 @@ const adminNav = [
 
   { href: "/admin/webhooks", label: "Webhooks", icon: Plug, group: "Integrationen" },
   { href: "/admin/notifications", label: "Notifications", icon: Bell, group: "Integrationen" },
+  { href: "/admin/whatsapp", label: "WhatsApp", icon: Bell, group: "Integrationen" },
   { href: "/admin/billing", label: "API-Billing", icon: Receipt, group: "Integrationen", tour: "admin-billing" },
   { href: "/admin/migration", label: "Migration", icon: ArrowLeftRight, group: "Integrationen", tour: "admin-migration" },
   { href: "/admin/knowledge-graph", label: "Knowledge-Graph", icon: Network, group: "Integrationen" },
@@ -140,6 +143,7 @@ export function Sidebar({ role, userName, base = "app" }: { role: Role; userName
 type NavItem = {
   href: string;
   label: string;
+  i18nKey?: string;
   icon: React.ComponentType<{ className?: string }>;
   tour?: string;
   group?: string;
@@ -157,6 +161,7 @@ function SidebarNavBody({
   base: "app" | "admin" | "family";
 }) {
   let lastGroup: string | undefined;
+  const i18n = useOptionalT();
   return (
     <nav className="flex-1 space-y-1 overflow-y-auto p-3">
       {nav.map((item) => {
@@ -185,7 +190,7 @@ function SidebarNavBody({
               )}
             >
               <item.icon className="h-4 w-4" />
-              {item.label}
+              {i18n && item.i18nKey ? i18n.t(item.i18nKey, item.label) : item.label}
             </Link>
           </div>
         );
@@ -203,6 +208,8 @@ function SidebarNavBody({
 }
 
 function SidebarFooter({ userName, role }: { userName: string; role: Role }) {
+  const i18n = useOptionalT();
+  const signOutLabel = i18n?.t("nav.signOut", "Abmelden") ?? "Abmelden";
   return (
     <div className="border-t border-border p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
       <div className="rounded-xl bg-background p-3">
@@ -213,7 +220,7 @@ function SidebarFooter({ userName, role }: { userName: string; role: Role }) {
         onClick={() => signOut({ callbackUrl: "/" })}
         className="mt-2 flex min-h-[44px] w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
       >
-        <LogOut className="h-4 w-4" /> Abmelden
+        <LogOut className="h-4 w-4" /> {signOutLabel}
       </button>
     </div>
   );

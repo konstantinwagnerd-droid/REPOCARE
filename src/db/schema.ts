@@ -525,6 +525,57 @@ export type PensionApplication = typeof pensionApplications.$inferSelect;
 export type PensionApplicationType = (typeof pensionApplicationTypeEnum.enumValues)[number];
 export type PensionApplicationStatus = (typeof pensionApplicationStatusEnum.enumValues)[number];
 
+// ============================================================================
+// WhatsApp Integration (Evolution API) — 2026-04-18
+// ============================================================================
+export const whatsappContacts = pgTable("whatsapp_contacts", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  tenantId: uuid("tenant_id").references(() => tenants.id, { onDelete: "cascade" }).notNull(),
+  residentId: uuid("resident_id").references(() => residents.id, { onDelete: "cascade" }),
+  familyUserId: uuid("family_user_id").references(() => users.id, { onDelete: "set null" }),
+  phone: text("phone").notNull(),
+  verified: boolean("verified").default(false),
+  consentGivenAt: timestamp("consent_given_at"),
+  consentScope: text("consent_scope").default("critical"), // all | critical | daily
+  quietHoursStart: text("quiet_hours_start").default("22:00"),
+  quietHoursEnd: text("quiet_hours_end").default("07:00"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const whatsappMessages = pgTable("whatsapp_messages", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  tenantId: uuid("tenant_id").references(() => tenants.id, { onDelete: "cascade" }).notNull(),
+  contactId: uuid("contact_id").references(() => whatsappContacts.id, { onDelete: "cascade" }),
+  direction: text("direction").notNull(), // outbound | inbound
+  eventType: text("event_type"), // incident | wellbeing | daily-report | ...
+  body: text("body").notNull(),
+  sentAt: timestamp("sent_at"),
+  deliveredAt: timestamp("delivered_at"),
+  readAt: timestamp("read_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Fallbesprechung (strukturierter Workflow)
+export const caseConferences = pgTable("case_conferences", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  tenantId: uuid("tenant_id").references(() => tenants.id, { onDelete: "cascade" }).notNull(),
+  date: timestamp("date").notNull(),
+  durationMinutes: integer("duration_minutes"),
+  participantsJson: jsonb("participants_json").$type<Array<{ name: string; role: string }>>().default([]),
+  residentIds: jsonb("resident_ids_json").$type<string[]>().default([]),
+  agendaItemsJson: jsonb("agenda_items_json").$type<Array<{ title: string; notes?: string }>>().default([]),
+  notes: text("notes"),
+  actionItemsJson: jsonb("action_items_json").$type<Array<{ residentId: string; action: string; owner: string; dueDate: string; criteria: string }>>().default([]),
+  summary: text("summary"),
+  pdfHash: text("pdf_hash"),
+  createdBy: uuid("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type WhatsappContact = typeof whatsappContacts.$inferSelect;
+export type WhatsappMessage = typeof whatsappMessages.$inferSelect;
+export type CaseConference = typeof caseConferences.$inferSelect;
+
 export type User = typeof users.$inferSelect;
 export type Resident = typeof residents.$inferSelect;
 export type CareReport = typeof careReports.$inferSelect;
@@ -535,3 +586,95 @@ export type Role = (typeof roleEnum.enumValues)[number];
 export type DnqpAssessment = typeof dnqpAssessments.$inferSelect;
 export type NandaDiagnosis = typeof nandaDiagnoses.$inferSelect;
 export type Biography = typeof biographies.$inferSelect;
+
+// ============================================================================
+// PDL ADMIN FEATURES (2026-04-18)
+// Feature 1: Kosten-Controlling — Stundensaetze + Pflegegrad-Raten + Fix-Kosten
+// Feature 2: Zertifizierungs-Tracker — ISO, KTQ, NQZ, Diakonie
+// Feature 3: Saved Reports — No-Code Query Builder fuer PDL
+// ============================================================================
+
+export const staffHourlyRates = pgTable("staff_hourly_rates", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  tenantId: uuid("tenant_id").references(() => tenants.id, { onDelete: "cascade" }).notNull(),
+  role: text("role").notNull(),
+  qualification: text("qualification"),
+  hourlyRateCents: integer("hourly_rate_cents").notNull(),
+  validFrom: timestamp("valid_from").notNull(),
+  validUntil: timestamp("valid_until"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const pflegegradRevenue = pgTable("pflegegrad_revenue", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  tenantId: uuid("tenant_id").references(() => tenants.id, { onDelete: "cascade" }).notNull(),
+  pflegegrad: integer("pflegegrad").notNull(),
+  monthlyRevenueCents: integer("monthly_revenue_cents").notNull(),
+  validFrom: timestamp("valid_from").notNull(),
+  validUntil: timestamp("valid_until"),
+  country: text("country").notNull().default("DE"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const fixedCosts = pgTable("fixed_costs", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  tenantId: uuid("tenant_id").references(() => tenants.id, { onDelete: "cascade" }).notNull(),
+  category: text("category").notNull(),
+  label: text("label").notNull(),
+  monthlyCostCents: integer("monthly_cost_cents").notNull(),
+  validFrom: timestamp("valid_from").notNull(),
+  validUntil: timestamp("valid_until"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const certifications = pgTable("certifications", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  tenantId: uuid("tenant_id").references(() => tenants.id, { onDelete: "cascade" }).notNull(),
+  certificationType: text("certification_type").notNull(),
+  status: text("status").notNull(),
+  awardedDate: timestamp("awarded_date"),
+  expiresDate: timestamp("expires_date"),
+  auditor: text("auditor"),
+  certificateNumber: text("certificate_number"),
+  scope: text("scope"),
+  documentsJson: jsonb("documents_json").$type<Array<{ name: string; uploadedAt: string; size: number; hash: string }>>().default([]),
+  nextAuditDate: timestamp("next_audit_date"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const certificationRequirements = pgTable("certification_requirements", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  certificationId: uuid("certification_id").references(() => certifications.id, { onDelete: "cascade" }).notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  category: text("category"),
+  status: text("status").notNull().default("offen"),
+  dueDate: timestamp("due_date"),
+  responsibleUserId: uuid("responsible_user_id").references(() => users.id),
+  evidenceJson: jsonb("evidence_json").$type<Array<{ name: string; url?: string; note?: string }>>().default([]),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const savedReports = pgTable("saved_reports", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  tenantId: uuid("tenant_id").references(() => tenants.id, { onDelete: "cascade" }).notNull(),
+  name: text("name").notNull(),
+  description: text("description"),
+  entity: text("entity").notNull(),
+  filtersJson: jsonb("filters_json").notNull(),
+  columnsJson: jsonb("columns_json").notNull(),
+  sortJson: jsonb("sort_json"),
+  limitRows: integer("limit_rows").default(100),
+  createdBy: uuid("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  lastRunAt: timestamp("last_run_at"),
+});
+
+export type StaffHourlyRate = typeof staffHourlyRates.$inferSelect;
+export type PflegegradRevenue = typeof pflegegradRevenue.$inferSelect;
+export type FixedCost = typeof fixedCosts.$inferSelect;
+export type Certification = typeof certifications.$inferSelect;
+export type CertificationRequirement = typeof certificationRequirements.$inferSelect;
+export type SavedReport = typeof savedReports.$inferSelect;

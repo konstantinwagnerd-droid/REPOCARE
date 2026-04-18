@@ -18,6 +18,9 @@ export const maxDuration = 60;
 const DDL = `
 -- NUCLEAR OPTION: DROP + CREATE fresh. Supabase hat nur Demo-Daten.
 -- Saubere Recreation verhindert Schema-Drift-Issues zwischen manueller DDL und drizzle-schema.
+DROP TABLE IF EXISTS whatsapp_messages CASCADE;
+DROP TABLE IF EXISTS whatsapp_contacts CASCADE;
+DROP TABLE IF EXISTS case_conferences CASCADE;
 DROP TABLE IF EXISTS amts_flags CASCADE;
 DROP TABLE IF EXISTS billing_llm_usage CASCADE;
 DROP TABLE IF EXISTS heimaufg_meldungen CASCADE;
@@ -476,6 +479,152 @@ CREATE TABLE IF NOT EXISTS amts_flags (
 );
 CREATE INDEX IF NOT EXISTS idx_amts_resident ON amts_flags(resident_id);
 CREATE INDEX IF NOT EXISTS idx_amts_severity ON amts_flags(severity);
+
+-- WhatsApp (Evolution API) 2026-04-18
+CREATE TABLE IF NOT EXISTS whatsapp_contacts (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  resident_id uuid REFERENCES residents(id) ON DELETE CASCADE,
+  family_user_id uuid REFERENCES users(id) ON DELETE SET NULL,
+  phone text NOT NULL,
+  verified boolean DEFAULT false,
+  consent_given_at timestamp,
+  consent_scope text DEFAULT 'critical',
+  quiet_hours_start text DEFAULT '22:00',
+  quiet_hours_end text DEFAULT '07:00',
+  created_at timestamp NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_wa_contacts_tenant ON whatsapp_contacts(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_wa_contacts_resident ON whatsapp_contacts(resident_id);
+
+CREATE TABLE IF NOT EXISTS whatsapp_messages (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  contact_id uuid REFERENCES whatsapp_contacts(id) ON DELETE CASCADE,
+  direction text NOT NULL,
+  event_type text,
+  body text NOT NULL,
+  sent_at timestamp,
+  delivered_at timestamp,
+  read_at timestamp,
+  created_at timestamp NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_wa_msg_contact ON whatsapp_messages(contact_id);
+CREATE INDEX IF NOT EXISTS idx_wa_msg_tenant_date ON whatsapp_messages(tenant_id, created_at);
+
+CREATE TABLE IF NOT EXISTS case_conferences (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  date timestamp NOT NULL,
+  duration_minutes integer,
+  participants_json jsonb DEFAULT '[]'::jsonb,
+  resident_ids_json jsonb DEFAULT '[]'::jsonb,
+  agenda_items_json jsonb DEFAULT '[]'::jsonb,
+  notes text,
+  action_items_json jsonb DEFAULT '[]'::jsonb,
+  summary text,
+  pdf_hash text,
+  created_by uuid REFERENCES users(id),
+  created_at timestamp NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_conf_tenant_date ON case_conferences(tenant_id, date);
+
+-- ============================================================================
+-- PDL ADMIN FEATURES (2026-04-18)
+-- Feature 1: Kosten-Controlling | Feature 2: Zertifizierungen | Feature 3: Saved Reports
+-- ============================================================================
+
+DROP TABLE IF EXISTS saved_reports CASCADE;
+DROP TABLE IF EXISTS certification_requirements CASCADE;
+DROP TABLE IF EXISTS certifications CASCADE;
+DROP TABLE IF EXISTS fixed_costs CASCADE;
+DROP TABLE IF EXISTS pflegegrad_revenue CASCADE;
+DROP TABLE IF EXISTS staff_hourly_rates CASCADE;
+
+CREATE TABLE staff_hourly_rates (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  role text NOT NULL,
+  qualification text,
+  hourly_rate_cents integer NOT NULL,
+  valid_from date NOT NULL,
+  valid_until date,
+  created_at timestamp NOT NULL DEFAULT now()
+);
+CREATE INDEX idx_staff_hourly_rates_tenant ON staff_hourly_rates(tenant_id);
+
+CREATE TABLE pflegegrad_revenue (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  pflegegrad integer NOT NULL,
+  monthly_revenue_cents integer NOT NULL,
+  valid_from date NOT NULL,
+  valid_until date,
+  country text NOT NULL DEFAULT 'DE',
+  created_at timestamp NOT NULL DEFAULT now()
+);
+CREATE INDEX idx_pflegegrad_revenue_tenant ON pflegegrad_revenue(tenant_id);
+
+CREATE TABLE fixed_costs (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  category text NOT NULL,
+  label text NOT NULL,
+  monthly_cost_cents integer NOT NULL,
+  valid_from date NOT NULL,
+  valid_until date,
+  created_at timestamp NOT NULL DEFAULT now()
+);
+CREATE INDEX idx_fixed_costs_tenant ON fixed_costs(tenant_id);
+
+CREATE TABLE certifications (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  certification_type text NOT NULL,
+  status text NOT NULL,
+  awarded_date date,
+  expires_date date,
+  auditor text,
+  certificate_number text,
+  scope text,
+  documents_json jsonb DEFAULT '[]'::jsonb,
+  next_audit_date date,
+  notes text,
+  created_at timestamp NOT NULL DEFAULT now(),
+  updated_at timestamp NOT NULL DEFAULT now()
+);
+CREATE INDEX idx_certifications_tenant ON certifications(tenant_id);
+CREATE INDEX idx_certifications_expires ON certifications(expires_date);
+
+CREATE TABLE certification_requirements (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  certification_id uuid NOT NULL REFERENCES certifications(id) ON DELETE CASCADE,
+  title text NOT NULL,
+  description text,
+  category text,
+  status text NOT NULL DEFAULT 'offen',
+  due_date date,
+  responsible_user_id uuid REFERENCES users(id),
+  evidence_json jsonb DEFAULT '[]'::jsonb,
+  created_at timestamp NOT NULL DEFAULT now()
+);
+CREATE INDEX idx_cert_requirements_cert ON certification_requirements(certification_id);
+
+CREATE TABLE saved_reports (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  name text NOT NULL,
+  description text,
+  entity text NOT NULL,
+  filters_json jsonb NOT NULL,
+  columns_json jsonb NOT NULL,
+  sort_json jsonb,
+  limit_rows integer DEFAULT 100,
+  created_by uuid REFERENCES users(id),
+  created_at timestamp NOT NULL DEFAULT now(),
+  last_run_at timestamp
+);
+CREATE INDEX idx_saved_reports_tenant ON saved_reports(tenant_id);
 
 CREATE TABLE IF NOT EXISTS leads (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
