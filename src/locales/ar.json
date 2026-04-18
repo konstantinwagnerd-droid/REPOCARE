@@ -1,0 +1,63 @@
+{
+  "nav": {
+    "overview": "نظرة عامة",
+    "residents": "المقيمون",
+    "handover": "تقرير المناوبة",
+    "voice": "إدخال صوتي",
+    "voiceCommands": "الأوامر الصوتية",
+    "search": "بحث",
+    "timeTracking": "تتبع الوقت",
+    "notifications": "الإشعارات",
+    "caseConference": "مناقشة الحالة",
+    "signOut": "تسجيل الخروج"
+  },
+  "topbar": {
+    "today": "اليوم",
+    "emergency": "طوارئ",
+    "search": "بحث",
+    "toggleDark": "التبديل إلى الوضع الداكن",
+    "toggleLight": "التبديل إلى الوضع الفاتح",
+    "notifications": "الإشعارات",
+    "tour": "جولة / مساعدة",
+    "language": "اللغة"
+  },
+  "emergency": {
+    "reported": "تم الإبلاغ عن حالة طارئة! يرجى التوجه إلى المحطة فورًا.",
+    "enterDetails": "أدخل التفاصيل"
+  },
+  "dashboard": {
+    "title": "نظرة عامة",
+    "welcome": "مرحبًا بعودتك"
+  },
+  "residents": {
+    "title": "المقيمون",
+    "search": "بحث",
+    "room": "الغرفة",
+    "station": "القسم",
+    "careGrade": "درجة الرعاية",
+    "age": "العمر",
+    "wellbeing": "الحالة العامة",
+    "noResults": "لا نتائج"
+  },
+  "handover": {
+    "title": "تقرير المناوبة",
+    "early": "الصباح",
+    "late": "بعد الظهر",
+    "night": "الليل",
+    "submit": "إرسال التقرير",
+    "draft": "حفظ المسودة"
+  },
+  "voice": {
+    "title": "إدخال صوتي",
+    "start": "بدء التسجيل",
+    "stop": "إيقاف",
+    "listening": "جارٍ الاستماع …",
+    "processing": "جارٍ المعالجة …"
+  },
+  "language": {
+    "de": "Deutsch",
+    "en": "English",
+    "tr": "Türkçe",
+    "ar": "العربية"
+  }
+}

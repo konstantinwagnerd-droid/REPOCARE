@@ -1,0 +1,63 @@
+{
+  "nav": {
+    "overview": "Genel Bakış",
+    "residents": "Sakinler",
+    "handover": "Vardiya Raporu",
+    "voice": "Sesli Giriş",
+    "voiceCommands": "Sesli Komutlar",
+    "search": "Ara",
+    "timeTracking": "Zaman Takibi",
+    "notifications": "Bildirimler",
+    "caseConference": "Vaka Görüşmesi",
+    "signOut": "Çıkış Yap"
+  },
+  "topbar": {
+    "today": "Bugün",
+    "emergency": "Acil Durum",
+    "search": "Ara",
+    "toggleDark": "Koyu moda geç",
+    "toggleLight": "Açık moda geç",
+    "notifications": "Bildirimler",
+    "tour": "Tur / Yardım",
+    "language": "Dil"
+  },
+  "emergency": {
+    "reported": "Acil durum bildirildi! Lütfen hemen istasyona gidin.",
+    "enterDetails": "Ayrıntıları girin"
+  },
+  "dashboard": {
+    "title": "Genel Bakış",
+    "welcome": "Tekrar hoş geldiniz"
+  },
+  "residents": {
+    "title": "Sakinler",
+    "search": "Ara",
+    "room": "Oda",
+    "station": "Bölüm",
+    "careGrade": "Bakım Düzeyi",
+    "age": "Yaş",
+    "wellbeing": "İyilik Hali",
+    "noResults": "Sonuç yok"
+  },
+  "handover": {
+    "title": "Vardiya Raporu",
+    "early": "Sabah",
+    "late": "Öğleden sonra",
+    "night": "Gece",
+    "submit": "Raporu gönder",
+    "draft": "Taslağı kaydet"
+  },
+  "voice": {
+    "title": "Sesli Giriş",
+    "start": "Kaydı başlat",
+    "stop": "Durdur",
+    "listening": "Dinleniyor …",
+    "processing": "İşleniyor …"
+  },
+  "language": {
+    "de": "Deutsch",
+    "en": "English",
+    "tr": "Türkçe",
+    "ar": "العربية"
+  }
+}

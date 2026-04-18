@@ -9,16 +9,20 @@ import { useState } from "react";
 import { CommandPalette } from "./command-palette";
 import { toast } from "sonner";
 import { useOptionalTour } from "@/components/tour/TourProvider";
+import { useOptionalT } from "@/lib/i18n";
+import { AppLanguageSwitcher } from "./app-language-switcher";
 
 export function Topbar({ userName, facility }: { userName: string; facility: string }) {
   const { resolvedTheme, setTheme } = useTheme();
   const [, setCmdOpen] = useState(false);
   const tourCtx = useOptionalTour();
+  const i18n = useOptionalT();
+  const t = i18n?.t ?? ((_k: string, f?: string) => f ?? _k);
 
   const handleEmergency = () => {
-    toast.error("Notfall gemeldet! Bitte sofort zur Station.", {
+    toast.error(t("emergency.reported", "Notfall gemeldet! Bitte sofort zur Station."), {
       duration: 10000,
-      action: { label: "Details eingeben", onClick: () => {} },
+      action: { label: t("emergency.enterDetails", "Details eingeben"), onClick: () => {} },
     });
   };
 
@@ -37,12 +41,14 @@ export function Topbar({ userName, facility }: { userName: string; facility: str
           {/* Emergency button — immer sichtbar, primär auf Mobile */}
           <button
             onClick={handleEmergency}
-            aria-label="Notfall melden"
+            aria-label={t("topbar.emergency", "Notfall melden")}
             className="flex h-11 items-center gap-1.5 rounded-xl bg-destructive px-3 text-xs font-semibold text-destructive-foreground transition-colors hover:bg-destructive/90"
           >
             <AlertTriangle className="h-4 w-4" />
-            <span className="hidden xs:inline sm:inline">Notfall</span>
+            <span className="hidden xs:inline sm:inline">{t("topbar.emergency", "Notfall")}</span>
           </button>
+
+          {i18n && <AppLanguageSwitcher />}
 
           {/* Voice shortcut — auf Mobile nicht nötig (Bottom-Nav hat Voice) */}
           <a

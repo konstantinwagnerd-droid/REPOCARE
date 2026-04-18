@@ -1,0 +1,63 @@
+{
+  "nav": {
+    "overview": "Übersicht",
+    "residents": "Bewohner:innen",
+    "handover": "Schichtbericht",
+    "voice": "Spracheingabe",
+    "voiceCommands": "Voice-Commands",
+    "search": "Suchen",
+    "timeTracking": "Zeiterfassung",
+    "notifications": "Benachrichtigungen",
+    "caseConference": "Fallbesprechung",
+    "signOut": "Abmelden"
+  },
+  "topbar": {
+    "today": "Heute",
+    "emergency": "Notfall",
+    "search": "Suchen",
+    "toggleDark": "Zu dunklem Design wechseln",
+    "toggleLight": "Zu hellem Design wechseln",
+    "notifications": "Benachrichtigungen",
+    "tour": "Tour / Hilfe",
+    "language": "Sprache"
+  },
+  "emergency": {
+    "reported": "Notfall gemeldet! Bitte sofort zur Station.",
+    "enterDetails": "Details eingeben"
+  },
+  "dashboard": {
+    "title": "Übersicht",
+    "welcome": "Willkommen zurück"
+  },
+  "residents": {
+    "title": "Bewohner:innen",
+    "search": "Suchen",
+    "room": "Zimmer",
+    "station": "Station",
+    "careGrade": "Pflegegrad",
+    "age": "Alter",
+    "wellbeing": "Wohlbefinden",
+    "noResults": "Keine Ergebnisse"
+  },
+  "handover": {
+    "title": "Schichtbericht",
+    "early": "Früh",
+    "late": "Spät",
+    "night": "Nacht",
+    "submit": "Bericht absenden",
+    "draft": "Entwurf speichern"
+  },
+  "voice": {
+    "title": "Spracheingabe",
+    "start": "Aufnahme starten",
+    "stop": "Stop",
+    "listening": "Höre zu …",
+    "processing": "Verarbeite …"
+  },
+  "language": {
+    "de": "Deutsch",
+    "en": "English",
+    "tr": "Türkçe",
+    "ar": "العربية"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "nav": {
+    "overview": "Overview",
+    "residents": "Residents",
+    "handover": "Shift Report",
+    "voice": "Voice Input",
+    "voiceCommands": "Voice Commands",
+    "search": "Search",
+    "timeTracking": "Time Tracking",
+    "notifications": "Notifications",
+    "caseConference": "Case Conference",
+    "signOut": "Sign Out"
+  },
+  "topbar": {
+    "today": "Today",
+    "emergency": "Emergency",
+    "search": "Search",
+    "toggleDark": "Switch to dark mode",
+    "toggleLight": "Switch to light mode",
+    "notifications": "Notifications",
+    "tour": "Tour / Help",
+    "language": "Language"
+  },
+  "emergency": {
+    "reported": "Emergency reported! Please go to the station immediately.",
+    "enterDetails": "Enter details"
+  },
+  "dashboard": {
+    "title": "Overview",
+    "welcome": "Welcome back"
+  },
+  "residents": {
+    "title": "Residents",
+    "search": "Search",
+    "room": "Room",
+    "station": "Ward",
+    "careGrade": "Care level",
+    "age": "Age",
+    "wellbeing": "Wellbeing",
+    "noResults": "No results"
+  },
+  "handover": {
+    "title": "Shift Report",
+    "early": "Early",
+    "late": "Late",
+    "night": "Night",
+    "submit": "Submit report",
+    "draft": "Save draft"
+  },
+  "voice": {
+    "title": "Voice Input",
+    "start": "Start recording",
+    "stop": "Stop",
+    "listening": "Listening …",
+    "processing": "Processing …"
+  },
+  "language": {
+    "de": "Deutsch",
+    "en": "English",
+    "tr": "Türkçe",
+    "ar": "العربية"
+  }
+}

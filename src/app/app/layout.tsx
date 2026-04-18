@@ -10,6 +10,7 @@ import { NotificationToaster } from "@/components/notifications/NotificationToas
 import { ImpersonationBanner } from "@/components/impersonation/banner";
 import { OfflineBanner } from "@/components/sample-data/OfflineBanner";
 import { TourProvider } from "@/components/tour/TourProvider";
+import { I18nProvider } from "@/lib/i18n";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -18,6 +19,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <VoiceCommandProvider>
+      <I18nProvider>
       <TourProvider role={session.user.role}>
         <ImpersonationBanner />
         <div className="flex min-h-screen">
@@ -33,6 +35,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <PrivacyBanner />
         <OfflineBanner />
       </TourProvider>
+      </I18nProvider>
     </VoiceCommandProvider>
   );
 }

@@ -20,6 +20,7 @@ import { useState } from "react";
 import { LayoutDashboard, Users, Mic, FileText, Menu, X, Search, Clock, Bell, Command, LogOut, Shield } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
+import { useOptionalT } from "@/lib/i18n";
 
 type Tab = {
   href: string;
@@ -28,11 +29,11 @@ type Tab = {
   accent?: boolean;
 };
 
-const TABS: readonly Tab[] = [
-  { href: "/app", label: "Start", icon: LayoutDashboard },
-  { href: "/app/residents", label: "Bewohner", icon: Users },
-  { href: "/app/voice", label: "Voice", icon: Mic, accent: true },
-  { href: "/app/handover", label: "Schicht", icon: FileText },
+const TABS: ReadonlyArray<Tab & { i18nKey?: string }> = [
+  { href: "/app", label: "Start", i18nKey: "nav.overview", icon: LayoutDashboard },
+  { href: "/app/residents", label: "Bewohner", i18nKey: "nav.residents", icon: Users },
+  { href: "/app/voice", label: "Voice", i18nKey: "nav.voice", icon: Mic, accent: true },
+  { href: "/app/handover", label: "Schicht", i18nKey: "nav.handover", icon: FileText },
 ];
 
 const MORE_LINKS = [
@@ -45,6 +46,8 @@ const MORE_LINKS = [
 export function MobileBottomNav({ role, userName }: { role?: string; userName?: string }) {
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
+  const i18n = useOptionalT();
+  const tr = (key: string | undefined, fallback: string) => (i18n && key ? i18n.t(key, fallback) : fallback);
 
   const isActive = (href: string) => {
     if (href === "/app") return pathname === "/app";
@@ -82,7 +85,7 @@ export function MobileBottomNav({ role, userName }: { role?: string; userName?: 
                   )}
                 >
                   <tab.icon className="h-5 w-5" aria-hidden />
-                  <span className="leading-none">{tab.label}</span>
+                  <span className="leading-none">{tr(tab.i18nKey, tab.label)}</span>
                 </Link>
               </li>
             );
