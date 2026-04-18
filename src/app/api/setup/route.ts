@@ -282,6 +282,32 @@ export async function GET(req: NextRequest) {
     }
     log.push("Schema OK.");
 
+    // Safety-Net: explizite ALTER TABLE fuer bekannte-fehlende Spalten,
+    // auch wenn die haupt-DDL sie schon enthaelt. ADD COLUMN IF NOT EXISTS ist idempotent.
+    log.push("Migriere bekannte Schema-Drift (primary_family_user_id, wellbeing_score, …)…");
+    const migrations = [
+      `ALTER TABLE residents ADD COLUMN IF NOT EXISTS primary_family_user_id uuid`,
+      `ALTER TABLE residents ADD COLUMN IF NOT EXISTS wellbeing_score integer DEFAULT 7`,
+      `ALTER TABLE residents ADD COLUMN IF NOT EXISTS deletion_reason text`,
+      `ALTER TABLE residents ADD COLUMN IF NOT EXISTS deleted_at timestamp`,
+      `ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verified timestamp`,
+      `ALTER TABLE care_reports ADD COLUMN IF NOT EXISTS ai_structured_json jsonb`,
+      `ALTER TABLE care_reports ADD COLUMN IF NOT EXISTS sis_tags_json jsonb`,
+      `ALTER TABLE care_plans ADD COLUMN IF NOT EXISTS due_date timestamp`,
+      `ALTER TABLE incidents ADD COLUMN IF NOT EXISTS severity incident_severity DEFAULT 'mittel'`,
+    ];
+    for (const m of migrations) {
+      try { await sql.unsafe(m); }
+      catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        // nur echte Fehler loggen, nicht "already exists"/"duplicate"
+        if (!/already exists|duplicate/i.test(msg)) {
+          log.push(`  ⚠ Migration failed: ${m.slice(0, 60)}… — ${msg.slice(0, 100)}`);
+        }
+      }
+    }
+    log.push("Migrations OK.");
+
     log.push("Seede Demo-Daten (Tenant, Users, Bewohner, Audit-Eintraege)…");
     const seedResult = await runSeed();
     log.push(`Seed OK: ${seedResult.users} Users, ${seedResult.residents} Bewohner.`);
