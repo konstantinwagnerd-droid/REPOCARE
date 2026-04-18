@@ -16,14 +16,42 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 
 const DDL = `
-DO $$ BEGIN CREATE TYPE role AS ENUM ('owner','admin','pdl','pflegekraft','angehoeriger'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TYPE role ADD VALUE IF NOT EXISTS 'owner' BEFORE 'admin'; EXCEPTION WHEN OTHERS THEN NULL; END $$;
-DO $$ BEGIN CREATE TYPE plan AS ENUM ('starter','professional','enterprise'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE TYPE shift AS ENUM ('frueh','spaet','nacht'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE TYPE care_plan_status AS ENUM ('offen','laufend','erledigt','pausiert'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE TYPE mar_status AS ENUM ('geplant','verabreicht','verweigert','ausgefallen'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE TYPE incident_severity AS ENUM ('niedrig','mittel','hoch','kritisch'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE TYPE wound_stage AS ENUM ('grad_1','grad_2','grad_3','grad_4','verheilt'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+-- NUCLEAR OPTION: DROP + CREATE fresh. Supabase hat nur Demo-Daten.
+-- Saubere Recreation verhindert Schema-Drift-Issues zwischen manueller DDL und drizzle-schema.
+DROP TABLE IF EXISTS audit_log CASCADE;
+DROP TABLE IF EXISTS export_records CASCADE;
+DROP TABLE IF EXISTS shifts CASCADE;
+DROP TABLE IF EXISTS family_messages CASCADE;
+DROP TABLE IF EXISTS risk_scores CASCADE;
+DROP TABLE IF EXISTS incidents CASCADE;
+DROP TABLE IF EXISTS wound_observations CASCADE;
+DROP TABLE IF EXISTS wounds CASCADE;
+DROP TABLE IF EXISTS medication_administrations CASCADE;
+DROP TABLE IF EXISTS medications CASCADE;
+DROP TABLE IF EXISTS vital_signs CASCADE;
+DROP TABLE IF EXISTS care_reports CASCADE;
+DROP TABLE IF EXISTS care_plans CASCADE;
+DROP TABLE IF EXISTS sis_assessments CASCADE;
+DROP TABLE IF EXISTS residents CASCADE;
+DROP TABLE IF EXISTS user_tenants CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS tenants CASCADE;
+DROP TABLE IF EXISTS leads CASCADE;
+DROP TYPE IF EXISTS role CASCADE;
+DROP TYPE IF EXISTS plan CASCADE;
+DROP TYPE IF EXISTS shift CASCADE;
+DROP TYPE IF EXISTS care_plan_status CASCADE;
+DROP TYPE IF EXISTS mar_status CASCADE;
+DROP TYPE IF EXISTS incident_severity CASCADE;
+DROP TYPE IF EXISTS wound_stage CASCADE;
+
+CREATE TYPE role AS ENUM ('owner','admin','pdl','pflegekraft','angehoeriger');
+CREATE TYPE plan AS ENUM ('starter','professional','enterprise');
+CREATE TYPE shift AS ENUM ('frueh','spaet','nacht');
+CREATE TYPE care_plan_status AS ENUM ('offen','laufend','erledigt','pausiert');
+CREATE TYPE mar_status AS ENUM ('geplant','verabreicht','verweigert','ausgefallen');
+CREATE TYPE incident_severity AS ENUM ('niedrig','mittel','hoch','kritisch');
+CREATE TYPE wound_stage AS ENUM ('grad_1','grad_2','grad_3','grad_4','verheilt');
 
 CREATE TABLE IF NOT EXISTS tenants (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -41,142 +69,185 @@ CREATE TABLE IF NOT EXISTS users (
   created_at timestamp NOT NULL DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS residents (
+-- residents: Spalten exakt wie in src/db/schema.ts
+CREATE TABLE residents (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
-  full_name text NOT NULL, birthdate timestamp NOT NULL,
-  pflegegrad integer NOT NULL, room text NOT NULL,
+  full_name text NOT NULL,
+  birthdate timestamp NOT NULL,
+  pflegegrad integer NOT NULL,
+  room text NOT NULL,
   station text NOT NULL DEFAULT 'Station A',
   admission_date timestamp NOT NULL,
-  diagnoses_json jsonb DEFAULT '[]'::jsonb, allergies_json jsonb DEFAULT '[]'::jsonb,
+  diagnoses_json jsonb DEFAULT '[]'::jsonb,
+  allergies_json jsonb DEFAULT '[]'::jsonb,
   emergency_contact_json jsonb,
   primary_family_user_id uuid,
   wellbeing_score integer DEFAULT 7,
-  deleted_at timestamp, deletion_reason text,
+  deleted_at timestamp,
+  deletion_reason text,
   created_at timestamp NOT NULL DEFAULT now()
 );
--- Bei existierenden Tabellen: fehlende Spalten nachziehen.
-ALTER TABLE residents ADD COLUMN IF NOT EXISTS primary_family_user_id uuid;
-ALTER TABLE residents ADD COLUMN IF NOT EXISTS wellbeing_score integer DEFAULT 7;
-ALTER TABLE residents ADD COLUMN IF NOT EXISTS deletion_reason text;
 
-CREATE TABLE IF NOT EXISTS sis_assessments (
+-- sis_assessments: themenfeld_1 (OHNE _json suffix), risiko_matrix, versioning
+CREATE TABLE sis_assessments (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   resident_id uuid NOT NULL REFERENCES residents(id) ON DELETE CASCADE,
-  themenfeld_1_json jsonb, themenfeld_2_json jsonb, themenfeld_3_json jsonb,
-  themenfeld_4_json jsonb, themenfeld_5_json jsonb, themenfeld_6_json jsonb,
-  risiko_matrix_json jsonb, created_by uuid REFERENCES users(id),
-  created_at timestamp NOT NULL DEFAULT now(), updated_at timestamp NOT NULL DEFAULT now()
+  themenfeld_1 jsonb,
+  themenfeld_2 jsonb,
+  themenfeld_3 jsonb,
+  themenfeld_4 jsonb,
+  themenfeld_5 jsonb,
+  themenfeld_6 jsonb,
+  risiko_matrix jsonb,
+  created_by uuid REFERENCES users(id),
+  version integer NOT NULL DEFAULT 1,
+  previous_version_hash text,
+  is_current boolean NOT NULL DEFAULT true,
+  created_at timestamp NOT NULL DEFAULT now(),
+  updated_at timestamp NOT NULL DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS care_plans (
+CREATE TABLE care_plans (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   resident_id uuid NOT NULL REFERENCES residents(id) ON DELETE CASCADE,
-  title text NOT NULL, description text, frequency text,
-  responsible_role role, status care_plan_status NOT NULL DEFAULT 'offen',
-  due_date timestamp, created_at timestamp NOT NULL DEFAULT now()
+  title text NOT NULL,
+  description text NOT NULL,
+  frequency text NOT NULL,
+  responsible_role role NOT NULL DEFAULT 'pflegekraft',
+  status care_plan_status NOT NULL DEFAULT 'offen',
+  due_date timestamp,
+  created_at timestamp NOT NULL DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS care_reports (
+CREATE TABLE care_reports (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   resident_id uuid NOT NULL REFERENCES residents(id) ON DELETE CASCADE,
   author_id uuid NOT NULL REFERENCES users(id),
-  shift shift, content text NOT NULL,
-  ai_structured_json jsonb, sis_tags_json jsonb,
+  shift shift NOT NULL,
+  content text NOT NULL,
+  ai_structured_json jsonb,
+  sis_tags_json jsonb DEFAULT '[]'::jsonb,
+  version integer NOT NULL DEFAULT 1,
+  previous_version_hash text,
+  signature_hash text,
+  signed_at timestamp,
+  is_current boolean NOT NULL DEFAULT true,
   created_at timestamp NOT NULL DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS vital_signs (
+CREATE TABLE vital_signs (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   resident_id uuid NOT NULL REFERENCES residents(id) ON DELETE CASCADE,
-  type text NOT NULL, value_numeric real, value_text text,
-  recorded_at timestamp NOT NULL DEFAULT now(),
+  type text NOT NULL,
+  value_numeric real,
+  value_text text,
+  recorded_at timestamp NOT NULL,
   recorded_by uuid REFERENCES users(id)
 );
 
-CREATE TABLE IF NOT EXISTS medications (
+CREATE TABLE medications (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   resident_id uuid NOT NULL REFERENCES residents(id) ON DELETE CASCADE,
-  name text NOT NULL, dosage text, frequency_json jsonb,
-  start_date date, end_date date, prescribed_by text,
-  created_at timestamp NOT NULL DEFAULT now()
+  name text NOT NULL,
+  dosage text NOT NULL,
+  frequency_json jsonb,
+  start_date timestamp NOT NULL,
+  end_date timestamp,
+  prescribed_by text
 );
 
-CREATE TABLE IF NOT EXISTS medication_administrations (
+CREATE TABLE medication_administrations (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   medication_id uuid NOT NULL REFERENCES medications(id) ON DELETE CASCADE,
-  scheduled_at timestamp NOT NULL, administered_at timestamp,
+  scheduled_at timestamp NOT NULL,
+  administered_at timestamp,
   administered_by uuid REFERENCES users(id),
-  status mar_status NOT NULL DEFAULT 'geplant', notes text
+  status mar_status NOT NULL DEFAULT 'geplant',
+  notes text
 );
 
-CREATE TABLE IF NOT EXISTS wounds (
+CREATE TABLE wounds (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   resident_id uuid NOT NULL REFERENCES residents(id) ON DELETE CASCADE,
-  location text, type text, stage wound_stage,
-  opened_at date, closed_at date,
-  created_at timestamp NOT NULL DEFAULT now()
+  location text NOT NULL,
+  type text NOT NULL,
+  stage wound_stage NOT NULL,
+  opened_at timestamp NOT NULL,
+  closed_at timestamp
 );
 
-CREATE TABLE IF NOT EXISTS wound_observations (
+CREATE TABLE wound_observations (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   wound_id uuid NOT NULL REFERENCES wounds(id) ON DELETE CASCADE,
-  observation text, photo_url text,
+  observation text NOT NULL,
+  photo_url text,
   recorded_at timestamp NOT NULL DEFAULT now(),
   recorded_by uuid REFERENCES users(id)
 );
 
-CREATE TABLE IF NOT EXISTS incidents (
+CREATE TABLE incidents (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   resident_id uuid NOT NULL REFERENCES residents(id) ON DELETE CASCADE,
-  type text NOT NULL, severity incident_severity NOT NULL DEFAULT 'mittel',
-  description text, occurred_at timestamp NOT NULL DEFAULT now(),
-  reported_by uuid REFERENCES users(id),
-  created_at timestamp NOT NULL DEFAULT now()
+  type text NOT NULL,
+  severity incident_severity NOT NULL,
+  description text NOT NULL,
+  occurred_at timestamp NOT NULL,
+  reported_by uuid REFERENCES users(id)
 );
 
-CREATE TABLE IF NOT EXISTS risk_scores (
+CREATE TABLE risk_scores (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   resident_id uuid NOT NULL REFERENCES residents(id) ON DELETE CASCADE,
-  type text NOT NULL, score real NOT NULL,
+  type text NOT NULL,
+  score real NOT NULL,
   computed_at timestamp NOT NULL DEFAULT now(),
   model_version text
 );
 
-CREATE TABLE IF NOT EXISTS family_messages (
+CREATE TABLE family_messages (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   resident_id uuid NOT NULL REFERENCES residents(id) ON DELETE CASCADE,
   from_user_id uuid REFERENCES users(id),
   to_user_id uuid REFERENCES users(id),
-  body text NOT NULL, read_at timestamp,
+  body text NOT NULL,
+  read_at timestamp,
   created_at timestamp NOT NULL DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS shifts (
+CREATE TABLE shifts (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
   user_id uuid NOT NULL REFERENCES users(id),
-  starts_at timestamp NOT NULL, ends_at timestamp NOT NULL,
+  starts_at timestamp NOT NULL,
+  ends_at timestamp NOT NULL,
   station text
 );
 
-CREATE TABLE IF NOT EXISTS audit_log (
+CREATE TABLE audit_log (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
   user_id uuid REFERENCES users(id),
-  entity_type text NOT NULL, entity_id uuid,
-  action text NOT NULL, before_json jsonb, after_json jsonb,
-  ip text, user_agent text,
+  entity_type text NOT NULL,
+  entity_id uuid,
+  action text NOT NULL,
+  before_json jsonb,
+  after_json jsonb,
+  ip text,
+  user_agent text,
   created_at timestamp NOT NULL DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS export_records (
+CREATE TABLE export_records (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
   user_id uuid REFERENCES users(id),
-  kind text NOT NULL, resident_id uuid,
-  hash text NOT NULL, filename text NOT NULL,
-  recipient text, created_at timestamp NOT NULL DEFAULT now()
+  kind text NOT NULL,
+  resident_id uuid,
+  hash text NOT NULL,
+  filename text NOT NULL,
+  recipient text,
+  created_at timestamp NOT NULL DEFAULT now()
 );
 
 -- Multi-Einrichtung pro User: Junction-Table fuer User <-> Tenant N:M Beziehung.
@@ -280,33 +351,7 @@ export async function GET(req: NextRequest) {
         throw err;
       }
     }
-    log.push("Schema OK.");
-
-    // Safety-Net: explizite ALTER TABLE fuer bekannte-fehlende Spalten,
-    // auch wenn die haupt-DDL sie schon enthaelt. ADD COLUMN IF NOT EXISTS ist idempotent.
-    log.push("Migriere bekannte Schema-Drift (primary_family_user_id, wellbeing_score, …)…");
-    const migrations = [
-      `ALTER TABLE residents ADD COLUMN IF NOT EXISTS primary_family_user_id uuid`,
-      `ALTER TABLE residents ADD COLUMN IF NOT EXISTS wellbeing_score integer DEFAULT 7`,
-      `ALTER TABLE residents ADD COLUMN IF NOT EXISTS deletion_reason text`,
-      `ALTER TABLE residents ADD COLUMN IF NOT EXISTS deleted_at timestamp`,
-      `ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verified timestamp`,
-      `ALTER TABLE care_reports ADD COLUMN IF NOT EXISTS ai_structured_json jsonb`,
-      `ALTER TABLE care_reports ADD COLUMN IF NOT EXISTS sis_tags_json jsonb`,
-      `ALTER TABLE care_plans ADD COLUMN IF NOT EXISTS due_date timestamp`,
-      `ALTER TABLE incidents ADD COLUMN IF NOT EXISTS severity incident_severity DEFAULT 'mittel'`,
-    ];
-    for (const m of migrations) {
-      try { await sql.unsafe(m); }
-      catch (err) {
-        const msg = err instanceof Error ? err.message : String(err);
-        // nur echte Fehler loggen, nicht "already exists"/"duplicate"
-        if (!/already exists|duplicate/i.test(msg)) {
-          log.push(`  ⚠ Migration failed: ${m.slice(0, 60)}… — ${msg.slice(0, 100)}`);
-        }
-      }
-    }
-    log.push("Migrations OK.");
+    log.push("Schema OK — alle Tabellen frisch gebaut aus schema.ts.");
 
     log.push("Seede Demo-Daten (Tenant, Users, Bewohner, Audit-Eintraege)…");
     const seedResult = await runSeed();
