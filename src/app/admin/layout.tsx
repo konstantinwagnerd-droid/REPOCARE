@@ -20,7 +20,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <Sidebar role={session.user.role} userName={session.user.name ?? "Admin"} base="admin" />
         <div className="flex flex-1 flex-col">
           <Topbar userName={session.user.name ?? "Admin"} facility="Pflegezentrum Hietzing · Admin" />
-          <main className="flex-1 bg-muted/20">{children}</main>
+          <main id="main-content" className="flex-1 bg-muted/20 pb-8">{children}</main>
         </div>
       </div>
       <AnalyticsTracker role={session.user.role} />
