@@ -12,7 +12,7 @@ import { calcAge, formatDate, formatDateTime, initials, timeAgo } from "@/lib/ut
 import { VitalsChart } from "@/components/app/vitals-chart";
 import { ExportButton } from "@/components/app/export-button";
 import { AkteExportDialog } from "@/components/app/akte-export-dialog";
-import { ArrowLeft, Phone, AlertTriangle, TrendingUp, TrendingDown, Minus, Mic, Plus, Camera, Droplets, Lock } from "lucide-react";
+import { ArrowLeft, Phone, AlertTriangle, TrendingUp, TrendingDown, Minus, Mic, Plus, Camera, Droplets, Lock, Printer } from "lucide-react";
 import { HelpTip } from "@/components/tooltip/HelpTip";
 import { GlossarTip } from "@/components/tooltip/GlossarTip";
 
@@ -90,6 +90,21 @@ export default async function ResidentDetail({ params }: { params: Promise<{ id:
             <Button variant="outline" size="lg"><Plus className="h-4 w-4" /> Vitalwert</Button>
             <AkteExportDialog residentId={r.id} />
             <ExportButton endpoint={`/api/exports/medikationsplan/${r.id}/bmp`} label="BMP drucken" />
+            <Button asChild variant="outline" size="lg" title="SIS als PDF drucken">
+              <Link href={`/app/print/sis/${r.id}?print=auto`} target="_blank" rel="noopener">
+                <Printer className="h-4 w-4" /> SIS drucken
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" title="Maßnahmenplan als PDF drucken">
+              <Link href={`/app/print/massnahmen/${r.id}?print=auto`} target="_blank" rel="noopener">
+                <Printer className="h-4 w-4" /> Maßnahmen drucken
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" title="Vitalzeichenverlauf als PDF drucken">
+              <Link href={`/app/print/vitalzeichen/${r.id}?print=auto`} target="_blank" rel="noopener">
+                <Printer className="h-4 w-4" /> Vitalzeichen drucken
+              </Link>
+            </Button>
           </div>
         </CardContent>
       </Card>
