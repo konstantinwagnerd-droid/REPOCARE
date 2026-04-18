@@ -17,8 +17,9 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
       },
       size: {
+        // Mobile-first: alle Sizes >= 44px Touch-Target, Desktop darf kleiner sein.
         default: "h-11 px-5 py-2",
-        sm: "h-10 px-4 rounded-lg",
+        sm: "h-11 px-4 rounded-lg md:h-10",
         lg: "h-12 px-7 text-base rounded-xl",
         xl: "h-14 px-8 text-base rounded-2xl",
         icon: "h-11 w-11",

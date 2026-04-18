@@ -207,8 +207,8 @@ export default async function AppDashboard() {
               {notifications.map((n, i) => (
                 <Link key={i} href={n.href} className="flex items-center gap-3 p-4 transition-colors hover:bg-secondary/50">
                   <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
-                    n.tone === "danger" ? "bg-rose-100 text-rose-700" :
-                    n.tone === "warning" ? "bg-amber-100 text-amber-700" :
+                    n.tone === "danger" ? "bg-rose-100 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300" :
+                    n.tone === "warning" ? "bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300" :
                     "bg-primary/10 text-primary"
                   }`}>
                     <n.icon className="h-4 w-4" />
@@ -229,7 +229,7 @@ export default async function AppDashboard() {
       <PageSection heading="Dein Dienstplan diese Woche">
         <Card>
           <CardContent className="p-4">
-            <div className="grid grid-cols-7 gap-2">
+            <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
               {weekDays.map((d, i) => {
                 const p = plan[i];
                 const isToday = i === todayIdx;
@@ -237,7 +237,7 @@ export default async function AppDashboard() {
                 return (
                   <div
                     key={d}
-                    className={`rounded-xl border p-3 text-center ${
+                    className={`rounded-xl border p-2 text-center sm:p-3 ${
                       isToday
                         ? "border-primary bg-primary/5"
                         : free
@@ -246,7 +246,7 @@ export default async function AppDashboard() {
                     }`}
                   >
                     <div className="text-xs font-medium uppercase text-muted-foreground">{d}</div>
-                    <div className={`mt-1 font-serif text-lg font-semibold ${free ? "text-muted-foreground" : "text-foreground"}`}>{p}</div>
+                    <div className={`mt-1 font-serif text-base font-semibold sm:text-lg ${free ? "text-muted-foreground" : "text-foreground"}`}>{p}</div>
                     {isToday && <div className="mt-1 text-[10px] uppercase tracking-wider text-primary">heute</div>}
                   </div>
                 );

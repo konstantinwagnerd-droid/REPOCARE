@@ -266,7 +266,7 @@ export function StatCard({ label, value, sublabel, icon: Icon, tone = "default",
 // ---------------------------------------------------------------------------
 
 export function PageContainer({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <div className={cn("space-y-8 p-6 lg:p-10", className)}>{children}</div>;
+  return <div className={cn("space-y-6 p-4 sm:space-y-8 sm:p-6 lg:p-10", className)}>{children}</div>;
 }
 
 // ---------------------------------------------------------------------------
