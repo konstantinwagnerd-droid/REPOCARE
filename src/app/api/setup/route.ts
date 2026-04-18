@@ -44,12 +44,21 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS residents (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
-  full_name text NOT NULL, birthdate date,
-  pflegegrad integer, room text, station text,
-  admission_date date, diagnoses_json jsonb, allergies_json jsonb,
-  emergency_contact_json jsonb, deleted_at timestamp,
+  full_name text NOT NULL, birthdate timestamp NOT NULL,
+  pflegegrad integer NOT NULL, room text NOT NULL,
+  station text NOT NULL DEFAULT 'Station A',
+  admission_date timestamp NOT NULL,
+  diagnoses_json jsonb DEFAULT '[]'::jsonb, allergies_json jsonb DEFAULT '[]'::jsonb,
+  emergency_contact_json jsonb,
+  primary_family_user_id uuid,
+  wellbeing_score integer DEFAULT 7,
+  deleted_at timestamp, deletion_reason text,
   created_at timestamp NOT NULL DEFAULT now()
 );
+-- Bei existierenden Tabellen: fehlende Spalten nachziehen.
+ALTER TABLE residents ADD COLUMN IF NOT EXISTS primary_family_user_id uuid;
+ALTER TABLE residents ADD COLUMN IF NOT EXISTS wellbeing_score integer DEFAULT 7;
+ALTER TABLE residents ADD COLUMN IF NOT EXISTS deletion_reason text;
 
 CREATE TABLE IF NOT EXISTS sis_assessments (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
