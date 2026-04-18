@@ -110,3 +110,40 @@
 @media screen {
   .print-header { display: none; }
 }
+
+/* ---------------------------------------------------------------------------
+ * Offizielle Pflege-Dokumente (Schichtbericht, SIS, Massnahmenplan, Wunddoku,
+ * Vitalzeichen, Incident, Pflegevisite, Jahresbericht).
+ *
+ * Routen unter /app/print/ benutzen <PrintPage> (src/components/print/).
+ * Das Body-Klasse "print-document-page" wird durch den Print-Layout gesetzt.
+ * ------------------------------------------------------------------------ */
+@page print-document { size: A4 portrait; margin: 15mm 15mm 20mm 15mm; }
+body.print-document-page { page: print-document; }
+
+@media print {
+  body.print-document-page {
+    background: #fff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  /* Sidebar/Topbar der App-Shell wegblenden falls eingeblendet */
+  body.print-document-page aside,
+  body.print-document-page [data-ui="topbar"],
+  body.print-document-page .mobile-bottom-nav {
+    display: none !important;
+  }
+  /* Bildschirm-Schatten + Margins weg beim Druck */
+  body.print-document-page .print-page-shell {
+    padding: 0 !important;
+    background: #fff !important;
+  }
+  body.print-document-page .print-sheet {
+    width: 100% !important;
+    min-height: auto !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+  body.print-document-page .print-signatures { page-break-inside: avoid; break-inside: avoid; }
+}
+
