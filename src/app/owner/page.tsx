@@ -1,9 +1,13 @@
 /**
  * Owner-Cockpit — Live-Dashboard mit allen wichtigen Zahlen aller Mandanten.
+ * Refactored auf Shell-Components (PageContainer/PageHeader/StatCard) mit Sparklines
+ * auf zeitreihen-fähigen KPIs.
  */
 import postgres from "postgres";
-import Link from "next/link";
-import { Activity, Users, Building2, Mail, Shield, Eye, AlertTriangle } from "lucide-react";
+import { Activity, Users, Building2, Mail, Shield, Eye, AlertTriangle, Database, Wrench, Info, FileClock } from "lucide-react";
+import {
+  PageContainer, PageHeader, PageSection, PageGrid, StatCard, QuickAction,
+} from "@/components/admin/page-shell";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -18,21 +22,30 @@ interface Stats {
   sessionsLastHour: number;
   auditEventsToday: number;
   errorsToday: number;
+  /** Logins der letzten 7 Tage (aelteste zuerst). */
+  loginsTrend: number[];
+  /** Sessions/Stunde der letzten 12 Stunden. */
+  sessionsTrend: number[];
+  /** Neue Leads der letzten 7 Tage. */
+  leadsTrend: number[];
+  /** Audit-Events der letzten 7 Tage. */
+  auditTrend: number[];
 }
+
+const EMPTY_STATS: Stats = {
+  tenants: 0, users: 0, residents: 0,
+  leads: { total: 0, new: 0 },
+  loginsToday: 0, loginsLast24h: 0, sessionsLastHour: 0,
+  auditEventsToday: 0, errorsToday: 0,
+  loginsTrend: [], sessionsTrend: [], leadsTrend: [], auditTrend: [],
+};
 
 async function loadStats(): Promise<Stats> {
   const dbUrl = process.env.DATABASE_URL;
-  const empty: Stats = {
-    tenants: 0, users: 0, residents: 0,
-    leads: { total: 0, new: 0 },
-    loginsToday: 0, loginsLast24h: 0, sessionsLastHour: 0,
-    auditEventsToday: 0, errorsToday: 0,
-  };
-  if (!dbUrl) return empty;
-
+  if (!dbUrl) return EMPTY_STATS;
   const sql = postgres(dbUrl, { max: 1, prepare: false, idle_timeout: 5 });
   try {
-    const [tenants, users, residents, leadsTotal, leadsNew, loginsToday, loginsLast24h, sessionsLastHour, auditToday] = await Promise.all([
+    const [tenants, users, residents, leadsTotal, leadsNew, loginsToday, loginsLast24h, sessionsLastHour, auditToday, loginsByDay, leadsByDay, auditByDay, sessionsByHour] = await Promise.all([
       sql`SELECT COUNT(*)::int as c FROM tenants`,
       sql`SELECT COUNT(*)::int as c FROM users WHERE role != 'owner'`,
       sql`SELECT COUNT(*)::int as c FROM residents WHERE deleted_at IS NULL`,
@@ -42,6 +55,10 @@ async function loadStats(): Promise<Stats> {
       sql`SELECT COUNT(*)::int as c FROM audit_log WHERE action = 'login' AND created_at >= NOW() - INTERVAL '24 hours'`,
       sql`SELECT COUNT(DISTINCT user_id)::int as c FROM audit_log WHERE created_at >= NOW() - INTERVAL '1 hour' AND user_id IS NOT NULL`,
       sql`SELECT COUNT(*)::int as c FROM audit_log WHERE created_at >= CURRENT_DATE`,
+      sql`SELECT date_trunc('day', created_at) as day, COUNT(*)::int as c FROM audit_log WHERE action='login' AND created_at >= NOW() - INTERVAL '7 days' GROUP BY day ORDER BY day`,
+      sql`SELECT date_trunc('day', created_at) as day, COUNT(*)::int as c FROM leads WHERE created_at >= NOW() - INTERVAL '7 days' GROUP BY day ORDER BY day`,
+      sql`SELECT date_trunc('day', created_at) as day, COUNT(*)::int as c FROM audit_log WHERE created_at >= NOW() - INTERVAL '7 days' GROUP BY day ORDER BY day`,
+      sql`SELECT date_trunc('hour', created_at) as hour, COUNT(DISTINCT user_id)::int as c FROM audit_log WHERE created_at >= NOW() - INTERVAL '12 hours' AND user_id IS NOT NULL GROUP BY hour ORDER BY hour`,
     ]);
     return {
       tenants: tenants[0].c, users: users[0].c, residents: residents[0].c,
@@ -49,92 +66,93 @@ async function loadStats(): Promise<Stats> {
       loginsToday: loginsToday[0].c, loginsLast24h: loginsLast24h[0].c,
       sessionsLastHour: sessionsLastHour[0].c,
       auditEventsToday: auditToday[0].c, errorsToday: 0,
+      loginsTrend: loginsByDay.map((r: { c: number }) => r.c),
+      leadsTrend: leadsByDay.map((r: { c: number }) => r.c),
+      auditTrend: auditByDay.map((r: { c: number }) => r.c),
+      sessionsTrend: sessionsByHour.map((r: { c: number }) => r.c),
     };
   } catch {
-    return empty;
+    return EMPTY_STATS;
   } finally {
     await sql.end();
   }
 }
 
-function Tile({ label, value, sub, icon: Icon, href, tone = "default" }: {
-  label: string; value: number | string; sub?: string;
-  icon: typeof Activity; href?: string;
-  tone?: "default" | "success" | "warning" | "danger";
-}) {
-  const toneClass = {
-    default: "border-border",
-    success: "border-emerald-200 bg-emerald-50/50 dark:border-emerald-900/40 dark:bg-emerald-950/20",
-    warning: "border-amber-200 bg-amber-50/50 dark:border-amber-900/40 dark:bg-amber-950/20",
-    danger: "border-rose-200 bg-rose-50/50 dark:border-rose-900/40 dark:bg-rose-950/20",
-  }[tone];
-  const inner = (
-    <div className={`rounded-xl border bg-background p-5 transition hover:shadow-md ${toneClass}`}>
-      <div className="flex items-start justify-between">
-        <div>
-          <div className="text-xs text-muted-foreground">{label}</div>
-          <div className="mt-1 font-serif text-3xl font-semibold tracking-tight">{value}</div>
-          {sub ? <div className="mt-1 text-xs text-muted-foreground">{sub}</div> : null}
-        </div>
-        <Icon size={20} className="text-muted-foreground" aria-hidden />
-      </div>
-    </div>
-  );
-  return href ? <Link href={href} className="block">{inner}</Link> : inner;
-}
-
 export default async function OwnerCockpitPage() {
-  const stats = await loadStats();
+  const s = await loadStats();
   return (
-    <div className="space-y-6 p-6 lg:p-10">
-      <header>
-        <h1 className="font-serif text-3xl font-semibold tracking-tight">Cockpit</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Echtzeit-Übersicht über alle Mandanten, Sessions und Aktivitäten — ausschließlich für dich.
-        </p>
-      </header>
+    <PageContainer>
+      <PageHeader
+        title="Cockpit"
+        subtitle="Echtzeit-Übersicht über alle Mandanten, Sessions und Aktivitäten — ausschließlich für dich."
+      />
 
-      <section>
-        <h2 className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">Live</h2>
-        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-          <Tile label="Aktive Sessions (1h)" value={stats.sessionsLastHour} icon={Eye} href="/owner/sessions" tone={stats.sessionsLastHour > 0 ? "success" : "default"} />
-          <Tile label="Logins heute" value={stats.loginsToday} sub={`${stats.loginsLast24h} in 24h`} icon={Activity} href="/owner/logins" />
-          <Tile label="Audit-Events heute" value={stats.auditEventsToday} icon={Shield} href="/owner/audit" />
-          <Tile label="Errors heute" value={stats.errorsToday} icon={AlertTriangle} tone={stats.errorsToday > 5 ? "danger" : "default"} />
-        </div>
-      </section>
+      <PageSection heading="Live" compact>
+        <PageGrid columns={4}>
+          <StatCard
+            label="Aktive Sessions (1h)"
+            value={s.sessionsLastHour}
+            sublabel="Eindeutige User:innen"
+            icon={Eye}
+            tone={s.sessionsLastHour > 0 ? "success" : "default"}
+            sparkline={s.sessionsTrend}
+            href="/owner/sessions"
+          />
+          <StatCard
+            label="Logins heute"
+            value={s.loginsToday}
+            sublabel={`${s.loginsLast24h} in 24h`}
+            icon={Activity}
+            tone="primary"
+            sparkline={s.loginsTrend}
+            href="/owner/logins"
+          />
+          <StatCard
+            label="Audit-Events heute"
+            value={s.auditEventsToday}
+            sublabel="Alle Mandanten"
+            icon={Shield}
+            sparkline={s.auditTrend}
+            href="/owner/audit"
+          />
+          <StatCard
+            label="Errors heute"
+            value={s.errorsToday}
+            sublabel="5xx + ungefangene Exceptions"
+            icon={AlertTriangle}
+            tone={s.errorsToday > 5 ? "danger" : "default"}
+            trend={s.errorsToday > 0 ? { value: `${s.errorsToday}`, direction: "up", positive: false } : undefined}
+          />
+        </PageGrid>
+      </PageSection>
 
-      <section>
-        <h2 className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">Bestand</h2>
-        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-          <Tile label="Einrichtungen" value={stats.tenants} icon={Building2} href="/owner/tenants" />
-          <Tile label="Users (ohne Owner)" value={stats.users} icon={Users} href="/owner/users" />
-          <Tile label="Bewohner:innen" value={stats.residents} icon={Users} href="/owner/residents" />
-          <Tile label="Leads gesamt" value={stats.leads.total} sub={`${stats.leads.new} neu`} icon={Mail} href="/owner/leads" tone={stats.leads.new > 0 ? "warning" : "default"} />
-        </div>
-      </section>
+      <PageSection heading="Bestand" compact>
+        <PageGrid columns={4}>
+          <StatCard label="Einrichtungen" value={s.tenants} icon={Building2} href="/owner/tenants" />
+          <StatCard label="Users (ohne Owner)" value={s.users} icon={Users} href="/owner/users" />
+          <StatCard label="Bewohner:innen" value={s.residents} icon={Users} tone="primary" href="/owner/residents" />
+          <StatCard
+            label="Leads gesamt"
+            value={s.leads.total}
+            sublabel={`${s.leads.new} neu`}
+            icon={Mail}
+            tone={s.leads.new > 0 ? "warning" : "default"}
+            sparkline={s.leadsTrend}
+            href="/owner/leads"
+          />
+        </PageGrid>
+      </PageSection>
 
-      <section className="rounded-xl border border-border bg-background p-6">
-        <h2 className="font-serif text-xl font-semibold tracking-tight">Quick-Actions</h2>
-        <div className="mt-4 grid gap-2 md:grid-cols-2">
-          <Link href="/owner/users" className="rounded-lg border border-border p-3 text-sm hover:bg-muted">
-            <div className="font-medium">Als anderer User einloggen</div>
-            <div className="text-xs text-muted-foreground">Impersonation für Support — wird audit-getrackt</div>
-          </Link>
-          <Link href="/owner/database" className="rounded-lg border border-border p-3 text-sm hover:bg-muted">
-            <div className="font-medium">SQL-Inspektor</div>
-            <div className="text-xs text-muted-foreground">Read-only Queries gegen Production-DB</div>
-          </Link>
-          <Link href="/owner/system" className="rounded-lg border border-border p-3 text-sm hover:bg-muted">
-            <div className="font-medium">System-Info</div>
-            <div className="text-xs text-muted-foreground">Env-Vars (maskiert), Build-Info, DB-Stats</div>
-          </Link>
-          <Link href="/owner/audit" className="rounded-lg border border-border p-3 text-sm hover:bg-muted">
-            <div className="font-medium">Globaler Audit-Log</div>
-            <div className="text-xs text-muted-foreground">Alle Mandanten zusammen, gefiltert nach Risiko</div>
-          </Link>
-        </div>
-      </section>
-    </div>
+      <PageSection heading="Quick-Actions">
+        <PageGrid columns={2} gap="sm">
+          <QuickAction title="Als anderer User einloggen" description="Impersonation fuer Support — wird audit-getrackt" href="/owner/users" icon={Eye} tone="primary" />
+          <QuickAction title="SQL-Inspektor" description="Read-only Queries gegen Production-DB" href="/owner/database" icon={Database} />
+          <QuickAction title="System-Info" description="Env-Vars (maskiert), Build-Info, DB-Stats" href="/owner/system" icon={Info} />
+          <QuickAction title="Globaler Audit-Log" description="Alle Mandanten zusammen, gefiltert nach Risiko" href="/owner/audit" icon={FileClock} />
+          <QuickAction title="Files / Backups" description="Blob-Storage, Dateiinventar" href="/owner/files" icon={Wrench} />
+          <QuickAction title="Einstellungen" description="Globale Plattform-Settings" href="/owner/settings" icon={Shield} />
+        </PageGrid>
+      </PageSection>
+    </PageContainer>
   );
 }
