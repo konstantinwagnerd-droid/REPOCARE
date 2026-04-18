@@ -18,6 +18,16 @@ export const maxDuration = 60;
 const DDL = `
 -- NUCLEAR OPTION: DROP + CREATE fresh. Supabase hat nur Demo-Daten.
 -- Saubere Recreation verhindert Schema-Drift-Issues zwischen manueller DDL und drizzle-schema.
+DROP TABLE IF EXISTS training_certificates CASCADE;
+DROP TABLE IF EXISTS training_attempts CASCADE;
+DROP TABLE IF EXISTS training_questions CASCADE;
+DROP TABLE IF EXISTS training_modules CASCADE;
+DROP TYPE IF EXISTS training_category CASCADE;
+DROP TYPE IF EXISTS training_question_type CASCADE;
+DROP TABLE IF EXISTS email_routing_rules CASCADE;
+DROP TABLE IF EXISTS email_inbound CASCADE;
+DROP TYPE IF EXISTS email_classification CASCADE;
+DROP TYPE IF EXISTS email_rule_match_type CASCADE;
 DROP TABLE IF EXISTS whatsapp_messages CASCADE;
 DROP TABLE IF EXISTS whatsapp_contacts CASCADE;
 DROP TABLE IF EXISTS case_conferences CASCADE;
@@ -625,6 +635,97 @@ CREATE TABLE saved_reports (
   last_run_at timestamp
 );
 CREATE INDEX idx_saved_reports_tenant ON saved_reports(tenant_id);
+
+CREATE TYPE training_category AS ENUM ('dnqp','hygiene','btm','brandschutz','dsgvo','custom');
+CREATE TYPE training_question_type AS ENUM ('single','multi','truefalse');
+
+CREATE TABLE training_modules (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  title text NOT NULL,
+  category training_category NOT NULL DEFAULT 'custom',
+  description text,
+  content_json jsonb DEFAULT '{}'::jsonb,
+  passing_score integer NOT NULL DEFAULT 80,
+  duration_minutes integer NOT NULL DEFAULT 15,
+  is_mandatory boolean NOT NULL DEFAULT true,
+  validity_months integer NOT NULL DEFAULT 12,
+  created_at timestamp NOT NULL DEFAULT now(),
+  updated_at timestamp NOT NULL DEFAULT now()
+);
+CREATE INDEX idx_training_modules_tenant ON training_modules(tenant_id);
+
+CREATE TABLE training_questions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  module_id uuid NOT NULL REFERENCES training_modules(id) ON DELETE CASCADE,
+  question text NOT NULL,
+  type training_question_type NOT NULL DEFAULT 'single',
+  options_json jsonb NOT NULL DEFAULT '[]'::jsonb,
+  correct_indices_json jsonb NOT NULL DEFAULT '[]'::jsonb,
+  explanation text,
+  order_index integer NOT NULL DEFAULT 0
+);
+CREATE INDEX idx_training_questions_module ON training_questions(module_id);
+
+CREATE TABLE training_attempts (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  module_id uuid NOT NULL REFERENCES training_modules(id) ON DELETE CASCADE,
+  started_at timestamp NOT NULL DEFAULT now(),
+  completed_at timestamp,
+  score integer,
+  passed boolean,
+  answers_json jsonb DEFAULT '{}'::jsonb
+);
+CREATE INDEX idx_training_attempts_user ON training_attempts(user_id);
+CREATE INDEX idx_training_attempts_module ON training_attempts(module_id);
+
+CREATE TABLE training_certificates (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  module_id uuid NOT NULL REFERENCES training_modules(id) ON DELETE CASCADE,
+  attempt_id uuid NOT NULL REFERENCES training_attempts(id) ON DELETE CASCADE,
+  issued_at timestamp NOT NULL DEFAULT now(),
+  expires_at timestamp,
+  certificate_hash text NOT NULL
+);
+CREATE INDEX idx_training_certs_user ON training_certificates(user_id);
+
+CREATE TYPE email_classification AS ENUM ('lead','application','complaint','support','other');
+CREATE TYPE email_rule_match_type AS ENUM ('subject_contains','body_contains','from_domain');
+
+CREATE TABLE email_inbound (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id uuid REFERENCES tenants(id) ON DELETE CASCADE,
+  from_email text NOT NULL,
+  from_name text,
+  subject text NOT NULL DEFAULT '',
+  body_text text,
+  body_html text,
+  received_at timestamp NOT NULL DEFAULT now(),
+  classification email_classification NOT NULL DEFAULT 'other',
+  confidence real NOT NULL DEFAULT 0,
+  routed_to text,
+  notified_at timestamp,
+  metadata_json jsonb DEFAULT '{}'::jsonb
+);
+CREATE INDEX idx_email_inbound_received ON email_inbound(received_at DESC);
+CREATE INDEX idx_email_inbound_classification ON email_inbound(classification);
+
+CREATE TABLE email_routing_rules (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id uuid REFERENCES tenants(id) ON DELETE CASCADE,
+  name text NOT NULL,
+  match_type email_rule_match_type NOT NULL,
+  match_value text NOT NULL,
+  classification email_classification NOT NULL,
+  priority integer NOT NULL DEFAULT 100,
+  active boolean NOT NULL DEFAULT true,
+  created_at timestamp NOT NULL DEFAULT now()
+);
+CREATE INDEX idx_email_rules_tenant ON email_routing_rules(tenant_id);
 
 CREATE TABLE IF NOT EXISTS leads (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),

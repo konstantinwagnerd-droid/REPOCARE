@@ -19,6 +19,7 @@ const pflegeNav = [
   { href: "/app/zeiterfassung", label: "Zeiterfassung", i18nKey: "nav.timeTracking", icon: Clock },
   { href: "/app/fallbesprechung", label: "Fallbesprechung", i18nKey: "nav.caseConference", icon: FileText },
   { href: "/app/notifications", label: "Benachrichtigungen", i18nKey: "nav.notifications", icon: Bell },
+  { href: "/app/schulungen", label: "Schulungen", i18nKey: "nav.training", icon: GraduationCap },
 ];
 
 const adminNav = [
@@ -42,6 +43,7 @@ const adminNav = [
   { href: "/admin/backup", label: "Backup", icon: Database, group: "Compliance" },
   { href: "/admin/dsgvo", label: "DSGVO", icon: Shield, group: "Compliance" },
   { href: "/admin/lms", label: "Lernplattform", icon: GraduationCap, group: "Compliance" },
+  { href: "/admin/schulungen", label: "Pflichtschulungen", icon: GraduationCap, group: "Compliance" },
   { href: "/admin/badges", label: "Badges", icon: Award, group: "Compliance" },
 
   { href: "/admin/webhooks", label: "Webhooks", icon: Plug, group: "Integrationen" },

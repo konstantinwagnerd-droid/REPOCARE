@@ -677,4 +677,119 @@ export type PflegegradRevenue = typeof pflegegradRevenue.$inferSelect;
 export type FixedCost = typeof fixedCosts.$inferSelect;
 export type Certification = typeof certifications.$inferSelect;
 export type CertificationRequirement = typeof certificationRequirements.$inferSelect;
+
+// --- Training / Schulungs-Quiz-Engine ----------------------------------------
+export const trainingCategoryEnum = pgEnum("training_category", [
+  "dnqp",
+  "hygiene",
+  "btm",
+  "brandschutz",
+  "dsgvo",
+  "custom",
+]);
+export const trainingQuestionTypeEnum = pgEnum("training_question_type", [
+  "single",
+  "multi",
+  "truefalse",
+]);
+
+export const trainingModules = pgTable("training_modules", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  tenantId: uuid("tenant_id").references(() => tenants.id, { onDelete: "cascade" }).notNull(),
+  title: text("title").notNull(),
+  category: trainingCategoryEnum("category").notNull().default("custom"),
+  description: text("description"),
+  contentJson: jsonb("content_json").default({}),
+  passingScore: integer("passing_score").notNull().default(80),
+  durationMinutes: integer("duration_minutes").notNull().default(15),
+  isMandatory: boolean("is_mandatory").notNull().default(true),
+  validityMonths: integer("validity_months").notNull().default(12),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const trainingQuestions = pgTable("training_questions", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  moduleId: uuid("module_id").references(() => trainingModules.id, { onDelete: "cascade" }).notNull(),
+  question: text("question").notNull(),
+  type: trainingQuestionTypeEnum("type").notNull().default("single"),
+  optionsJson: jsonb("options_json").$type<string[]>().notNull().default([]),
+  correctIndicesJson: jsonb("correct_indices_json").$type<number[]>().notNull().default([]),
+  explanation: text("explanation"),
+  orderIndex: integer("order_index").notNull().default(0),
+});
+
+export const trainingAttempts = pgTable("training_attempts", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  tenantId: uuid("tenant_id").references(() => tenants.id, { onDelete: "cascade" }).notNull(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  moduleId: uuid("module_id").references(() => trainingModules.id, { onDelete: "cascade" }).notNull(),
+  startedAt: timestamp("started_at").defaultNow().notNull(),
+  completedAt: timestamp("completed_at"),
+  score: integer("score"),
+  passed: boolean("passed"),
+  answersJson: jsonb("answers_json").default({}),
+});
+
+export const trainingCertificates = pgTable("training_certificates", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  tenantId: uuid("tenant_id").references(() => tenants.id, { onDelete: "cascade" }).notNull(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  moduleId: uuid("module_id").references(() => trainingModules.id, { onDelete: "cascade" }).notNull(),
+  attemptId: uuid("attempt_id").references(() => trainingAttempts.id, { onDelete: "cascade" }).notNull(),
+  issuedAt: timestamp("issued_at").defaultNow().notNull(),
+  expiresAt: timestamp("expires_at"),
+  certificateHash: text("certificate_hash").notNull(),
+});
+
+export type TrainingModule = typeof trainingModules.$inferSelect;
+export type TrainingQuestion = typeof trainingQuestions.$inferSelect;
+export type TrainingAttempt = typeof trainingAttempts.$inferSelect;
+export type TrainingCertificate = typeof trainingCertificates.$inferSelect;
+
+// --- E-Mail Auto-Routing -----------------------------------------------------
+export const emailClassificationEnum = pgEnum("email_classification", [
+  "lead",
+  "application",
+  "complaint",
+  "support",
+  "other",
+]);
+export const emailRuleMatchTypeEnum = pgEnum("email_rule_match_type", [
+  "subject_contains",
+  "body_contains",
+  "from_domain",
+]);
+
+export const emailInbound = pgTable("email_inbound", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  tenantId: uuid("tenant_id").references(() => tenants.id, { onDelete: "cascade" }),
+  fromEmail: text("from_email").notNull(),
+  fromName: text("from_name"),
+  subject: text("subject").notNull().default(""),
+  bodyText: text("body_text"),
+  bodyHtml: text("body_html"),
+  receivedAt: timestamp("received_at").defaultNow().notNull(),
+  classification: emailClassificationEnum("classification").notNull().default("other"),
+  confidence: real("confidence").notNull().default(0),
+  routedTo: text("routed_to"),
+  notifiedAt: timestamp("notified_at"),
+  metadataJson: jsonb("metadata_json").default({}),
+});
+
+export const emailRoutingRules = pgTable("email_routing_rules", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  tenantId: uuid("tenant_id").references(() => tenants.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  matchType: emailRuleMatchTypeEnum("match_type").notNull(),
+  matchValue: text("match_value").notNull(),
+  classification: emailClassificationEnum("classification").notNull(),
+  priority: integer("priority").notNull().default(100),
+  active: boolean("active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type EmailInbound = typeof emailInbound.$inferSelect;
+export type EmailRoutingRule = typeof emailRoutingRules.$inferSelect;
+export type EmailClassification = EmailInbound["classification"];
 export type SavedReport = typeof savedReports.$inferSelect;
