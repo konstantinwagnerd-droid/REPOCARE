@@ -3,17 +3,11 @@
  * Token-basierte Authentifizierung — token = HMAC(email, UNSUBSCRIBE_SECRET).
  */
 import { NextRequest, NextResponse } from "next/server";
-import crypto from "node:crypto";
 import { logger } from "@/lib/monitoring/logger";
-
-const SECRET = process.env.UNSUBSCRIBE_SECRET ?? process.env.AUTH_SECRET ?? "dev-only-secret";
+import { signUnsubscribe } from "@/lib/email-transport/unsubscribe-url";
 
 function sign(email: string): string {
-  return crypto.createHmac("sha256", SECRET).update(email).digest("hex").slice(0, 32);
-}
-
-export function makeUnsubscribeUrl(baseUrl: string, email: string): string {
-  return `${baseUrl}/api/email/unsubscribe?e=${encodeURIComponent(email)}&t=${sign(email)}`;
+  return signUnsubscribe(email);
 }
 
 async function handle(email: string | null, token: string | null) {

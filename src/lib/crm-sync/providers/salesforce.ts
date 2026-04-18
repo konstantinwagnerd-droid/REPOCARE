@@ -23,9 +23,12 @@ function getConfig(): SalesforceConfig | null {
 }
 
 async function login(cfg: SalesforceConfig): Promise<unknown> {
-  // Lazy import so projects without the dep still build
-  // @ts-expect-error — optional peer dep
-  const mod = await import("jsforce").catch(() => null);
+  // Optional peer dependency: bei Bedarf via runtime-eval geladen, damit Webpack
+  // den Import nicht statisch verfolgt und Build ohne `jsforce` durchläuft.
+  const dynImport = (0, eval)("(s) => import(s)") as (s: string) => Promise<unknown>;
+  const mod = await dynImport("jsforce").catch(() => null) as
+    | { Connection: new (opts: { loginUrl: string }) => { login: (u: string, p: string) => Promise<unknown> } }
+    | null;
   if (!mod) throw new Error("jsforce not installed — run `npm i jsforce` to enable Salesforce provider.");
   const conn = new mod.Connection({ loginUrl: cfg.loginUrl });
   await conn.login(cfg.username, `${cfg.password}${cfg.securityToken}`);
