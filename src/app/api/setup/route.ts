@@ -206,6 +206,40 @@ CREATE TABLE IF NOT EXISTS leads (
 
 const SETUP_TOKEN = process.env.SETUP_TOKEN ?? "careai-setup-2026";
 
+/**
+ * SQL-Splitter fuer Multi-Statement-DDL. Respektiert `DO $$ … $$` Bloecke als
+ * atomare Einheit (enthalten intern Semikola).
+ */
+function splitSqlStatements(ddl: string): string[] {
+  const out: string[] = [];
+  let buf = "";
+  let inDollarBlock = false;
+  const lines = ddl.split(/\r?\n/);
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!inDollarBlock && trimmed.startsWith("--")) continue; // comment
+    if (!inDollarBlock && /\$\$/.test(line)) {
+      // Line contains $$ — either entering or exiting a block
+      const count = (line.match(/\$\$/g) ?? []).length;
+      buf += line + "\n";
+      if (count % 2 === 1) inDollarBlock = !inDollarBlock;
+      continue;
+    }
+    if (inDollarBlock) {
+      buf += line + "\n";
+      if (/\$\$/.test(line)) inDollarBlock = false;
+      continue;
+    }
+    buf += line + "\n";
+    if (trimmed.endsWith(";")) {
+      out.push(buf);
+      buf = "";
+    }
+  }
+  if (buf.trim()) out.push(buf);
+  return out;
+}
+
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const token = url.searchParams.get("token");
@@ -228,8 +262,24 @@ export async function GET(req: NextRequest) {
     log.push("Verbinde zu Supabase…");
     const sql = postgres(dbUrl, { max: 1, prepare: false, idle_timeout: 5 });
 
-    log.push("Lege Schema an (idempotent)…");
-    await sql.unsafe(DDL);
+    log.push("Lege Schema an (idempotent, statement-by-statement)…");
+    // Split DDL: Transaction-Pooler behandelt Multi-Statement-Strings nicht zuverlaessig.
+    // Wir splitten an ';' + Zeilenumbruch und filtern DO-Bloecke als ganze Einheit.
+    const statements = splitSqlStatements(DDL);
+    log.push(`  ${statements.length} Statements zu verarbeiten…`);
+    for (let i = 0; i < statements.length; i++) {
+      const stmt = statements[i].trim();
+      if (!stmt) continue;
+      try {
+        await sql.unsafe(stmt);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        // "already exists" / "duplicate" sind bei IF NOT EXISTS harmlos
+        if (/already exists|duplicate/i.test(msg)) continue;
+        log.push(`  ⚠ Statement ${i + 1} fehlgeschlagen: ${msg.slice(0, 120)}`);
+        throw err;
+      }
+    }
     log.push("Schema OK.");
 
     log.push("Seede Demo-Daten (Tenant, Users, Bewohner, Audit-Eintraege)…");
@@ -237,8 +287,8 @@ export async function GET(req: NextRequest) {
     log.push(`Seed OK: ${seedResult.users} Users, ${seedResult.residents} Bewohner.`);
 
     // Owner-Account anlegen (versteckt, nicht in Demo-Liste)
-    const ownerEmail = process.env.OWNER_EMAIL ?? "konstantin@careai.health";
-    const ownerPassword = process.env.OWNER_PASSWORD ?? "Koko16!!";
+    const ownerEmail = process.env.OWNER_EMAIL ?? "konstantin.wagner.d@gmail.com";
+    const ownerPassword = process.env.OWNER_PASSWORD ?? "CareAI??1";
     const ownerName = process.env.OWNER_NAME ?? "Konstantin Wagner";
 
     log.push("Lege/aktualisiere Owner-Account…");
