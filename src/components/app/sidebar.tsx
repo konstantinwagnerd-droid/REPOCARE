@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { LayoutDashboard, Users, FileText, Mic, Search, LogOut, Sparkles, Settings, Shield, Plug, LayoutGrid, Database, Bell, BarChart3, Radar, Receipt, Flag, UserCheck, Clock, GraduationCap, Award, Activity, Palette, Network, ArrowLeftRight, Download, Command, FlaskConical, Zap, CloudCog, Menu, X } from "lucide-react";
+import { LayoutDashboard, Users, FileText, Mic, Search, LogOut, Sparkles, Settings, Shield, Plug, LayoutGrid, Database, Bell, BarChart3, Radar, Receipt, Flag, UserCheck, Clock, GraduationCap, Award, Activity, Palette, Network, ArrowLeftRight, Download, Command, FlaskConical, Zap, CloudCog, Menu, X, Euro, ClipboardCheck, Wrench } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import type { Role } from "@/db/schema";
@@ -29,12 +29,15 @@ const adminNav = [
   { href: "/admin/zeiterfassung", label: "Zeiterfassung", icon: Clock, group: "Allgemein" },
 
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3, group: "Auswertung", tour: "admin-analytics" },
+  { href: "/admin/controlling", label: "Kosten-Controlling", icon: Euro, group: "Auswertung" },
   { href: "/admin/reports", label: "Reports", icon: FileText, group: "Auswertung" },
-  { href: "/admin/report-builder", label: "Report-Builder", icon: LayoutGrid, group: "Auswertung" },
+  { href: "/admin/reports/builder", label: "Query-Builder", icon: Wrench, group: "Auswertung" },
+  { href: "/admin/report-builder", label: "Dashboard-Builder", icon: LayoutGrid, group: "Auswertung" },
   { href: "/admin/anomaly", label: "Anomalien", icon: Radar, group: "Auswertung" },
   { href: "/admin/benchmarks", label: "Benchmarks", icon: Activity, group: "Auswertung" },
   { href: "/admin/exports", label: "Exporte", icon: Download, group: "Auswertung" },
 
+  { href: "/admin/zertifizierungen", label: "Zertifizierungen", icon: ClipboardCheck, group: "Compliance" },
   { href: "/admin/audit", label: "Audit-Log", icon: Shield, group: "Compliance", tour: "admin-audit" },
   { href: "/admin/backup", label: "Backup", icon: Database, group: "Compliance" },
   { href: "/admin/dsgvo", label: "DSGVO", icon: Shield, group: "Compliance" },
