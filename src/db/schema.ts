@@ -246,6 +246,249 @@ export const usersRelations = relations(users, ({ one }) => ({
   tenant: one(tenants, { fields: [users.tenantId], references: [tenants.id] }),
 }));
 
+// ============================================================================
+// DACH COMPETITIVE GAP-CLOSE (2026-04-18)
+// Siehe docs/competitor-analysis/GAP-ANALYSIS.md fuer Priorisierung.
+// Tabellen bilden Feature-Paritaet mit Medifox/Vivendi/Senso/Novatec ab.
+// ============================================================================
+
+// DNQP Expertenstandards (Deutsches Netzwerk fuer Qualitaetsentwicklung in der Pflege)
+// 10 Standards mit je ~6 Themenkomplexen. Quelle: DNQP / Hochschule Osnabrueck.
+export const dnqpStandardEnum = pgEnum("dnqp_standard", [
+  "sturzprophylaxe",
+  "dekubitusprophylaxe",
+  "schmerzmanagement_akut",
+  "schmerzmanagement_chronisch",
+  "ernaehrungsmanagement",
+  "kontinenzfoerderung",
+  "entlassungsmanagement",
+  "wundversorgung_chronisch",
+  "demenz",
+  "mundgesundheit",
+  "beziehungsgestaltung",
+]);
+
+export const dnqpAssessments = pgTable("dnqp_assessments", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  residentId: uuid("resident_id").references(() => residents.id, { onDelete: "cascade" }).notNull(),
+  standard: dnqpStandardEnum("standard").notNull(),
+  // Themenkomplexe des jeweiligen Standards (z.B. bei Sturz: Assessment, Information,
+  // Interventionen, Umgebungsanpassung, Evaluation, Dokumentation)
+  sections: jsonb("sections_json").$type<Record<string, { finding: string; measure: string; evaluation: string }>>(),
+  // Validierte Score-Skalen: Braden (Dekubitus), Tinetti (Sturz), MNA (Ernaehrung), NRS/VAS (Schmerz)
+  scoreName: text("score_name"),
+  scoreValue: real("score_value"),
+  riskLevel: text("risk_level"), // niedrig/mittel/hoch
+  recommendedMeasures: jsonb("recommended_measures_json").$type<string[]>().default([]),
+  assessedBy: uuid("assessed_by").references(() => users.id),
+  assessedAt: timestamp("assessed_at").defaultNow().notNull(),
+  nextReviewDue: timestamp("next_review_due"),
+});
+
+// NANDA-I Pflegediagnosen im PES-Schema: Problem, Aetiologie, Symptome
+// Quelle: NANDA International 2021-2023 Taxonomie II.
+export const nandaDiagnoses = pgTable("nanda_diagnoses", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  residentId: uuid("resident_id").references(() => residents.id, { onDelete: "cascade" }).notNull(),
+  code: text("code").notNull(), // z.B. "00155" Sturzgefahr
+  label: text("label").notNull(),
+  problem: text("problem").notNull(),
+  etiology: text("etiology").notNull(), // beeinflussende Faktoren
+  symptoms: jsonb("symptoms_json").$type<string[]>().default([]),
+  priority: integer("priority").notNull().default(3), // 1=hoch .. 5=niedrig
+  status: text("status").notNull().default("aktiv"), // aktiv/geloest/ruht
+  resolvedAt: timestamp("resolved_at"),
+  createdBy: uuid("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// NIC Nursing Interventions Classification + NOC Nursing Outcomes Classification
+// Quelle: University of Iowa College of Nursing. Bibliothek fuer Interventionen/Outcomes.
+export const nicInterventions = pgTable("nic_interventions", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  diagnosisId: uuid("diagnosis_id").references(() => nandaDiagnoses.id, { onDelete: "cascade" }).notNull(),
+  nicCode: text("nic_code").notNull(), // z.B. "6490" Sturzpraevention
+  nicLabel: text("nic_label").notNull(),
+  activities: jsonb("activities_json").$type<string[]>().default([]),
+  frequency: text("frequency"),
+  nocCode: text("noc_code"), // Ziel-Outcome
+  nocLabel: text("noc_label"),
+  targetScore: integer("target_score"), // 1-5 Likert
+  currentScore: integer("current_score"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Dienstplan-Qualifikations-Matrix
+export const staffQualifications = pgTable("staff_qualifications", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  qualification: text("qualification").notNull(), // DGKP, PFA, PA, Azubi, Praktikant, Hilfskraft
+  validFrom: timestamp("valid_from"),
+  validUntil: timestamp("valid_until"),
+  certificateUrl: text("certificate_url"),
+});
+
+export const shiftRequirements = pgTable("shift_requirements", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  tenantId: uuid("tenant_id").references(() => tenants.id, { onDelete: "cascade" }).notNull(),
+  station: text("station").notNull(),
+  shift: shiftEnum("shift").notNull(),
+  minFachkraefte: integer("min_fachkraefte").notNull().default(1),
+  minHilfskraefte: integer("min_hilfskraefte").notNull().default(0),
+  minAzubis: integer("min_azubis").notNull().default(0),
+});
+
+// AMTS (Arzneimittel-Therapie-Sicherheit). Quelle: §31a SGB V, Fachinformationen ABDA/MMI.
+export const medicationInteractions = pgTable("medication_interactions", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  residentId: uuid("resident_id").references(() => residents.id, { onDelete: "cascade" }).notNull(),
+  medAId: uuid("med_a_id").references(() => medications.id, { onDelete: "cascade" }).notNull(),
+  medBId: uuid("med_b_id").references(() => medications.id, { onDelete: "cascade" }),
+  severity: text("severity").notNull(), // kontraindiziert / schwerwiegend / moderat / geringfuegig
+  mechanism: text("mechanism"),
+  recommendation: text("recommendation").notNull(),
+  // Auch Doppelverordnung / Allergie-Kontra / Dosis-Warnung
+  kind: text("kind").notNull().default("interaktion"),
+  detectedAt: timestamp("detected_at").defaultNow().notNull(),
+  acknowledgedBy: uuid("acknowledged_by").references(() => users.id),
+  acknowledgedAt: timestamp("acknowledged_at"),
+});
+
+// Wund-Doku: Vermessung L x B x T mit Typ-Klassifikation (WCS Wundklassifikation)
+export const woundMeasurements = pgTable("wound_measurements", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  woundId: uuid("wound_id").references(() => wounds.id, { onDelete: "cascade" }).notNull(),
+  lengthMm: real("length_mm").notNull(),
+  widthMm: real("width_mm").notNull(),
+  depthMm: real("depth_mm"),
+  areaMm2: real("area_mm2"),
+  exudate: text("exudate"), // kein/gering/maessig/stark
+  woundBed: text("wound_bed"), // granulation/fibrin/nekrose/gemischt
+  edges: text("edges"), // vital/mazeriert/unterminiert
+  surrounding: text("surrounding"),
+  odor: boolean("odor").default(false),
+  painScore: integer("pain_score"), // NRS 0-10
+  photoUrl: text("photo_url"),
+  measuredAt: timestamp("measured_at").defaultNow().notNull(),
+  measuredBy: uuid("measured_by").references(() => users.id),
+});
+
+// Aufnahme-Assistent: strukturierter 7-Tage-Einzugsprozess
+export const admissionChecklists = pgTable("admission_checklists", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  residentId: uuid("resident_id").references(() => residents.id, { onDelete: "cascade" }).notNull(),
+  tasks: jsonb("tasks_json").$type<Array<{
+    day: number; // 0-7
+    task: string;
+    category: string; // dokumente/medizin/pflege/sozial/recht
+    done: boolean;
+    doneAt?: string;
+    doneBy?: string;
+    note?: string;
+  }>>().default([]),
+  startedAt: timestamp("started_at").defaultNow().notNull(),
+  completedAt: timestamp("completed_at"),
+});
+
+// Leistungsnachweis — SGB XI DE + Pflegegeld AT
+export const serviceRecords = pgTable("service_records", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  residentId: uuid("resident_id").references(() => residents.id, { onDelete: "cascade" }).notNull(),
+  serviceCode: text("service_code").notNull(), // SGB XI §36/§37/§37b/§39c/§45a/§45b bzw. AT-Leistung
+  serviceLabel: text("service_label").notNull(),
+  quantity: real("quantity").notNull().default(1),
+  unit: text("unit").notNull().default("Einsatz"),
+  performedAt: timestamp("performed_at").notNull(),
+  performedBy: uuid("performed_by").references(() => users.id).notNull(),
+  signatureHash: text("signature_hash"),
+  billingStatus: text("billing_status").notNull().default("offen"), // offen/abgerechnet/storniert
+  jurisdiction: text("jurisdiction").notNull().default("DE"), // DE/AT
+});
+
+// Pflegevisite — strukturiertes Template nach PDL-Quartals-Visite
+export const careVisits = pgTable("care_visits", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  residentId: uuid("resident_id").references(() => residents.id, { onDelete: "cascade" }).notNull(),
+  visitedBy: uuid("visited_by").references(() => users.id).notNull(),
+  visitDate: timestamp("visit_date").defaultNow().notNull(),
+  // Dimensionen: Struktur, Prozess, Ergebnis (nach Donabedian) + Bewohner-Erleben
+  structureFindings: text("structure_findings"),
+  processFindings: text("process_findings"),
+  outcomeFindings: text("outcome_findings"),
+  residentFeedback: text("resident_feedback"),
+  actionsAgreed: jsonb("actions_agreed_json").$type<Array<{ action: string; dueDate: string; owner: string }>>().default([]),
+  overallRating: integer("overall_rating"), // 1-5
+  nextVisitDue: timestamp("next_visit_due"),
+});
+
+// Biographie nach DNQP / IzEB (Institut zur Erforschung biographischer Pflege)
+export const biographies = pgTable("biographies", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  residentId: uuid("resident_id").references(() => residents.id, { onDelete: "cascade" }).notNull().unique(),
+  // 10 Kapitel: Herkunft, Kindheit, Schule/Ausbildung, Beruf, Familie/Partnerschaft,
+  //  Wohnen, Freizeit/Hobbys, Glauben/Werte, pragendes/Krisen, Gewohnheiten/Rituale
+  chapters: jsonb("chapters_json").$type<Record<string, { text: string; lastUpdatedAt: string; source: string }>>(),
+  dailyRituals: jsonb("daily_rituals_json").$type<Array<{ time: string; ritual: string }>>().default([]),
+  preferences: jsonb("preferences_json").$type<{ food?: string[]; music?: string[]; activities?: string[]; dislikes?: string[] }>(),
+  // Relevant bei Demenz: validierende Erinnerungsanker
+  memoryAnchors: jsonb("memory_anchors_json").$type<string[]>().default([]),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// HEIMaufG (AT) — Meldung an Bewohnervertretung bei Freiheitsbeschraenkung
+// Quelle: Heimaufenthaltsgesetz §3-§5 (AT). Pflicht fuer AT-Einrichtungen.
+export const heimaufgMeldungen = pgTable("heimaufg_meldungen", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  residentId: uuid("resident_id").references(() => residents.id, { onDelete: "cascade" }).notNull(),
+  kind: text("kind").notNull(), // mechanisch (Gurt/Bettgitter), medikamentoes, psychisch
+  reason: text("reason").notNull(),
+  gelinderesMittelGeprueft: text("gelinderes_mittel_geprueft").notNull(),
+  anordnungDurch: text("anordnung_durch").notNull(), // Arzt-Name
+  startAt: timestamp("start_at").notNull(),
+  endAt: timestamp("end_at"),
+  bewohnervertretungNotified: boolean("bewohnervertretung_notified").default(false),
+  notifiedAt: timestamp("notified_at"),
+  createdBy: uuid("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// ============================================================================
+// LLM Cost-Tracking + AMTS Flags (2026-04-18)
+// ============================================================================
+
+// Pro LLM-Request: Tokens, Kosten (in Cent als integer), Status, Fehler.
+export const billingLlmUsage = pgTable("billing_llm_usage", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  tenantId: uuid("tenant_id").references(() => tenants.id, { onDelete: "cascade" }),
+  userId: uuid("user_id").references(() => users.id),
+  requestType: text("request_type").notNull(), // sis-structure | handover | risk-assess | ...
+  model: text("model").notNull(),
+  promptTokens: integer("prompt_tokens").notNull(),
+  completionTokens: integer("completion_tokens").notNull(),
+  costEurCents: integer("cost_eur_cents").notNull(),
+  durationMs: integer("duration_ms").notNull(),
+  status: text("status").notNull(), // success | error | cached | budget-exceeded
+  errorMessage: text("error_message"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// AMTS: per Medikation generierte Warnungen (PRISCUS, FORTA, Interaktionen).
+export const amtsFlags = pgTable("amts_flags", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  residentId: uuid("resident_id").references(() => residents.id, { onDelete: "cascade" }).notNull(),
+  medicationId: uuid("medication_id").references(() => medications.id),
+  flagType: text("flag_type").notNull(), // priscus | forta-d | forta-c | interaction
+  severity: text("severity").notNull(), // hoch | mittel | niedrig
+  detailsJson: jsonb("details_json").notNull(),
+  acknowledgedBy: uuid("acknowledged_by").references(() => users.id),
+  acknowledgedAt: timestamp("acknowledged_at"),
+  acknowledgementReason: text("acknowledgement_reason"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type BillingLlmUsage = typeof billingLlmUsage.$inferSelect;
+export type AmtsFlag = typeof amtsFlags.$inferSelect;
+
 export type User = typeof users.$inferSelect;
 export type Resident = typeof residents.$inferSelect;
 export type CareReport = typeof careReports.$inferSelect;
@@ -253,3 +496,6 @@ export type VitalSign = typeof vitalSigns.$inferSelect;
 export type Medication = typeof medications.$inferSelect;
 export type CarePlan = typeof carePlans.$inferSelect;
 export type Role = (typeof roleEnum.enumValues)[number];
+export type DnqpAssessment = typeof dnqpAssessments.$inferSelect;
+export type NandaDiagnosis = typeof nandaDiagnoses.$inferSelect;
+export type Biography = typeof biographies.$inferSelect;

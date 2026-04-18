@@ -23,6 +23,8 @@ export interface LLMRequest {
   promptKey?: string;
   /** If true, response must be valid JSON. */
   jsonMode?: boolean;
+  /** Enable prompt-caching for the system prompt (Anthropic: cache_control ephemeral). */
+  enableCache?: boolean;
 }
 
 export interface LLMUsage {

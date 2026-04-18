@@ -18,6 +18,21 @@ export const maxDuration = 60;
 const DDL = `
 -- NUCLEAR OPTION: DROP + CREATE fresh. Supabase hat nur Demo-Daten.
 -- Saubere Recreation verhindert Schema-Drift-Issues zwischen manueller DDL und drizzle-schema.
+DROP TABLE IF EXISTS amts_flags CASCADE;
+DROP TABLE IF EXISTS billing_llm_usage CASCADE;
+DROP TABLE IF EXISTS heimaufg_meldungen CASCADE;
+DROP TABLE IF EXISTS biographies CASCADE;
+DROP TABLE IF EXISTS care_visits CASCADE;
+DROP TABLE IF EXISTS service_records CASCADE;
+DROP TABLE IF EXISTS admission_checklists CASCADE;
+DROP TABLE IF EXISTS wound_measurements CASCADE;
+DROP TABLE IF EXISTS medication_interactions CASCADE;
+DROP TABLE IF EXISTS shift_requirements CASCADE;
+DROP TABLE IF EXISTS staff_qualifications CASCADE;
+DROP TABLE IF EXISTS nic_interventions CASCADE;
+DROP TABLE IF EXISTS nanda_diagnoses CASCADE;
+DROP TABLE IF EXISTS dnqp_assessments CASCADE;
+DROP TYPE IF EXISTS dnqp_standard CASCADE;
 DROP TABLE IF EXISTS audit_log CASCADE;
 DROP TABLE IF EXISTS export_records CASCADE;
 DROP TABLE IF EXISTS shifts CASCADE;
@@ -261,6 +276,206 @@ CREATE TABLE IF NOT EXISTS user_tenants (
   PRIMARY KEY (user_id, tenant_id)
 );
 CREATE INDEX IF NOT EXISTS idx_user_tenants_tenant ON user_tenants(tenant_id);
+
+-- ============================================================================
+-- DACH COMPETITIVE GAP-CLOSE Tabellen (2026-04-18)
+-- ============================================================================
+
+CREATE TYPE dnqp_standard AS ENUM (
+  'sturzprophylaxe','dekubitusprophylaxe','schmerzmanagement_akut','schmerzmanagement_chronisch',
+  'ernaehrungsmanagement','kontinenzfoerderung','entlassungsmanagement','wundversorgung_chronisch',
+  'demenz','mundgesundheit','beziehungsgestaltung'
+);
+
+CREATE TABLE IF NOT EXISTS dnqp_assessments (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  resident_id uuid NOT NULL REFERENCES residents(id) ON DELETE CASCADE,
+  standard dnqp_standard NOT NULL,
+  sections_json jsonb,
+  score_name text,
+  score_value real,
+  risk_level text,
+  recommended_measures_json jsonb DEFAULT '[]'::jsonb,
+  assessed_by uuid REFERENCES users(id),
+  assessed_at timestamp NOT NULL DEFAULT now(),
+  next_review_due timestamp
+);
+CREATE INDEX IF NOT EXISTS idx_dnqp_resident ON dnqp_assessments(resident_id);
+
+CREATE TABLE IF NOT EXISTS nanda_diagnoses (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  resident_id uuid NOT NULL REFERENCES residents(id) ON DELETE CASCADE,
+  code text NOT NULL,
+  label text NOT NULL,
+  problem text NOT NULL,
+  etiology text NOT NULL,
+  symptoms_json jsonb DEFAULT '[]'::jsonb,
+  priority integer NOT NULL DEFAULT 3,
+  status text NOT NULL DEFAULT 'aktiv',
+  resolved_at timestamp,
+  created_by uuid REFERENCES users(id),
+  created_at timestamp NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_nanda_resident ON nanda_diagnoses(resident_id);
+
+CREATE TABLE IF NOT EXISTS nic_interventions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  diagnosis_id uuid NOT NULL REFERENCES nanda_diagnoses(id) ON DELETE CASCADE,
+  nic_code text NOT NULL,
+  nic_label text NOT NULL,
+  activities_json jsonb DEFAULT '[]'::jsonb,
+  frequency text,
+  noc_code text,
+  noc_label text,
+  target_score integer,
+  current_score integer,
+  created_at timestamp NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS staff_qualifications (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  qualification text NOT NULL,
+  valid_from timestamp,
+  valid_until timestamp,
+  certificate_url text
+);
+
+CREATE TABLE IF NOT EXISTS shift_requirements (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  station text NOT NULL,
+  shift shift NOT NULL,
+  min_fachkraefte integer NOT NULL DEFAULT 1,
+  min_hilfskraefte integer NOT NULL DEFAULT 0,
+  min_azubis integer NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS medication_interactions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  resident_id uuid NOT NULL REFERENCES residents(id) ON DELETE CASCADE,
+  med_a_id uuid NOT NULL REFERENCES medications(id) ON DELETE CASCADE,
+  med_b_id uuid REFERENCES medications(id) ON DELETE CASCADE,
+  severity text NOT NULL,
+  mechanism text,
+  recommendation text NOT NULL,
+  kind text NOT NULL DEFAULT 'interaktion',
+  detected_at timestamp NOT NULL DEFAULT now(),
+  acknowledged_by uuid REFERENCES users(id),
+  acknowledged_at timestamp
+);
+
+CREATE TABLE IF NOT EXISTS wound_measurements (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  wound_id uuid NOT NULL REFERENCES wounds(id) ON DELETE CASCADE,
+  length_mm real NOT NULL,
+  width_mm real NOT NULL,
+  depth_mm real,
+  area_mm2 real,
+  exudate text,
+  wound_bed text,
+  edges text,
+  surrounding text,
+  odor boolean DEFAULT false,
+  pain_score integer,
+  photo_url text,
+  measured_at timestamp NOT NULL DEFAULT now(),
+  measured_by uuid REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS admission_checklists (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  resident_id uuid NOT NULL REFERENCES residents(id) ON DELETE CASCADE,
+  tasks_json jsonb DEFAULT '[]'::jsonb,
+  started_at timestamp NOT NULL DEFAULT now(),
+  completed_at timestamp
+);
+
+CREATE TABLE IF NOT EXISTS service_records (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  resident_id uuid NOT NULL REFERENCES residents(id) ON DELETE CASCADE,
+  service_code text NOT NULL,
+  service_label text NOT NULL,
+  quantity real NOT NULL DEFAULT 1,
+  unit text NOT NULL DEFAULT 'Einsatz',
+  performed_at timestamp NOT NULL,
+  performed_by uuid NOT NULL REFERENCES users(id),
+  signature_hash text,
+  billing_status text NOT NULL DEFAULT 'offen',
+  jurisdiction text NOT NULL DEFAULT 'DE'
+);
+CREATE INDEX IF NOT EXISTS idx_svc_resident_date ON service_records(resident_id, performed_at);
+
+CREATE TABLE IF NOT EXISTS care_visits (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  resident_id uuid NOT NULL REFERENCES residents(id) ON DELETE CASCADE,
+  visited_by uuid NOT NULL REFERENCES users(id),
+  visit_date timestamp NOT NULL DEFAULT now(),
+  structure_findings text,
+  process_findings text,
+  outcome_findings text,
+  resident_feedback text,
+  actions_agreed_json jsonb DEFAULT '[]'::jsonb,
+  overall_rating integer,
+  next_visit_due timestamp
+);
+
+CREATE TABLE IF NOT EXISTS biographies (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  resident_id uuid NOT NULL UNIQUE REFERENCES residents(id) ON DELETE CASCADE,
+  chapters_json jsonb,
+  daily_rituals_json jsonb DEFAULT '[]'::jsonb,
+  preferences_json jsonb,
+  memory_anchors_json jsonb DEFAULT '[]'::jsonb,
+  updated_at timestamp NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS heimaufg_meldungen (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  resident_id uuid NOT NULL REFERENCES residents(id) ON DELETE CASCADE,
+  kind text NOT NULL,
+  reason text NOT NULL,
+  gelinderes_mittel_geprueft text NOT NULL,
+  anordnung_durch text NOT NULL,
+  start_at timestamp NOT NULL,
+  end_at timestamp,
+  bewohnervertretung_notified boolean DEFAULT false,
+  notified_at timestamp,
+  created_by uuid REFERENCES users(id),
+  created_at timestamp NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS billing_llm_usage (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id uuid REFERENCES tenants(id) ON DELETE CASCADE,
+  user_id uuid REFERENCES users(id),
+  request_type text NOT NULL,
+  model text NOT NULL,
+  prompt_tokens integer NOT NULL,
+  completion_tokens integer NOT NULL,
+  cost_eur_cents integer NOT NULL,
+  duration_ms integer NOT NULL,
+  status text NOT NULL,
+  error_message text,
+  created_at timestamp NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_billing_llm_tenant_month ON billing_llm_usage(tenant_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_billing_llm_request_type ON billing_llm_usage(request_type);
+
+CREATE TABLE IF NOT EXISTS amts_flags (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  resident_id uuid NOT NULL REFERENCES residents(id) ON DELETE CASCADE,
+  medication_id uuid REFERENCES medications(id),
+  flag_type text NOT NULL,
+  severity text NOT NULL,
+  details_json jsonb NOT NULL,
+  acknowledged_by uuid REFERENCES users(id),
+  acknowledged_at timestamp,
+  acknowledgement_reason text,
+  created_at timestamp NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_amts_resident ON amts_flags(resident_id);
+CREATE INDEX IF NOT EXISTS idx_amts_severity ON amts_flags(severity);
 
 CREATE TABLE IF NOT EXISTS leads (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
