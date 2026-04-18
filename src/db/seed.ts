@@ -52,7 +52,7 @@ const shiftTypes = ["frueh", "spaet", "nacht"] as const;
 function pick<T>(arr: T[]): T { return arr[Math.floor(Math.random() * arr.length)]; }
 function range(n: number) { return Array.from({ length: n }, (_, i) => i); }
 
-async function main() {
+export async function runSeed(): Promise<{ ok: true; users: number; residents: number }> {
   console.info("Seeding CareAI demo data...");
 
   // Truncate (soft) — only in dev
@@ -257,7 +257,10 @@ async function main() {
   }));
 
   console.info("Seed complete. Login with Demo2026!");
-  process.exit(0);
+  return { ok: true, users: insertedUsers.length, residents: 12 };
 }
 
-main().catch((e) => { console.error(e); process.exit(1); });
+// Allow invocation via tsx CLI (npm run db:seed)
+if (typeof require !== "undefined" && require.main === module) {
+  runSeed().then(() => process.exit(0)).catch((e) => { console.error(e); process.exit(1); });
+}
