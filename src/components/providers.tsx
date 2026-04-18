@@ -3,11 +3,19 @@
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import { SessionProvider } from "next-auth/react";
+import { OfflineBanner } from "@/components/offline/OfflineBanner";
+import { ConflictDialog } from "@/components/offline/ConflictDialog";
+import { InstallPrompt } from "@/components/offline/InstallPrompt";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-      <SessionProvider>{children}</SessionProvider>
+      <SessionProvider>
+        <OfflineBanner />
+        {children}
+        <ConflictDialog />
+        <InstallPrompt />
+      </SessionProvider>
       <Toaster
         position="bottom-right"
         toastOptions={{

@@ -1,9 +1,10 @@
 {
   "name": "CareAI — KI-gestützte Pflegedokumentation",
   "short_name": "CareAI",
-  "description": "CareAI entlastet Pflegekräfte mit KI-gestützter Sprachdokumentation, SIS, Berichten und Handover — DSGVO-konform in Österreich gehostet.",
+  "description": "CareAI entlastet Pflegekräfte mit KI-gestützter Sprachdokumentation, SIS, Berichten und Handover — DSGVO-konform, EU-Hosting, voll offline-fähig.",
   "start_url": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "background_color": "#0B1220",
   "theme_color": "#0B84FF",
   "lang": "de-AT",
@@ -11,8 +12,16 @@
   "scope": "/",
   "orientation": "portrait-primary",
   "categories": ["medical", "productivity", "business"],
+  "prefer_related_applications": false,
   "icons": [
-    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Neuer Pflegebericht", "short_name": "Bericht", "url": "/app/berichte/neu", "description": "Schnellzugriff auf neuen Pflegebericht" },
+    { "name": "Vorfall melden", "short_name": "Vorfall", "url": "/app/incidents/neu", "description": "Sturz oder Vorfall dokumentieren" },
+    { "name": "Schichtbericht", "short_name": "Schicht", "url": "/app/schichtbericht", "description": "Schichtübergabe erfassen" }
   ]
 }
