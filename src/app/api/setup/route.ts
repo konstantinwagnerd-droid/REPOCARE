@@ -9,6 +9,7 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import postgres from "postgres";
+import bcrypt from "bcryptjs";
 import { runSeed } from "@/db/seed";
 
 export const runtime = "nodejs";
@@ -222,9 +223,44 @@ export async function GET(req: NextRequest) {
     await sql.unsafe(DDL);
     log.push("Schema OK.");
 
-    log.push("Seede Demo-Daten (Tenant, 8 Users, 12 Bewohner, ~220 Audit-Eintraege)…");
+    log.push("Seede Demo-Daten (Tenant, Users, Bewohner, Audit-Eintraege)…");
     const seedResult = await runSeed();
     log.push(`Seed OK: ${seedResult.users} Users, ${seedResult.residents} Bewohner.`);
+
+    // Owner-Account anlegen (versteckt, nicht in Demo-Liste)
+    const ownerEmail = process.env.OWNER_EMAIL ?? "konstantin@careai.health";
+    const ownerPassword = process.env.OWNER_PASSWORD ?? "Koko16!!";
+    const ownerName = process.env.OWNER_NAME ?? "Konstantin Wagner";
+
+    log.push("Lege/aktualisiere Owner-Account…");
+    const passwordHash = await bcrypt.hash(ownerPassword, 12);
+
+    // 1. Operations-Tenant fuer den Owner (separat von Demo-Heim)
+    const opsTenant = await sql`
+      INSERT INTO tenants (name, address, plan)
+      VALUES ('CareAI Operations', 'Schwarzenbergplatz 7/30, 1030 Wien', 'enterprise')
+      ON CONFLICT DO NOTHING
+      RETURNING id
+    `;
+    let opsTenantId: string;
+    if (opsTenant.length > 0) {
+      opsTenantId = opsTenant[0].id as string;
+    } else {
+      const existing = await sql`SELECT id FROM tenants WHERE name = 'CareAI Operations' LIMIT 1`;
+      opsTenantId = existing[0].id as string;
+    }
+
+    // 2. Owner-User upsert
+    await sql`
+      INSERT INTO users (tenant_id, email, password_hash, role, full_name, email_verified)
+      VALUES (${opsTenantId}::uuid, ${ownerEmail}, ${passwordHash}, 'owner', ${ownerName}, NOW())
+      ON CONFLICT (email) DO UPDATE SET
+        password_hash = EXCLUDED.password_hash,
+        role = 'owner',
+        full_name = EXCLUDED.full_name,
+        email_verified = NOW()
+    `;
+    log.push(`Owner OK: ${ownerEmail}`);
 
     await sql.end();
 
@@ -232,11 +268,12 @@ export async function GET(req: NextRequest) {
       ok: true,
       duration_ms: Date.now() - t0,
       log,
-      next_steps: [
-        "Login: https://repocare.vercel.app/login",
-        "Email: pflege@careai.demo",
-        "Passwort: Demo2026!",
-      ],
+      next_steps: {
+        demo_login: "https://repocare.vercel.app/login (pflege@careai.demo / Demo2026!)",
+        owner_login: `https://repocare.vercel.app/login (${ownerEmail} / ***)`,
+        owner_panel: "https://repocare.vercel.app/owner",
+        hint: "Owner-Account ist NICHT auf der Login-Seite gelistet. Nur du kennst die Email.",
+      },
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
