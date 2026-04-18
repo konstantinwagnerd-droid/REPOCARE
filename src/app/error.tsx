@@ -2,11 +2,11 @@
 
 import { useEffect } from "react";
 import { AlertTriangle, RotateCw, LayoutDashboard } from "lucide-react";
+import { captureException } from "@/lib/observability/capture";
 
 export default function GlobalError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   useEffect(() => {
-    // eslint-disable-next-line no-console
-    console.error(JSON.stringify({ level: "error", msg: "global_error", digest: error.digest, message: error.message }));
+    captureException(error, { digest: error.digest, boundary: "app_error" });
   }, [error]);
 
   return (

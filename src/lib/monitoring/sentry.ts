@@ -18,8 +18,10 @@ export async function initSentry(): Promise<void> {
     return;
   }
   try {
-    // @ts-expect-error — optional dep; install @sentry/node for server runtime.
-    sentry = await import("@sentry/node");
+    // Seit April 2026 ist @sentry/nextjs als Hard-Dep installiert.
+    // Der eigentliche Init erfolgt in sentry.{client,server,edge}.config.ts —
+    // diese Funktion bleibt als Runtime-Fallback fuer Nicht-Next-Workers.
+    sentry = await import("@sentry/nextjs");
     sentry.init({
       dsn,
       environment: process.env.NODE_ENV,
