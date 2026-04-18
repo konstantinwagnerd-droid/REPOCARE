@@ -48,6 +48,8 @@ const adminNav = [
 
   { href: "/admin/webhooks", label: "Webhooks", icon: Plug, group: "Integrationen" },
   { href: "/admin/notifications", label: "Notifications", icon: Bell, group: "Integrationen" },
+  { href: "/admin/email-inbox", label: "E-Mail-Posteingang", icon: Bell, group: "Integrationen" },
+  { href: "/admin/email-routing", label: "E-Mail-Routing", icon: Plug, group: "Integrationen" },
   { href: "/admin/whatsapp", label: "WhatsApp", icon: Bell, group: "Integrationen" },
   { href: "/admin/billing", label: "API-Billing", icon: Receipt, group: "Integrationen", tour: "admin-billing" },
   { href: "/admin/migration", label: "Migration", icon: ArrowLeftRight, group: "Integrationen", tour: "admin-migration" },
