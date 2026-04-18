@@ -489,6 +489,42 @@ export const amtsFlags = pgTable("amts_flags", {
 export type BillingLlmUsage = typeof billingLlmUsage.$inferSelect;
 export type AmtsFlag = typeof amtsFlags.$inferSelect;
 
+// Pflegegeld / Pflegegrad Antragsgenerator
+// DE: Antrag auf Leistungen nach SGB XI (NBA-basiert, Pflegegrade 1-5)
+// AT: Antrag auf Bundespflegegeld nach BPGG (Stufen 1-7)
+export const pensionApplicationTypeEnum = pgEnum("pension_application_type", [
+  "de-sgb-xi",
+  "at-bpgg",
+]);
+export const pensionApplicationStatusEnum = pgEnum("pension_application_status", [
+  "draft",
+  "submitted",
+  "approved",
+  "rejected",
+]);
+
+export const pensionApplications = pgTable("pension_applications", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  residentId: uuid("resident_id").references(() => residents.id, { onDelete: "cascade" }).notNull(),
+  tenantId: uuid("tenant_id").references(() => tenants.id, { onDelete: "cascade" }).notNull(),
+  applicationType: pensionApplicationTypeEnum("application_type").notNull(),
+  status: pensionApplicationStatusEnum("status").notNull().default("draft"),
+  // Vollständige Form-Felder (auto-befüllt aus Bewohner-Daten + PDL-ergänzungen)
+  formData: jsonb("form_data_json").$type<Record<string, unknown>>().default({}).notNull(),
+  // Ergebnis nach Bescheid
+  assignedGrade: integer("assigned_grade"), // DE: 1-5, AT: 1-7
+  notes: text("notes"),
+  pdfHash: text("pdf_hash"),
+  createdBy: uuid("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  submittedAt: timestamp("submitted_at"),
+  statusUpdatedAt: timestamp("status_updated_at"),
+});
+
+export type PensionApplication = typeof pensionApplications.$inferSelect;
+export type PensionApplicationType = (typeof pensionApplicationTypeEnum.enumValues)[number];
+export type PensionApplicationStatus = (typeof pensionApplicationStatusEnum.enumValues)[number];
+
 export type User = typeof users.$inferSelect;
 export type Resident = typeof residents.$inferSelect;
 export type CareReport = typeof careReports.$inferSelect;
