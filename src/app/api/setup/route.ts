@@ -738,6 +738,20 @@ CREATE TABLE IF NOT EXISTS leads (
   created_at timestamp NOT NULL DEFAULT now(),
   updated_at timestamp NOT NULL DEFAULT now()
 );
+
+-- Mandanten-Vokabular fuer Voice-Transcript-Editor (Auto-Learn).
+-- Siehe: src/lib/voice/vocab-learner.ts, docs/voice-transcript-editor.md
+CREATE TABLE IF NOT EXISTS tenant_vocabulary (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  pattern text NOT NULL,
+  correct text NOT NULL,
+  category text,
+  use_count integer NOT NULL DEFAULT 1,
+  last_used_at timestamp NOT NULL DEFAULT now(),
+  created_at timestamp NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_tenant_vocabulary_tenant ON tenant_vocabulary(tenant_id);
 `;
 
 const SETUP_TOKEN = process.env.SETUP_TOKEN ?? "careai-setup-2026";

@@ -5,10 +5,19 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Mic, Square, Pause, Play, Loader2, Check, Sparkles, AlertTriangle } from "lucide-react";
 import { motion } from "framer-motion";
+import { TranscriptEditor } from "@/components/voice/transcript-editor";
 
 const MAX_SECONDS = 5 * 60; // 5 min — Whisper Free-Tier safety
 
-type Phase = "idle" | "recording" | "paused" | "transcribing" | "structuring" | "done" | "error";
+type Phase =
+  | "idle"
+  | "recording"
+  | "paused"
+  | "transcribing"
+  | "editing"
+  | "structuring"
+  | "done"
+  | "error";
 
 type StructuredResult = {
   summary: string;
@@ -206,8 +215,10 @@ export function VoiceClient() {
       setTranscript(data.transcript ?? "");
       setEditableTranscript(data.transcript ?? "");
 
-      // Auto-run structure step
-      await runStructure(data.transcript ?? "");
+      // Zwischenschritt: Transkript-Editor mit Fachvokabular-Autokorrektur anzeigen.
+      // Claude-Strukturierung wird erst getriggert wenn der User im Editor
+      // auf "KI-Strukturieren" klickt.
+      setPhase("editing");
     } catch (e) {
       setErrorMsg(e instanceof Error ? e.message : "Transkription fehlgeschlagen.");
       setPhase("error");
@@ -345,6 +356,20 @@ export function VoiceClient() {
             Das kann ca. 10–30 Sekunden dauern.
           </div>
         </div>
+      )}
+
+      {phase === "editing" && (
+        <TranscriptEditor
+          rawTranscript={transcript}
+          durationSeconds={seconds}
+          onSubmit={(finalText) => {
+            setEditableTranscript(finalText);
+            setTranscript(finalText);
+            void runStructure(finalText);
+          }}
+          onReRecord={reset}
+          onCancel={reset}
+        />
       )}
 
       {phase === "error" && (

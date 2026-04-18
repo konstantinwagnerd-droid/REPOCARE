@@ -793,3 +793,18 @@ export type EmailInbound = typeof emailInbound.$inferSelect;
 export type EmailRoutingRule = typeof emailRoutingRules.$inferSelect;
 export type EmailClassification = EmailInbound["classification"];
 export type SavedReport = typeof savedReports.$inferSelect;
+
+// Mandanten-spezifisches Pflege-Vokabular — gelernt aus manuellen User-Korrekturen
+// am Whisper-Transkript. Ergaenzt das statische Dictionary in
+// src/lib/voice/pflege-vocabulary.ts. Siehe auch docs/voice-transcript-editor.md
+export const tenantVocabulary = pgTable("tenant_vocabulary", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  tenantId: uuid("tenant_id").references(() => tenants.id, { onDelete: "cascade" }).notNull(),
+  pattern: text("pattern").notNull(),
+  correct: text("correct").notNull(),
+  category: text("category"),
+  useCount: integer("use_count").notNull().default(1),
+  lastUsedAt: timestamp("last_used_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+export type TenantVocabulary = typeof tenantVocabulary.$inferSelect;
