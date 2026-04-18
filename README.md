@@ -127,6 +127,53 @@ docker run --name careai-pg -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgr
 
 ---
 
+## Voice-Setup (echte Spracherkennung aktivieren)
+
+Standardmäßig läuft `/app/voice` im **Mock-Modus** (deterministische Demo-Ausgabe).
+Für echte Spracheingabe setze in **Vercel → Settings → Environment Variables** (oder in `.env` lokal):
+
+### 1. Transkription (Audio → Text)
+
+```env
+# OpenAI Whisper
+WHISPER_PROVIDER="openai"
+OPENAI_API_KEY="sk-..."
+WHISPER_MODEL="whisper-1"
+
+# ODER ElevenLabs Scribe (EU-hosted, empfohlen für DSGVO)
+WHISPER_PROVIDER="elevenlabs"
+ELEVENLABS_API_KEY="xi-..."
+ELEVENLABS_MODEL="scribe_v1"
+```
+
+### 2. SIS-Strukturierung (Text → JSON)
+
+```env
+LLM_PROVIDER="anthropic"        # oder "openai"
+ENABLE_REAL_LLM="true"
+ANTHROPIC_API_KEY="sk-ant-..."
+ANTHROPIC_MODEL="claude-4-7-sonnet-20250929"
+# für OpenAI stattdessen:
+# OPENAI_MODEL="gpt-4o-mini"    # billiger, qualitativ ausreichend
+```
+
+### Kostenschutz & DSGVO
+
+- **Max 5 Min Audio** pro Aufnahme (Whisper-Free-Tier Limit).
+- **Max 10 Transkriptionen/User/Tag** (Rate-Limit, in-memory; in Prod → Redis).
+- **Audio wird NICHT gespeichert** — nur das Transkript landet in der DB.
+- **PII-Scrub**: bei echten LLM-Providern werden Namen/SVN/IBAN vor Übertragung ersetzt.
+- **Audit-Log**: jede Transkription/Strukturierung erzeugt `audit_log`-Eintrag mit `entity_type=voice_transcription` bzw. `voice_structuring` (ohne Text-Inhalt, nur Metadaten).
+
+### Endpoints
+
+| Route | Methode | Input | Output |
+|---|---|---|---|
+| `/api/voice/transcribe` | POST | `multipart/form-data: audio (Blob), durationSeconds` | `{ text, transcript, provider, language, duration }` |
+| `/api/voice/structure` | POST | `{ transcript, residentId?, residentName?, pflegegrad?, shift? }` | `{ summary, sisTags, vitals, actions, concerns, recommendations, confidence, provider }` |
+
+---
+
 ## Demo-Logins
 
 Passwort für alle: **`Demo2026!`**

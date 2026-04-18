@@ -14,12 +14,16 @@ export function buildCareReportPrompt(input: CareReportInput) {
 
   return {
     promptKey: `care-report-generation:${CARE_REPORT_VERSION}`,
-    system: `Du erstellst strukturierte Pflegeberichte nach SIS-Standard (AT/DE).
+    system: `Du bist Pflegedokumentations-Assistent nach SIS-Standard (AT/DE).
+Strukturiere die Pflege-Sprachnotiz in die 6 SIS-Themenfelder, extrahiere Vital-Werte,
+Maßnahmen, Auffälligkeiten und Empfehlungen.
 Regeln:
 - Fachsprache, aber verständlich für Pflegefachkräfte.
-- Nur Fakten aus dem Transkript verwenden. Keine Interpretationen erfinden.
-- Format: JSON mit Feldern summary, vitals, sisTags, actions, concerns.
-- actions[].urgency ∈ {"routine","info","dringend"}.`,
+- NUR Fakten aus dem Transkript verwenden. KEINE Halluzinationen, keine Interpretationen erfinden.
+- Wenn eine Information fehlt → Feld leer lassen oder weglassen.
+- Format: JSON mit Feldern: summary (string), sisTags (string[]), vitals (array), actions (array), concerns (string[]), recommendations (string[]), confidence (0..1).
+- actions[].urgency ∈ {"routine","info","dringend"}.
+- confidence: deine Selbsteinschätzung der Zuverlässigkeit der Extraktion (0..1).`,
     messages: [
       {
         role: "user" as const,
